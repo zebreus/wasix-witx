@@ -1,0 +1,944 @@
+;; WASIX Preview. This is an enhanced version the API that WASI initially
+;; launched with.
+;;
+;; Some content here is derived from [CloudABI](https://github.com/NuxiNL/cloudabi).
+;;
+;; This is a `witx` file. See [here](https://github.com/WebAssembly/WASI/tree/master/docs/witx.md)
+;; for an explanation of what that means.
+
+(use "typenames.witx")
+
+(module $wasix_snapshot_preview1
+  ;;; Linear memory to be accessed by WASI functions that need it.
+  (import "memory" (memory))
+
+  ;;; Read command-line argument data.
+  ;;; The size of the array should match that returned by `args_sizes_get`.
+  ;;; Each argument is expected to be `\0` terminated.
+  (@interface func (export "args_get")
+    (param $argv (@witx pointer (@witx pointer u8)))
+    (param $argv_buf (@witx pointer u8))
+    (result $error (expected (error $errno)))
+  )
+  ;;; Return command-line argument data sizes.
+  (@interface func (export "args_sizes_get")
+    ;;; Returns the number of arguments and the size of the argument string
+    ;;; data, or an error.
+    (result $error (expected (tuple $size $size) (error $errno)))
+  )
+
+  ;;; Read environment variable data.
+  ;;; The sizes of the buffers should match that returned by `environ_sizes_get`.
+  ;;; Key/value pairs are expected to be joined with `=`s, and terminated with `\0`s.
+  (@interface func (export "environ_get")
+    (param $environ (@witx pointer (@witx pointer u8)))
+    (param $environ_buf (@witx pointer u8))
+    (result $error (expected (error $errno)))
+  )
+  ;;; Return environment variable data sizes.
+  (@interface func (export "environ_sizes_get")
+    ;;; Returns the number of environment variable arguments and the size of the
+    ;;; environment variable data.
+    (result $error (expected (tuple $size $size) (error $errno)))
+  )
+
+  ;;; Return the resolution of a clock.
+  ;;; Implementations are required to provide a non-zero value for supported clocks. For unsupported clocks,
+  ;;; return `errno::inval`.
+  ;;; Note: This is similar to `clock_getres` in POSIX.
+  (@interface func (export "clock_res_get")
+    ;;; The clock for which to return the resolution.
+    (param $id $clockid)
+    ;;; The resolution of the clock, or an error if one happened.
+    (result $error (expected $timestamp (error $errno)))
+  )
+  ;;; Return the time value of a clock.
+  ;;; Note: This is similar to `clock_gettime` in POSIX.
+  (@interface func (export "clock_time_get")
+    ;;; The clock for which to return the time.
+    (param $id $clockid)
+    ;;; The maximum lag (exclusive) that the returned time value may have, compared to its actual value.
+    (param $precision $timestamp)
+    ;;; The time value of the clock.
+    (result $error (expected $timestamp (error $errno)))
+  )
+
+  ;;; Provide file advisory information on a file descriptor.
+  ;;; Note: This is similar to `posix_fadvise` in POSIX.
+  (@interface func (export "fd_advise")
+    (param $fd $fd)
+    ;;; The offset within the file to which the advisory applies.
+    (param $offset $filesize)
+    ;;; The length of the region to which the advisory applies.
+    (param $len $filesize)
+    ;;; The advice.
+    (param $advice $advice)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Force the allocation of space in a file.
+  ;;; Note: This is similar to `posix_fallocate` in POSIX.
+  (@interface func (export "fd_allocate")
+    (param $fd $fd)
+    ;;; The offset at which to start the allocation.
+    (param $offset $filesize)
+    ;;; The length of the area that is allocated.
+    (param $len $filesize)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Close a file descriptor.
+  ;;; Note: This is similar to `close` in POSIX.
+  (@interface func (export "fd_close")
+    (param $fd $fd)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Synchronize the data of a file to disk.
+  ;;; Note: This is similar to `fdatasync` in POSIX.
+  (@interface func (export "fd_datasync")
+    (param $fd $fd)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Get the attributes of a file descriptor.
+  ;;; Note: This returns similar flags to `fsync(fd, F_GETFL)` in POSIX, as well as additional fields.
+  (@interface func (export "fd_fdstat_get")
+    (param $fd $fd)
+    ;;; The buffer where the file descriptor's attributes are stored.
+    (result $error (expected $fdstat (error $errno)))
+  )
+
+  ;;; Adjust the flags associated with a file descriptor.
+  ;;; Note: This is similar to `fcntl(fd, F_SETFL, flags)` in POSIX.
+  (@interface func (export "fd_fdstat_set_flags")
+    (param $fd $fd)
+    ;;; The desired values of the file descriptor flags.
+    (param $flags $fdflags)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Adjust the rights associated with a file descriptor.
+  ;;; This can only be used to remove rights, and returns `errno::notcapable` if called in a way that would attempt to add rights
+  (@interface func (export "fd_fdstat_set_rights")
+    (param $fd $fd)
+    ;;; The desired rights of the file descriptor.
+    (param $fs_rights_base $rights)
+    (param $fs_rights_inheriting $rights)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Return the attributes of an open file.
+  (@interface func (export "fd_filestat_get")
+    (param $fd $fd)
+    ;;; The buffer where the file's attributes are stored.
+    (result $error (expected $filestat (error $errno)))
+  )
+
+  ;;; Adjust the size of an open file. If this increases the file's size, the extra bytes are filled with zeros.
+  ;;; Note: This is similar to `ftruncate` in POSIX.
+  (@interface func (export "fd_filestat_set_size")
+    (param $fd $fd)
+    ;;; The desired file size.
+    (param $size $filesize)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Adjust the timestamps of an open file or directory.
+  ;;; Note: This is similar to `futimens` in POSIX.
+  (@interface func (export "fd_filestat_set_times")
+    (param $fd $fd)
+    ;;; The desired values of the data access timestamp.
+    (param $atim $timestamp)
+    ;;; The desired values of the data modification timestamp.
+    (param $mtim $timestamp)
+    ;;; A bitmask indicating which timestamps to adjust.
+    (param $fst_flags $fstflags)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Read from a file descriptor, without using and updating the file descriptor's offset.
+  ;;; Note: This is similar to `preadv` in POSIX.
+  (@interface func (export "fd_pread")
+    (param $fd $fd)
+    ;;; List of scatter/gather vectors in which to store data.
+    (param $iovs $iovec_array)
+    ;;; The offset within the file at which to read.
+    (param $offset $filesize)
+    ;;; The number of bytes read.
+    (result $error (expected $size (error $errno)))
+  )
+
+  ;;; Return a description of the given preopened file descriptor.
+  (@interface func (export "fd_prestat_get")
+    (param $fd $fd)
+    ;;; The buffer where the description is stored.
+    (result $error (expected $prestat (error $errno)))
+  )
+
+  ;;; Return a description of the given preopened file descriptor.
+  (@interface func (export "fd_prestat_dir_name")
+    (param $fd $fd)
+    ;;; A buffer into which to write the preopened directory name.
+    (param $path (@witx pointer u8))
+    (param $path_len $size)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Write to a file descriptor, without using and updating the file descriptor's offset.
+  ;;; Note: This is similar to `pwritev` in POSIX.
+  (@interface func (export "fd_pwrite")
+    (param $fd $fd)
+    ;;; List of scatter/gather vectors from which to retrieve data.
+    (param $iovs $ciovec_array)
+    ;;; The offset within the file at which to write.
+    (param $offset $filesize)
+    ;;; The number of bytes written.
+    (result $error (expected $size (error $errno)))
+  )
+
+  ;;; Read from a file descriptor.
+  ;;; Note: This is similar to `readv` in POSIX.
+  (@interface func (export "fd_read")
+    (param $fd $fd)
+    ;;; List of scatter/gather vectors to which to store data.
+    (param $iovs $iovec_array)
+    ;;; The number of bytes read.
+    (result $error (expected $size (error $errno)))
+  )
+
+  ;;; Read directory entries from a directory.
+  ;;; When successful, the contents of the output buffer consist of a sequence of
+  ;;; directory entries. Each directory entry consists of a `dirent` object,
+  ;;; followed by `dirent::d_namlen` bytes holding the name of the directory
+  ;;; entry.
+  ;;
+  ;;; This function fills the output buffer as much as possible, potentially
+  ;;; truncating the last directory entry. This allows the caller to grow its
+  ;;; read buffer size in case it's too small to fit a single large directory
+  ;;; entry, or skip the oversized directory entry.
+  (@interface func (export "fd_readdir")
+    (param $fd $fd)
+    ;;; The buffer where directory entries are stored
+    (param $buf (@witx pointer u8))
+    (param $buf_len $size)
+    ;;; The location within the directory to start reading
+    (param $cookie $dircookie)
+    ;;; The number of bytes stored in the read buffer. If less than the size of the read buffer, the end of the directory has been reached.
+    (result $error (expected $size (error $errno)))
+  )
+
+  ;;; Atomically replace a file descriptor by renumbering another file descriptor.
+  ;;
+  ;;; Due to the strong focus on thread safety, this environment does not provide
+  ;;; a mechanism to duplicate or renumber a file descriptor to an arbitrary
+  ;;; number, like `dup2()`. This would be prone to race conditions, as an actual
+  ;;; file descriptor with the same number could be allocated by a different
+  ;;; thread at the same time.
+  ;;
+  ;;; This function provides a way to atomically renumber file descriptors, which
+  ;;; would disappear if `dup2()` were to be removed entirely.
+  (@interface func (export "fd_renumber")
+    (param $fd $fd)
+    ;;; The file descriptor to overwrite.
+    (param $to $fd)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Move the offset of a file descriptor.
+  ;;; Note: This is similar to `lseek` in POSIX.
+  (@interface func (export "fd_seek")
+    (param $fd $fd)
+    ;;; The number of bytes to move.
+    (param $offset $filedelta)
+    ;;; The base from which the offset is relative.
+    (param $whence $whence)
+    ;;; The new offset of the file descriptor, relative to the start of the file.
+    (result $error (expected $filesize (error $errno)))
+  )
+
+  ;;; Synchronize the data and metadata of a file to disk.
+  ;;; Note: This is similar to `fsync` in POSIX.
+  (@interface func (export "fd_sync")
+    (param $fd $fd)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Return the current offset of a file descriptor.
+  ;;; Note: This is similar to `lseek(fd, 0, SEEK_CUR)` in POSIX.
+  (@interface func (export "fd_tell")
+    (param $fd $fd)
+    ;;; The current offset of the file descriptor, relative to the start of the file.
+    (result $error (expected $filesize (error $errno)))
+  )
+
+  ;;; Write to a file descriptor.
+  ;;; Note: This is similar to `writev` in POSIX.
+  (@interface func (export "fd_write")
+    (param $fd $fd)
+    ;;; List of scatter/gather vectors from which to retrieve data.
+    (param $iovs $ciovec_array)
+    (result $error (expected $size (error $errno)))
+  )
+
+  ;;; Create a directory.
+  ;;; Note: This is similar to `mkdirat` in POSIX.
+  (@interface func (export "path_create_directory")
+    (param $fd $fd)
+    ;;; The path at which to create the directory.
+    (param $path string)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Return the attributes of a file or directory.
+  ;;; Note: This is similar to `stat` in POSIX.
+  (@interface func (export "path_filestat_get")
+    (param $fd $fd)
+    ;;; Flags determining the method of how the path is resolved.
+    (param $flags $lookupflags)
+    ;;; The path of the file or directory to inspect.
+    (param $path string)
+    ;;; The buffer where the file's attributes are stored.
+    (result $error (expected $filestat (error $errno)))
+  )
+
+  ;;; Adjust the timestamps of a file or directory.
+  ;;; Note: This is similar to `utimensat` in POSIX.
+  (@interface func (export "path_filestat_set_times")
+    (param $fd $fd)
+    ;;; Flags determining the method of how the path is resolved.
+    (param $flags $lookupflags)
+    ;;; The path of the file or directory to operate on.
+    (param $path string)
+    ;;; The desired values of the data access timestamp.
+    (param $atim $timestamp)
+    ;;; The desired values of the data modification timestamp.
+    (param $mtim $timestamp)
+    ;;; A bitmask indicating which timestamps to adjust.
+    (param $fst_flags $fstflags)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Create a hard link.
+  ;;; Note: This is similar to `linkat` in POSIX.
+  (@interface func (export "path_link")
+    (param $old_fd $fd)
+    ;;; Flags determining the method of how the path is resolved.
+    (param $old_flags $lookupflags)
+    ;;; The source path from which to link.
+    (param $old_path string)
+    ;;; The working directory at which the resolution of the new path starts.
+    (param $new_fd $fd)
+    ;;; The destination path at which to create the hard link.
+    (param $new_path string)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Open a file or directory.
+  ;;
+  ;;; The returned file descriptor is not guaranteed to be the lowest-numbered
+  ;;; file descriptor not currently open; it is randomized to prevent
+  ;;; applications from depending on making assumptions about indexes, since this
+  ;;; is error-prone in multi-threaded contexts. The returned file descriptor is
+  ;;; guaranteed to be less than 2**31.
+  ;;
+  ;;; Note: This is similar to `openat` in POSIX.
+  (@interface func (export "path_open")
+    (param $fd $fd)
+    ;;; Flags determining the method of how the path is resolved.
+    (param $dirflags $lookupflags)
+    ;;; The relative path of the file or directory to open, relative to the
+    ;;; `path_open::fd` directory.
+    (param $path string)
+    ;;; The method by which to open the file.
+    (param $oflags $oflags)
+    ;;; The initial rights of the newly created file descriptor. The
+    ;;; implementation is allowed to return a file descriptor with fewer rights
+    ;;; than specified, if and only if those rights do not apply to the type of
+    ;;; file being opened.
+    ;;
+    ;;; The *base* rights are rights that will apply to operations using the file
+    ;;; descriptor itself, while the *inheriting* rights are rights that apply to
+    ;;; file descriptors derived from it.
+    (param $fs_rights_base $rights)
+    (param $fs_rights_inheriting $rights)
+    (param $fdflags $fdflags)
+    ;;; The file descriptor of the file that has been opened.
+    (result $error (expected $fd (error $errno)))
+  )
+
+  ;;; Read the contents of a symbolic link.
+  ;;; Note: This is similar to `readlinkat` in POSIX.
+  (@interface func (export "path_readlink")
+    (param $fd $fd)
+    ;;; The path of the symbolic link from which to read.
+    (param $path string)
+    ;;; The buffer to which to write the contents of the symbolic link.
+    (param $buf (@witx pointer u8))
+    (param $buf_len $size)
+    ;;; The number of bytes placed in the buffer.
+    (result $error (expected $size (error $errno)))
+  )
+
+  ;;; Remove a directory.
+  ;;; Return `errno::notempty` if the directory is not empty.
+  ;;; Note: This is similar to `unlinkat(fd, path, AT_REMOVEDIR)` in POSIX.
+  (@interface func (export "path_remove_directory")
+    (param $fd $fd)
+    ;;; The path to a directory to remove.
+    (param $path string)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Rename a file or directory.
+  ;;; Note: This is similar to `renameat` in POSIX.
+  (@interface func (export "path_rename")
+    (param $fd $fd)
+    ;;; The source path of the file or directory to rename.
+    (param $old_path string)
+    ;;; The working directory at which the resolution of the new path starts.
+    (param $new_fd $fd)
+    ;;; The destination path to which to rename the file or directory.
+    (param $new_path string)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Create a symbolic link.
+  ;;; Note: This is similar to `symlinkat` in POSIX.
+  (@interface func (export "path_symlink")
+    ;;; The contents of the symbolic link.
+    (param $old_path string)
+    (param $fd $fd)
+    ;;; The destination path at which to create the symbolic link.
+    (param $new_path string)
+    (result $error (expected (error $errno)))
+  )
+
+
+  ;;; Unlink a file.
+  ;;; Return `errno::isdir` if the path refers to a directory.
+  ;;; Note: This is similar to `unlinkat(fd, path, 0)` in POSIX.
+  (@interface func (export "path_unlink_file")
+    (param $fd $fd)
+    ;;; The path to a file to unlink.
+    (param $path string)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Concurrently poll for the occurrence of a set of events.
+  (@interface func (export "poll_oneoff")
+    ;;; The events to which to subscribe.
+    (param $in (@witx const_pointer $subscription))
+    ;;; The events that have occurred.
+    (param $out (@witx pointer $event))
+    ;;; Both the number of subscriptions and events.
+    (param $nsubscriptions $size)
+    ;;; The number of events stored.
+    (result $error (expected $size (error $errno)))
+  )
+
+  ;;; Terminate the process normally. An exit code of 0 indicates successful
+  ;;; termination of the program. The meanings of other values is dependent on
+  ;;; the environment.
+  (@interface func (export "proc_exit")
+    ;;; The exit code returned by the process.
+    (param $rval $exitcode)
+    (@witx noreturn)
+  )
+
+  ;;; Send a signal to the process of the calling thread.
+  ;;; Note: This is similar to `raise` in POSIX.
+  (@interface func (export "proc_raise")
+    ;;; The signal condition to trigger.
+    (param $sig $signal)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Temporarily yield execution of the calling thread.
+  ;;; Note: This is similar to `sched_yield` in POSIX.
+  (@interface func (export "sched_yield")
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Write high-quality random data into a buffer.
+  ;;; This function blocks when the implementation is unable to immediately
+  ;;; provide sufficient high-quality random data.
+  ;;; This function may execute slowly, so when large mounts of random data are
+  ;;; required, it's advisable to use this function to seed a pseudo-random
+  ;;; number generator, rather than to provide the random data directly.
+  (@interface func (export "random_get")
+    ;;; The buffer to fill with random data.
+    (param $buf (@witx pointer u8))
+    (param $buf_len $size)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Opens the STDIN from TTY
+  (@interface func (export "tty_stdin")
+    (result $error (expected $fd (error $errno)))
+  )
+
+  ;;; Opens the STDOUT from TTY
+  (@interface func (export "tty_stdout")
+    (result $error (expected $fd (error $errno)))
+  )
+
+  ;;; Opens the STDERR from TTY
+  (@interface func (export "tty_stderr")
+    (result $error (expected $fd (error $errno)))
+  )
+
+  ;;; Retrieves the rect of the TTY display
+  (@interface func (export "tty_rect")
+    ;;; The rect which will be filled by this call
+    (param $rect (@witx pointer $rect))
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Creates a new thread by spawning a new process that shares the same
+  ;;; memory address space, file handles and main event loops
+  ;;; 
+  ;;; The return value is either 0 which indicates this is the child process
+  ;;; or its a positive PID that gives a handle to the child thread that was
+  ;;; created
+  (@interface func (export "thread_fork")
+    (result $error (expected $pid (error $errno)))
+  )
+
+  ;;; Sends the current thread to sleep for a period of time
+  (@interface func (export "thread_sleep")
+    ;;; Amount of time that the thread should sleep
+    (param $duration $timestamp)
+    (result $error (expected $pid (error $errno)))
+  )
+
+  ;;; Returns the handle of the current thread
+  (@interface func (export "thread_id")
+    (result $error (expected $pid (error $errno)))
+  )
+
+  ;;; Terminates the current running thread, if this is the last thread then
+  ;;; the process will also exit with the specified exit code. An exit code
+  ;;; of 0 indicates successful termination of the thread. The meanings of
+  ;;; other values is dependent on the environment.
+  (@interface func (export "thread_exit")
+    ;;; The exit code returned by the process.
+    (param $rval $exitcode)
+    (@witx noreturn)
+  )
+
+  ;;; Spawns a new bus process for a particular web WebAssembly
+  ;;; binary that is referenced by its process name.
+  (@interface func (export "bus_spawn")
+    ;;; Descriptor of the process to be spawned
+    (param $desc $bus_process)
+    ;;; Returns a bus process id that can be used to invoke calls
+    (result $error (expected $bus_handles (error $bus_error)))
+  )
+
+  ;;; Closes a bus process and releases all associated resources
+  (@interface func (export "bus_close")
+    ;;; Handle of the bus process handle to be closed
+    (param $bid $bid)
+    (result $error (expected (error $bus_error)))
+  )
+
+  ;;; Invokes a call within a running bus process.
+  (@interface func (export "bus_invoke")
+    ;;; Handle of the bus process to invoke the call within
+    (param $bid $bid)
+    ;;; Optional parent bus call that this is related to
+    (param $parent $option_cid)
+    ;;; Causes the call handle to remain open even when A
+    ;;; reply is received. It is then the  callers responsibility
+    ;;; to invoke 'bus_drop' when they are finished with the call
+    (param $keep_alive $bool)
+    ;;; Topic that describes the type of call to made
+    (param $topic string)
+    ;;; The buffer where data to be transmitted is stored
+    (param $buf $buf_array)
+    (result $error (expected $cid (error $bus_error)))
+  )
+
+  ;;; Causes a fault on a particular call that was made
+  ;;; to this process from another process; where 'bid'
+  ;;; is the callering process context.
+  (@interface func (export "bus_fault")
+    ;;; Handle of the call to raise a fault on
+    (param $cid $cid)
+    ;;; Fault to be raised on the bus
+    (param $fault $bus_error)
+    (result $error (expected (error $bus_error)))
+  )
+
+  ;;; Closes a bus call based on its bus call handle
+  (@interface func (export "bus_drop")
+    ;;; Handle of the bus call handle to be dropped
+    (param $cid $cid)
+    (result $error (expected (error $bus_error)))
+  )
+
+  ;;; Replies to a call that was made to this process
+  ;;; from another process; where 'cid' is the call context.
+  ;;; This will may also drop the handle and release any
+  ;;; associated resources (if keepalive is not set)
+  (@interface func (export "bus_reply")
+    ;;; Handle of the call to send a reply on
+    (param $cid $cid)
+    ;;; The buffer where data to be transmitted is stored
+    (param $buf $buf_array)
+    (result $error (expected (error $bus_error)))
+  )
+
+  ;;; Invokes a callback within the calling process against
+  ;;; a particular bus call represented by 'cid'.
+  (@interface func (export "bus_callback")
+    ;;; Handle of the call where a callback will be send
+    (param $cid $cid)
+    ;;; Topic that describes the type of callback
+    (param $topic string)
+    ;;; The buffer where data to be transmitted is stored
+    (param $buf $buf_array)
+    (result $error (expected (error $bus_error)))
+  )
+
+  ;;; Tells the operating system that this process is
+  ;;; now listening for bus calls on a particular topic
+  (@interface func (export "bus_listen")
+    ;;; Optional parent bus call that this is related to
+    (param $parent $option_cid)
+    ;;; Topic that describes the process will listen forcalls on
+    (param $topic string)
+    (result $error (expected (error $bus_error)))
+  )
+
+  ;;; Polls for any outstanding events from a particular
+  ;;; bus process by its handle
+  (@interface func (export "bus_poll")
+    ;;; Handle of the bus process to poll for new events
+    ;;; (if no process is supplied then it polls for the current process)
+    (param $bid $option_bid)
+    ;;; Timeout before the poll returns, if one passed 0
+    ;;; as the timeout then this call is non blocking.
+    (param $timeout $timestamp)
+    ;;; An events buffer that will hold any received bus events
+    (param $events (@witx pointer $bus_event))
+    (param $nevents $size)
+    ;;; Returns the number of events that have occured
+    (result $error (expected $size (error $bus_error)))
+  )
+
+  ;;; Receives the next event data from the bus
+  (@interface func (export "bus_poll_data")
+    ;;; Handle of the bus process to poll for new events
+    ;;; (if no process is supplied then it polls for the current process)
+    (param $bid $option_bid)
+    ;;; Type of event data that is held here
+    (param $ty (@witx pointer $bus_data_type))
+    ;;; Handle of the call this data is related to
+    (param $cid (@witx pointer $cid))
+    ;;; The topic that describes the event that happened
+    (param $topic (@witx pointer u8))
+    (param $topic_len $size)
+    ;;; The buffer where event data is stored
+    (param $buf (@witx pointer u8))
+    (param $buf_len $size)
+    ;;; Returns the number of events that have occured
+    (result $error (expected (error $bus_error)))
+  )
+
+  ;;; Connects to a websocket at a particular network URL
+  (@interface func (export "ws_connect")
+    ;;; URL of the web socket destination to connect to
+    (param $url string)
+    ;;; Returns a socket handle which is used to send and receive data
+    (result $error (expected $fd (error $errno)))
+  )
+
+  ;;; Makes a HTTP request to a remote web resource and
+  ;;; returns a socket handles that are used to send and receive data
+  (@interface func (export "http_request")
+    ;;; URL of the HTTP resource to connect to
+    (param $url string)
+    ;;; HTTP method to be invoked
+    (param $method string)
+    ;;; HTTP body to be sent with this request
+    (param $body $buf_array)
+    ;;; HTTP headers to attach to the request
+    (param $headers $http_header_array)
+    ;;; Should the request body be compressed
+    (param $gzip $bool)
+    ;;; The body of the response can be streamed from the returned
+    ;;; file handle
+    (result $error (expected $http_handles (error $errno)))
+  )
+
+  ;;; Retrieves the status of a HTTP request
+  (@interface func (export "http_status")
+    ;;; Handle of the HTTP request
+    (param $fd $fd) 
+    ;;; Pointer to a buffer that will be filled with the current
+    ;;; status of this HTTP request
+    (param $status (@witx pointer $http_status))
+    ;;; Buffer that will hold the status text
+    (param $status_text (@witx pointer u8))
+    (param $status_text_len $size)
+    ;;; Returns the number of bytes held in the status text field
+    (result $error (expected $size (error $errno)))
+  )
+
+  ;;; Returns the next HTTP response header received from
+  ;;; the http server
+  (@interface func (export "http_header")
+    ;;; Handle of the HTTP request
+    (param $fd $fd) 
+    ;;; Buffer that will hold the header name
+    (param $key (@witx pointer u8))
+    (param $key_len $size)
+    ;;; Buffer that will hold the header value
+    (param $val (@witx pointer u8))
+    (param $val_len $size)
+    (result $error (expected $http_header_sizes (error $errno)))
+  )
+
+  ;;; Shut down socket send and receive channels.
+  ;;; Note: This is similar to `shutdown` in POSIX.
+  (@interface func (export "sock_shutdown")
+    (param $fd $fd)
+    ;;; Which channels on the socket to shut down.
+    (param $how $sdflags)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Returns the current status of a socket
+  (@interface func (export "sock_status")
+    (param $fd $fd)
+    (result $error (expected $sock_status (error $errno)))
+  )
+
+  ;;; Returns the local address to which the socket is bound.
+  ;;;
+  ;;; Note: This is similar to `getsockname` in POSIX
+  ;;;
+  ;;; When successful, the contents of the output buffer consist of an IP address,
+  ;;; either IP4 or IP6.
+  (@interface func (export "sock_addr_local")
+    ;;; Socket that the address is bound to
+    (param $fd $fd)
+    (result $error (expected $addr_ip (error $errno)))
+  )
+
+  ;;; Returns the remote address to which the socket is connected to.
+  ;;;
+  ;;; Note: This is similar to `getpeername` in POSIX
+  ;;;
+  ;;; When successful, the contents of the output buffer consist of an IP address,
+  ;;; either IP4 or IP6.
+  (@interface func (export "sock_addr_remote")
+    ;;; Socket that the address is bound to
+    (param $fd $fd)
+    (result $error (expected $addr_ip (error $errno)))
+  )
+
+  ;;; Create an endpoint for communication.
+  ;;;
+  ;;; creates an endpoint for communication and returns a file descriptor
+  ;;; tor that refers to that endpoint. The file descriptor returned by a successful
+  ;;; call will be the lowest-numbered file descriptor not currently open
+  ;;; for the process.
+  ;;;
+  ;;; Note: This is similar to `socket` in POSIX using PF_INET
+  (@interface func (export "sock_open")
+    ;;; Capability descriptor
+    (param $capability $fd)
+    ;;; Address family
+    (param $af $address_family)
+    ;;; Socket type, either datagram or stream
+    (param $socktype $sock_type)
+    ;;; The file descriptor of the socket that has been opened.
+    (result $error (expected $fd (error $errno)))
+  )
+
+  ;;; Enable/disable address reuse on a socket
+  ;;; Note: This is similar to `setsockopt` in POSIX for SO_REUSEADDR
+  (@interface func (export "sock_set_reuse_addr")
+    ;;; Socket descriptor
+    (param $fd $fd)
+    ;;; Should the socket reuse addresses
+    (param $reuse $bool)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Retrieve status of address reuse on a socket
+  ;;; Note: This is similar to `getsockopt` in POSIX for SO_REUSEADDR
+  (@interface func (export "sock_get_reuse_addr")
+    ;;; Socket descriptor
+    (param $fd $fd)
+    (result $error (expected $size (error $errno)))
+  )
+
+  ;;; Enable port reuse on a socket
+  ;;; Note: This is similar to `setsockopt` in POSIX for SO_REUSEPORT
+  (@interface func (export "sock_set_reuse_port")
+    ;;; Socket descriptor
+    (param $fd $fd)
+    ;;; Should the socket reuse ports
+    (param $reuse $bool)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Retrieve status of port reuse on a socket
+  ;;; Note: This is similar to `getsockopt` in POSIX for SO_REUSEPORT
+  (@interface func (export "sock_get_reuse_port")
+    ;;; Socket descriptor
+    (param $fd $fd)
+    (result $error (expected $size (error $errno)))
+  )
+
+  ;;; Set size of receive buffer
+  ;;; Note: This is similar to `setsockopt` in POSIX for SO_RCVBUF
+  (@interface func (export "sock_set_recv_buf_size")
+    ;;; Socket descriptor
+    (param $fd $fd)
+    ;;; Buffer size
+    (param $size $size)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Retrieve the size of the receive buffer
+  ;;; Note: This is similar to `getsockopt` in POSIX for SO_RCVBUF
+  (@interface func (export "sock_get_recv_buf_size")
+    ;;; Socket descriptor
+    (param $fd $fd)
+    (result $error (expected $size (error $errno)))
+  )
+
+  ;;; Set size of send buffer
+  ;;; Note: This is similar to `setsockopt` in POSIX for SO_SNDBUF
+  (@interface func (export "sock_set_send_buf_size")
+    ;;; Socket descriptor
+    (param $fd $fd)
+    ;;; Buffer size
+    (param $size $size)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Retrieve the size of the send buffer
+  ;;; Note: This is similar to `getsockopt` in POSIX for SO_SNDBUF
+  (@interface func (export "sock_get_send_buf_size")
+    ;;; Socket descriptor
+    (param $fd $fd)
+    (result $error (expected $size (error $errno)))
+  )
+
+  ;;; Bind a socket
+  ;;; Note: This is similar to `bind` in POSIX using PF_INET
+  (@interface func (export "sock_bind")
+    ;;; File descriptor of the socket to be bind
+    (param $fd $fd)
+    ;;; Address to bind the socket to
+    (param $addr $addr_port)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Listen for connections on a socket
+  ;;; Note: This is similar to `listen`
+  (@interface func (export "sock_listen")
+    ;;; File descriptor of the socket to be bind
+    (param $fd $fd)
+    ;;; Maximum size of the queue for pending connections
+    (param $backlog $size)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Accept a connection on a socket
+  ;;; Note: This is similar to `accept`
+  (@interface func (export "sock_accept")
+    ;;; File descriptor of the socket to be bind
+    (param $fd $fd)
+    (result $error (expected $fd (error $errno)))
+  )
+
+  ;;; Initiate a connection on a socket to the specified address
+  ;;; Note: This is similar to `connect` in POSIX
+  (@interface func (export "sock_connect")
+    ;;; Socket descriptor
+    (param $fd $fd)
+    ;;; Address of the socket to connect to
+    (param $addr $addr_port)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Receive a message from a socket.
+  ;;; Note: This is similar to `recv` in POSIX.
+  (@interface func (export "sock_recv")
+    (param $fd $fd)
+    ;;; The buffer where data will be stored
+    (param $buf (@witx pointer u8))
+    (param $buf_len $size)
+    ;;; Message flags.
+    (param $flags $riflags)
+    (result $error (expected $size (error $errno)))
+  )
+
+  ;;; Receive a message from a socket.
+  ;;;
+  ;;; The address buffer must be at least the size of addr_t.
+  ;;;
+  ;;; Note: This is similar to `recvfrom` in POSIX.
+  (@interface func (export "sock_recv_from")
+    (param $fd $fd)
+    ;;; The buffer where data will be stored
+    (param $buf (@witx pointer u8))
+    (param $buf_len $size)
+    ;;; The address of origin for the message
+    (param $addr (@witx pointer $addr_port))
+    ;;; Message flags.
+    (param $flags $riflags)
+    (result $error (expected $size (error $errno)))
+  )
+
+  ;;; Send a message on a socket.
+  ;;; Note: This is similar to `send` in POSIX.
+  (@interface func (export "sock_send")
+    (param $fd $fd)
+    ;;; The buffer where data will be stored
+    (param $buf $buf_array)
+    ;;; Message flags.
+    (param $flags $siflags)
+    ;;; Number of bytes transmitted.
+    (result $error (expected $size (error $errno)))
+  )
+
+  ;;; Send a message on a socket.
+  ;;; Note: This is similar to `sendto` in POSIX.
+  (@interface func (export "sock_send_to")
+    (param $fd $fd)
+    ;;; The buffer where data will be stored
+    (param $buf $buf_array)
+    ;;; Address of the socket to send message to
+    (param $addr $addr_port)
+    ;;; Message flags.
+    (param $flags $siflags)
+    ;;; Number of bytes transmitted.
+    (result $error (expected $size (error $errno)))
+  )
+
+  ;;; Resolves a hostname and a port to one or more IP addresses.
+  ;;;
+  ;;; Note: This is similar to `getaddrinfo` in POSIX
+  ;;;
+  ;;; When successful, the contents of the output buffer consist of a sequence of
+  ;;; IPv4 and/or IPv6 addresses. Each address entry consists of a addr_t object.
+  ;;
+  ;;; This function fills the output buffer as much as possible.
+  (@interface func (export "resolve")
+    ;;; Host to resolve
+    (param $host string)
+    ;;; The buffer where IP addresses will be stored
+    (param $ips (@witx pointer $addr_ip))
+    (param $nips $size)
+    ;;; The number of IP addresses returned during the DNS resolution.
+    (result $error (expected $size (error $errno)))
+  )
+)
