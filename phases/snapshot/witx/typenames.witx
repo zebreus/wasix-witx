@@ -293,6 +293,8 @@
   )
 )
 
+(typename $buf_array (list u8))
+
 ;;; Option type
 (typename $option
   (enum (@witx tag u8)
@@ -339,15 +341,6 @@
   )
 )
 
-;;; Represents an optional string
-(typename $option_string
-  (union
-    (@witx tag $option)
-    u8
-    string
-  )
-)
-
 ;;; A region of memory for scatter/gather reads.
 (typename $iovec
   (record
@@ -370,7 +363,6 @@
 
 (typename $iovec_array (list $iovec))
 (typename $ciovec_array (list $ciovec))
-(typename $buf_array (list u8))
 
 ;;; Relative offset within a file.
 (typename $filedelta s64)
@@ -739,78 +731,6 @@
   )
 )
 
-(typename $arg_array (list string))
-(typename $preopen_array (list string))
-
-;;; Describes a bus process to be started.
-(typename $bus_process_local
-  (record
-    ;;; Name of the process to be spawned
-    (field $name string)
-    ;;; Indicates if the process will chroot or not
-    (field $chroot $bool)
-    ;;; List of the arguments to pass the process
-    (field $args $arg_array)
-    ;;; List of the preopens for this process
-    (field $preopen $preopen_array)
-    ;;; How will stdin be handled
-    (field $stdin $stdio_mode)
-    ;;; How will stdout be handled
-    (field $stdout $stdio_mode)
-    ;;; How will stderr be handled
-    (field $stderr $stdio_mode)
-    ;;; Working directory when this process will
-    ;;; start (zero indicates the current directory)
-    (field $working_dir $option_string)
-  )
-)
-
-;;; Describes a bus process to be started.
-(typename $bus_process_remote
-  (record
-    ;;; Name of the process to be spawned
-    (field $name string)
-    ;;; Indicates if the process will chroot or not
-    (field $chroot $bool)
-    ;;; List of the arguments to pass the process
-    (field $args $arg_array)
-    ;;; List of the preopens for this process
-    (field $preopen $preopen_array)
-    ;;; Working directory when this process will
-    ;;; start (zero indicates the current directory)
-    (field $working_dir string)
-    ;;; How will stdin be handled
-    (field $stdin $stdio_mode)
-    ;;; How will stdout be handled
-    (field $stdout $stdio_mode)
-    ;;; How will stderr be handled
-    (field $stderr $stdio_mode)
-    ;;; Instance identifier where this process will be spawned
-    (field $instance string)
-    ;;; Acceess token used to authenticate with the instance
-    (field $token $option_string)
-  )
-)
-
-;;; Type of bus process to be started
-(typename $bus_process_type
-  (enum (@witx tag u8)
-    ;;; The bus process will be spawned locally
-    $local
-    ;;; The bus process will be spawned on a remote instance
-    $remote
-  )
-)
-
-;;; The contents of a `subscription`.
-(typename $bus_process
-  (union
-    (@witx tag $bus_process_type)
-    $bus_process_local
-    $bus_process_remote
-  )
-)
-
 ;;; Bus process handles.
 (typename $bus_handles
   (record
@@ -1119,16 +1039,6 @@
   )
 )
 
-;;; HTTP header
-(typename $http_header
-  (record
-    ;;; Header name
-    (field $key string)
-    ;;; Header value
-    (field $val string)
-  )
-)
-
 ;;; Size of the header key and value
 (typename $http_header_sizes
   (record
@@ -1139,8 +1049,6 @@
   )
 )
 
-(typename $http_header_array (list $http_header))
-
 ;;; HTTP request handles used to send and receive data to the server
 (typename $http_handles
   (record
@@ -1148,6 +1056,9 @@
     (field $request $fd)
     ;;; File handle used to receive the response data
     (field $response $fd)
+    ;;; File handle used to read the response headers
+    ;;; (entries are separated by line feeds)
+    (field $headers $fd)
   )
 )
 

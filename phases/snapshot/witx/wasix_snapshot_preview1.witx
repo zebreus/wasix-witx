@@ -495,6 +495,22 @@
     (result $error (expected (error $errno)))
   )
 
+  ;;; Returns the current working directory
+  (@interface func (export "pwd_get")
+    ;;; The buffer where current directory is stored
+    (param $path (@witx pointer u8))
+    (param $path_len $size)
+    ;;; Number of bytes returned in the path buffer
+    (result $error (expected $size (error $errno)))
+  )
+
+  ;;; Sets the current working directory
+  (@interface func (export "pwd_set")
+    ;;; Path to change the current working directory to
+    (param $path string)
+    (result $error (expected (error $errno)))
+  )
+
   ;;; Creates a new thread by spawning a new process that shares the same
   ;;; memory address space, file handles and main event loops
   ;;; 
@@ -529,9 +545,56 @@
 
   ;;; Spawns a new bus process for a particular web WebAssembly
   ;;; binary that is referenced by its process name.
-  (@interface func (export "bus_spawn")
-    ;;; Descriptor of the process to be spawned
-    (param $desc $bus_process)
+  (@interface func (export "bus_spawn_local")
+    ;;; Name of the process to be spawned
+    (param $name string)
+    ;;; Indicates if the process will chroot or not
+    (param $chroot $bool)
+    ;;; List of the arguments to pass the process
+    ;;; (entries are separated by line feeds)
+    (param $args string)
+    ;;; List of the preopens for this process
+    ;;; (entries are separated by line feeds)
+    (param $preopen string)
+    ;;; How will stdin be handled
+    (param $stdin $stdio_mode)
+    ;;; How will stdout be handled
+    (param $stdout $stdio_mode)
+    ;;; How will stderr be handled
+    (param $stderr $stdio_mode)
+    ;;; Working directory where this process should run
+    ;;; (passing '.' will use the current directory)
+    (param $working_dir string)
+    ;;; Returns a bus process id that can be used to invoke calls
+    (result $error (expected $bus_handles (error $bus_error)))
+  )
+
+  ;;; Spawns a new bus process for a particular web WebAssembly
+  ;;; binary that is referenced by its process name on a remote instance
+  (@interface func (export "bus_spawn_remote")
+    ;;; Name of the process to be spawned
+    (param $name string)
+    ;;; Indicates if the process will chroot or not
+    (param $chroot $bool)
+    ;;; List of the arguments to pass the process
+    ;;; (entries are separated by line feeds)
+    (param $args string)
+    ;;; List of the preopens for this process
+    ;;; (entries are separated by line feeds)
+    (param $preopen string)
+    ;;; Working directory where this process should run
+    ;;; (passing '.' will use the current directory)
+    (param $working_dir string)
+    ;;; How will stdin be handled
+    (param $stdin $stdio_mode)
+    ;;; How will stdout be handled
+    (param $stdout $stdio_mode)
+    ;;; How will stderr be handled
+    (param $stderr $stdio_mode)
+    ;;; Instance identifier where this process will be spawned
+    (param $instance string)
+    ;;; Acceess token used to authenticate with the instance
+    (param $token string)
     ;;; Returns a bus process id that can be used to invoke calls
     (result $error (expected $bus_handles (error $bus_error)))
   )
@@ -662,10 +725,9 @@
     (param $url string)
     ;;; HTTP method to be invoked
     (param $method string)
-    ;;; HTTP body to be sent with this request
-    (param $body $buf_array)
     ;;; HTTP headers to attach to the request
-    (param $headers $http_header_array)
+    ;;; (headers seperated by lines)
+    (param $headers string)
     ;;; Should the request body be compressed
     (param $gzip $bool)
     ;;; The body of the response can be streamed from the returned
@@ -685,20 +747,6 @@
     (param $status_text_len $size)
     ;;; Returns the number of bytes held in the status text field
     (result $error (expected $size (error $errno)))
-  )
-
-  ;;; Returns the next HTTP response header received from
-  ;;; the http server
-  (@interface func (export "http_header")
-    ;;; Handle of the HTTP request
-    (param $fd $fd) 
-    ;;; Buffer that will hold the header name
-    (param $key (@witx pointer u8))
-    (param $key_len $size)
-    ;;; Buffer that will hold the header value
-    (param $val (@witx pointer u8))
-    (param $val_len $size)
-    (result $error (expected $http_header_sizes (error $errno)))
   )
 
   ;;; Shut down socket send and receive channels.
