@@ -511,26 +511,33 @@
     (result $error (expected (error $errno)))
   )
 
-  ;;; Creates a new thread by spawning a new process that shares the same
-  ;;; memory address space, file handles and main event loops
-  ;;; 
-  ;;; The return value is either 0 which indicates this is the child process
-  ;;; or its a positive PID that gives a handle to the child thread that was
-  ;;; created
+  ;;; Creates a new thread by spawning that shares the same
+  ;;; memory address space, file handles and main event loops.
+  ;;; The function referenced by the fork call must be
+  ;;; exported by the web assembly process.
   (@interface func (export "thread_fork")
-    (result $error (expected $pid (error $errno)))
+    ;;; Name of the function that will be invoked as a new thread
+    (param $name string)
+    ;;; Indicates if the function will operate as a reactor or
+    ;;; as a normal thread. Reactors will be repeatable called
+    ;;; whenever IO work is available to be processed.
+    (param $reactor $bool)
+    ;;; Returns the thread index of the newly created thread
+    ;;; (indices always start from zero)
+    (result $error (expected $tid (error $errno)))
   )
 
   ;;; Sends the current thread to sleep for a period of time
   (@interface func (export "thread_sleep")
     ;;; Amount of time that the thread should sleep
     (param $duration $timestamp)
-    (result $error (expected $pid (error $errno)))
+    (result $error (expected (error $errno)))
   )
 
-  ;;; Returns the handle of the current thread
+  ;;; Returns the index of the current thread
+  ;;; (threads indices are sequencial from zero)
   (@interface func (export "thread_id")
-    (result $error (expected $pid (error $errno)))
+    (result $error (expected $tid (error $errno)))
   )
 
   ;;; Terminates the current running thread, if this is the last thread then

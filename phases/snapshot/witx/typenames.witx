@@ -309,6 +309,9 @@
 ;;; A process descriptor handle.
 (typename $pid (handle))
 
+;;; A thread handle
+(typename $tid (handle))
+
 ;;; A bus process handle
 (typename $bid (handle))
 
