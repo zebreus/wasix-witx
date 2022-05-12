@@ -245,6 +245,13 @@
     (result $error (expected (error $errno)))
   )
 
+  ;;; Atomically duplicate a file handle.
+  ;;
+  (@interface func (export "fd_dup")
+    (param $fd $fd)
+    (result $error (expected $fd (error $errno)))
+  )
+
   ;;; Move the offset of a file descriptor.
   ;;; Note: This is similar to `lseek` in POSIX.
   (@interface func (export "fd_seek")
