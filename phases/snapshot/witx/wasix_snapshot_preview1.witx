@@ -937,10 +937,10 @@
   ;;; Accept a connection on a socket
   ;;; Note: This is similar to `accept`
   (@interface func (export "sock_accept")
-    ;;; The address of peer socket
-    (param $addr (@witx pointer $addr_port))
     ;;; File descriptor of the socket to be bind
     (param $fd $fd)
+    ;;; The address of peer socket
+    (param $addr (@witx pointer $addr_port))
     (result $error (expected $fd (error $errno)))
   )
 
