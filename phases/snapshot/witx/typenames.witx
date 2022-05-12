@@ -985,6 +985,8 @@
     $reuse_addr
     ;;; No delay
     $nodelay
+    ;;; Only accept IPv6
+    $only_v6
   )
 )
 
