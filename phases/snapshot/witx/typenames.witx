@@ -1144,6 +1144,20 @@
   )
 )
 
+;;; Describes the type of timeout what will be changed
+(typename $timeout_type
+  (flags (@witx repr u8)
+    ;;; Read operation timeout
+    $read
+    ;;; Write operation timeout
+    $write
+    ;;; Connections to other sockets
+    $connect
+    ;;; Accept connection timeout
+    $accept
+  )
+)
+
 ;;; Identifiers for preopened capabilities.
 (typename $preopentype
   (enum (@witx tag u8)

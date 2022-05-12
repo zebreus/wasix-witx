@@ -885,6 +885,26 @@
     (result $error (expected $option_timestamp (error $errno)))
   )
 
+  ;;; Sets one of the timeouts on the socket
+  (@interface func (export "sock_set_timeout")
+    ;;; Socket descriptor
+    (param $fd $fd)
+    ;;; Type of timeout to be changed
+    (param $ty $timeout_type)
+    ;;; Value to set the timeout to
+    (param $reuse $timestamp)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Retrieve one of the timeouts on the socket
+  (@interface func (export "sock_get_timeout")
+    ;;; Socket descriptor
+    (param $fd $fd)
+    ;;; Type of timeout to be retrieved
+    (param $ty $timeout_type)
+    (result $error (expected $timestamp (error $errno)))
+  )
+
   ;;; Set size of receive buffer
   ;;; Note: This is similar to `setsockopt` in POSIX for SO_RCVBUF
   (@interface func (export "sock_set_recv_buf_size")
