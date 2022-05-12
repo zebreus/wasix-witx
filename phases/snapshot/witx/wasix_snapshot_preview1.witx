@@ -281,6 +281,11 @@
     (result $error (expected $size (error $errno)))
   )
 
+  ;;; Opens a pipe with two file handles
+  (@interface func (export "pipe")
+    (result $error (expected $pipe_handles (error $errno)))
+  )
+
   ;;; Create a directory.
   ;;; Note: This is similar to `mkdirat` in POSIX.
   (@interface func (export "path_create_directory")
@@ -496,7 +501,7 @@
   )
 
   ;;; Returns the current working directory
-  (@interface func (export "pwd_get")
+  (@interface func (export "getcwd")
     ;;; The buffer where current directory is stored
     (param $path (@witx pointer u8))
     (param $path_len $size)
@@ -505,7 +510,7 @@
   )
 
   ;;; Sets the current working directory
-  (@interface func (export "pwd_set")
+  (@interface func (export "chdir")
     ;;; Path to change the current working directory to
     (param $path string)
     (result $error (expected (error $errno)))
@@ -515,9 +520,11 @@
   ;;; memory address space, file handles and main event loops.
   ;;; The function referenced by the fork call must be
   ;;; exported by the web assembly process.
-  (@interface func (export "thread_fork")
+  (@interface func (export "thread_spawn")
     ;;; Name of the function that will be invoked as a new thread
     (param $name string)
+    ;;; User data that will be supplied to the function when its called
+    (param $user_data u64)
     ;;; Indicates if the function will operate as a reactor or
     ;;; as a normal thread. Reactors will be repeatable called
     ;;; whenever IO work is available to be processed.
@@ -538,6 +545,25 @@
   ;;; (threads indices are sequencial from zero)
   (@interface func (export "thread_id")
     (result $error (expected $tid (error $errno)))
+  )
+
+  ;;; Joins this thread with another thread, blocking this
+  ;;; one until the other finishes
+  (@interface func (export "thread_join")
+    ;;; Handle of the thread to wait on
+    (param $tid $tid)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Returns the available parallelism which is normally the
+  ;;; number of available cores that can run concurrently
+  (@interface func (export "thread_parallelism")
+    (result $error (expected $usize (error $errno)))
+  )
+
+  ;;; Returns the handle of the current process
+  (@interface func (export "getpid")
+    (result $error (expected $pid (error $errno)))
   )
 
   ;;; Terminates the current running thread, if this is the last thread then
@@ -804,8 +830,6 @@
   ;;;
   ;;; Note: This is similar to `socket` in POSIX using PF_INET
   (@interface func (export "sock_open")
-    ;;; Capability descriptor
-    (param $capability $fd)
     ;;; Address family
     (param $af $address_family)
     ;;; Socket type, either datagram or stream
@@ -897,6 +921,10 @@
   )
 
   ;;; Listen for connections on a socket
+  ;;;
+  ;;; Polling the socket handle will wait until a connection
+  ;;; attempt is made
+  ;;;
   ;;; Note: This is similar to `listen`
   (@interface func (export "sock_listen")
     ;;; File descriptor of the socket to be bind
@@ -909,12 +937,18 @@
   ;;; Accept a connection on a socket
   ;;; Note: This is similar to `accept`
   (@interface func (export "sock_accept")
+    ;;; The address of peer socket
+    (param $addr (@witx pointer $addr_port))
     ;;; File descriptor of the socket to be bind
     (param $fd $fd)
     (result $error (expected $fd (error $errno)))
   )
 
   ;;; Initiate a connection on a socket to the specified address
+  ;;; 
+  ;;; Polling the socket handle will wait for data to arrive or for
+  ;;; the socket status to change which can be queried via 'sock_status'
+  ;;;
   ;;; Note: This is similar to `connect` in POSIX
   (@interface func (export "sock_connect")
     ;;; Socket descriptor
