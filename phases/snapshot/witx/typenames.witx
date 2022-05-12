@@ -1052,6 +1052,16 @@
   )
 )
 
+;;; Represents a socket that was accepted
+(typename $accepted_socket
+  (record
+    ;;; Socket handle
+    (field $fd $fd)
+    ;;; Peer socket address
+    (field $addr $addr_port)
+  )
+)
+
 ;;; Size of the header key and value
 (typename $http_header_sizes
   (record
