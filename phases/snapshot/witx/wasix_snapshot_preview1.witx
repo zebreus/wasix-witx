@@ -1112,10 +1112,10 @@
     (param $fd $fd)
     ;;; List of scatter/gather vectors to which to retrieve data
     (param $si_data $ciovec_array)
-    ;;; Address of the socket to send message to
-    (param $addr $addr_port)
     ;;; Message flags.
     (param $si_flags $siflags)
+    ;;; Address of the socket to send message to
+    (param $addr $addr_port)
     ;;; Number of bytes transmitted.
     (result $error (expected $size (error $errno)))
   )
