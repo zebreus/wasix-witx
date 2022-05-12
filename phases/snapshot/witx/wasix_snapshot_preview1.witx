@@ -289,6 +289,8 @@
   )
 
   ;;; Opens a pipe with two file handles
+  ;;;
+  ;;; Pipes are bidirectional meaning 
   (@interface func (export "pipe")
     (result $error (expected $pipe_handles (error $errno)))
   )
@@ -985,11 +987,9 @@
     ;;; The buffer where data will be stored
     (param $buf (@witx pointer u8))
     (param $buf_len $size)
-    ;;; The address of origin for the message
-    (param $addr (@witx pointer $addr_port))
     ;;; Message flags.
     (param $flags $riflags)
-    (result $error (expected $size (error $errno)))
+    (result $error (expected $received_data (error $errno)))
   )
 
   ;;; Send a message on a socket.

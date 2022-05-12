@@ -723,10 +723,10 @@
 ;;; Pipe handles.
 (typename $pipe_handles
   (record
-    ;;; File handle for data that goes into the pipe
-    (field $pipe_in $fd)
-    ;;; File handle for data that comes out of hte pipe
-    (field $pipe_out $fd)
+    ;;; File handle for data on one side of the pipe
+    (field $pipe $fd)
+    ;;; File handle for data on the other side of hte pipe
+    (field $other $fd)
   )
 )
 
@@ -1057,6 +1057,16 @@
   (record
     ;;; Socket handle
     (field $fd $fd)
+    ;;; Peer socket address
+    (field $addr $addr_port)
+  )
+)
+
+;;; Represents some data received from a peer
+(typename $received_data
+  (record
+    ;;; Amount of data that was received
+    (field $size $size)
     ;;; Peer socket address
     (field $addr $addr_port)
   )
