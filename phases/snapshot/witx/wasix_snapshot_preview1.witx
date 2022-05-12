@@ -1040,13 +1040,16 @@
     (param $backlog $size)
     (result $error (expected (error $errno)))
   )
-
-  ;;; Accept a connection on a socket
-  ;;; Note: This is similar to `accept`
+  
+  ;;; Accept a new incoming connection.
+  ;;; Note: This is similar to `accept` in POSIX.
   (@interface func (export "sock_accept")
-    ;;; File descriptor of the socket that is listening
+    ;;; The listening socket.
     (param $fd $fd)
-    (result $error (expected $accepted_socket (error $errno)))
+    ;;; The desired values of the file descriptor flags.
+    (param $flags $fdflags)
+    ;;; New socket connection
+    (result $error (expected (tuple $fd $addr_port) (error $errno)))
   )
 
   ;;; Initiate a connection on a socket to the specified address
@@ -1064,54 +1067,55 @@
   )
 
   ;;; Receive a message from a socket.
-  ;;; Note: This is similar to `recv` in POSIX.
+  ;;; Note: This is similar to `recv` in POSIX, though it also supports reading
+  ;;; the data into multiple buffers in the manner of `readv`.
   (@interface func (export "sock_recv")
     (param $fd $fd)
-    ;;; The buffer where data will be stored
-    (param $buf (@witx pointer u8))
-    (param $buf_len $size)
+    ;;; List of scatter/gather vectors to which to store data.
+    (param $ri_data $iovec_array)
     ;;; Message flags.
-    (param $flags $riflags)
-    (result $error (expected $size (error $errno)))
+    (param $ri_flags $riflags)
+    ;;; Number of bytes stored in ri_data and message flags.
+    (result $error (expected (tuple $size $roflags) (error $errno)))
   )
 
-  ;;; Receive a message from a socket.
-  ;;;
-  ;;; The address buffer must be at least the size of addr_t.
-  ;;;
-  ;;; Note: This is similar to `recvfrom` in POSIX.
+  ;;; Receive a message and its peer address from a socket.
+  ;;; Note: This is similar to `recvfrom` in POSIX, though it also supports reading
+  ;;; the data into multiple buffers in the manner of `readv`.
   (@interface func (export "sock_recv_from")
     (param $fd $fd)
-    ;;; The buffer where data will be stored
-    (param $buf (@witx pointer u8))
-    (param $buf_len $size)
+    ;;; List of scatter/gather vectors to which to store data.
+    (param $ri_data $iovec_array)
     ;;; Message flags.
-    (param $flags $riflags)
-    (result $error (expected $received_data (error $errno)))
+    (param $ri_flags $riflags)
+    ;;; Number of bytes stored in ri_data and message flags.
+    (result $error (expected (tuple $size $roflags $addr_port) (error $errno)))
   )
 
   ;;; Send a message on a socket.
-  ;;; Note: This is similar to `send` in POSIX.
+  ;;; Note: This is similar to `send` in POSIX, though it also supports writing
+  ;;; the data from multiple buffers in the manner of `writev`.
   (@interface func (export "sock_send")
     (param $fd $fd)
-    ;;; The buffer where data will be stored
-    (param $buf $buf_array)
+    ;;; List of scatter/gather vectors to which to retrieve data
+    (param $si_data $ciovec_array)
     ;;; Message flags.
-    (param $flags $siflags)
+    (param $si_flags $siflags)
     ;;; Number of bytes transmitted.
     (result $error (expected $size (error $errno)))
   )
 
-  ;;; Send a message on a socket.
-  ;;; Note: This is similar to `sendto` in POSIX.
+  ;;; Send a message on a socket to a specific address.
+  ;;; Note: This is similar to `sendto` in POSIX, though it also supports writing
+  ;;; the data from multiple buffers in the manner of `writev`.
   (@interface func (export "sock_send_to")
     (param $fd $fd)
-    ;;; The buffer where data will be stored
-    (param $buf $buf_array)
+    ;;; List of scatter/gather vectors to which to retrieve data
+    (param $si_data $ciovec_array)
     ;;; Address of the socket to send message to
     (param $addr $addr_port)
     ;;; Message flags.
-    (param $flags $siflags)
+    (param $si_flags $siflags)
     ;;; Number of bytes transmitted.
     (result $error (expected $size (error $errno)))
   )
@@ -1127,6 +1131,8 @@
   (@interface func (export "resolve")
     ;;; Host to resolve
     (param $host string)
+    ;;; Port hint (zero if no hint is supplied)
+    (param $port u16)
     ;;; The buffer where IP addresses will be stored
     (param $ips (@witx pointer $addr_ip))
     (param $nips $size)

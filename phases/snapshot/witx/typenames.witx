@@ -1081,26 +1081,6 @@
   )
 )
 
-;;; Represents a socket that was accepted
-(typename $accepted_socket
-  (record
-    ;;; Socket handle
-    (field $fd $fd)
-    ;;; Peer socket address
-    (field $addr $addr_port)
-  )
-)
-
-;;; Represents some data received from a peer
-(typename $received_data
-  (record
-    ;;; Amount of data that was received
-    (field $size $size)
-    ;;; Peer socket address
-    (field $addr $addr_port)
-  )
-)
-
 ;;; Size of the header key and value
 (typename $http_header_sizes
   (record
