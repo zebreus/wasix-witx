@@ -905,6 +905,22 @@
     (result $error (expected $timestamp (error $errno)))
   )
 
+  ;;; Set TTL for this socket
+  (@interface func (export "sock_set_ttl")
+    ;;; Socket descriptor
+    (param $fd $fd)
+    ;;; Time to live
+    (param $ttl $size)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Retrieve the TTL for this socket
+  (@interface func (export "sock_get_ttl")
+    ;;; Socket descriptor
+    (param $fd $fd)
+    (result $error (expected $size (error $errno)))
+  )
+
   ;;; Set size of receive buffer
   ;;; Note: This is similar to `setsockopt` in POSIX for SO_RCVBUF
   (@interface func (export "sock_set_recv_buf_size")
