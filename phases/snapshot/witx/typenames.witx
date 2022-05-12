@@ -1127,8 +1127,6 @@
     $rd
     ;;; Disables further send operations.
     $wr
-    ;;; Disables both receive and send operations.
-    $rdwr
   )
 )
 
