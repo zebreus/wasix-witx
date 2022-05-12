@@ -847,57 +847,25 @@
     (result $error (expected $fd (error $errno)))
   )
 
-  ;;; Enable/disable address reuse on a socket
+  ;;; Sets a particular socket setting
   ;;; Note: This is similar to `setsockopt` in POSIX for SO_REUSEADDR
-  (@interface func (export "sock_set_reuse_addr")
+  (@interface func (export "sock_set_opt")
     ;;; Socket descriptor
     (param $fd $fd)
-    ;;; Should the socket reuse addresses
+    ;;; Socket option to be set
+    (param &opt $sock_option)
+    ;;; Value to set the option to
     (param $reuse $bool)
     (result $error (expected (error $errno)))
   )
 
-  ;;; Retrieve status of address reuse on a socket
+  ;;; Retrieve status of particular socket seting
   ;;; Note: This is similar to `getsockopt` in POSIX for SO_REUSEADDR
-  (@interface func (export "sock_get_reuse_addr")
+  (@interface func (export "sock_get_opt")
     ;;; Socket descriptor
     (param $fd $fd)
-    (result $error (expected $bool (error $errno)))
-  )
-
-  ;;; Enable port reuse on a socket
-  ;;; Note: This is similar to `setsockopt` in POSIX for SO_REUSEPORT
-  (@interface func (export "sock_set_reuse_port")
-    ;;; Socket descriptor
-    (param $fd $fd)
-    ;;; Should the socket reuse ports
-    (param $reuse $bool)
-    (result $error (expected (error $errno)))
-  )
-
-  ;;; Retrieve status of port reuse on a socket
-  ;;; Note: This is similar to `getsockopt` in POSIX for SO_REUSEPORT
-  (@interface func (export "sock_get_reuse_port")
-    ;;; Socket descriptor
-    (param $fd $fd)
-    (result $error (expected $bool (error $errno)))
-  )
-
-  ;;; Enable socket NO_DELAY which means it will not buffer
-  ;;; data before sending it out over the socket
-  (@interface func (export "sock_set_nodelay")
-    ;;; Socket descriptor
-    (param $fd $fd)
-    ;;; Should the socket not delay packets
-    (param $reuse $bool)
-    (result $error (expected (error $errno)))
-  )
-
-  ;;; Retrieve status of no_delay flag, which means the socket
-  ;;; will not buffer data before it sends it over the socket
-  (@interface func (export "sock_get_nodelay")
-    ;;; Socket descriptor
-    (param $fd $fd)
+    ;;; Socket option to be retrieved
+    (param &opt $sock_option)
     (result $error (expected $bool (error $errno)))
   )
 

@@ -967,6 +967,20 @@
   )
 )
 
+;;; Socket option
+(typename $sock_option
+  (enum (@witx tag u8)
+    ;;; Reuse Port
+    $reuse_port
+    ;;; Reuse Address
+    $reuse_addr
+    ;;; Linger
+    $linger
+    ;;; No delay
+    $nodelay
+  )
+)
+
 ;;; IP port number
 (typename $ip_port u16)
 
