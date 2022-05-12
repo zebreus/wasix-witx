@@ -892,7 +892,7 @@
     ;;; Type of timeout to be changed
     (param $ty $timeout_type)
     ;;; Value to set the timeout to
-    (param $reuse $timestamp)
+    (param $reuse $option_timestamp)
     (result $error (expected (error $errno)))
   )
 
