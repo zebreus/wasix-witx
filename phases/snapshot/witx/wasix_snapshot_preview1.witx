@@ -921,6 +921,66 @@
     (result $error (expected $size (error $errno)))
   )
 
+  ;;; Set TTL for IPv4 multicast for this socket
+  (@interface func (export "sock_set_multicast_ttl_v4")
+    ;;; Socket descriptor
+    (param $fd $fd)
+    ;;; Time to live
+    (param $ttl $size)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Retrieve the TTL for IPv4 multicast for this socket
+  (@interface func (export "sock_get_multicast_ttl_v4")
+    ;;; Socket descriptor
+    (param $fd $fd)
+    (result $error (expected $size (error $errno)))
+  )
+
+  ;;; Joins a particular multicast IPv4 group
+  (@interface func (export "sock_join_multicast_v4")
+    ;;; Socket descriptor
+    (param $fd $fd)
+    ;;; Multicast group to joined
+    (param $multiaddr $addr_ip4)
+    ;;; Interface that will join
+    (param $interface $addr_ip4)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Leaves a particular multicast IPv4 group
+  (@interface func (export "sock_leave_multicast_v4")
+    ;;; Socket descriptor
+    (param $fd $fd)
+    ;;; Multicast group to leave
+    (param $multiaddr $addr_ip4)
+    ;;; Interface that will left
+    (param $interface $addr_ip4)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Joins a particular multicast IPv6 group
+  (@interface func (export "sock_join_multicast_v6")
+    ;;; Socket descriptor
+    (param $fd $fd)
+    ;;; Multicast group to joined
+    (param $multiaddr $addr_ip6)
+    ;;; Interface that will join
+    (param $interface u32)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Leaves a particular multicast IPv6 group
+  (@interface func (export "sock_leave_multicast_v6")
+    ;;; Socket descriptor
+    (param $fd $fd)
+    ;;; Multicast group to leave
+    (param $multiaddr $addr_ip6)
+    ;;; Interface that will left
+    (param $interface u32)
+    (result $error (expected (error $errno)))
+  )
+
   ;;; Set size of receive buffer
   ;;; Note: This is similar to `setsockopt` in POSIX for SO_RCVBUF
   (@interface func (export "sock_set_recv_buf_size")
