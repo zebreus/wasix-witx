@@ -869,6 +869,22 @@
     (result $error (expected $bool (error $errno)))
   )
 
+  ;;; Sets how long the socket will linger
+  (@interface func (export "sock_set_linger")
+    ;;; Socket descriptor
+    (param $fd $fd)
+    ;;; Value to set the linger to
+    (param $reuse $option_timestamp)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Retrieve how long the socket will linger for
+  (@interface func (export "sock_get_linger")
+    ;;; Socket descriptor
+    (param $fd $fd)
+    (result $error (expected $option_timestamp (error $errno)))
+  )
+
   ;;; Set size of receive buffer
   ;;; Note: This is similar to `setsockopt` in POSIX for SO_RCVBUF
   (@interface func (export "sock_set_recv_buf_size")

@@ -303,6 +303,15 @@
   )
 )
 
+;;; Represents an optional timestamp
+(typename $option_timestamp
+  (union
+    (@witx tag $option)
+    u8
+    $timestamp
+  )
+)
+
 ;;; A file descriptor handle.
 (typename $fd (handle))
 
@@ -974,8 +983,6 @@
     $reuse_port
     ;;; Reuse Address
     $reuse_addr
-    ;;; Linger
-    $linger
     ;;; No delay
     $nodelay
   )
