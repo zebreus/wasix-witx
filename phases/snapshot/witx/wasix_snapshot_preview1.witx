@@ -862,7 +862,7 @@
   (@interface func (export "sock_get_reuse_addr")
     ;;; Socket descriptor
     (param $fd $fd)
-    (result $error (expected $size (error $errno)))
+    (result $error (expected $bool (error $errno)))
   )
 
   ;;; Enable port reuse on a socket
@@ -880,7 +880,25 @@
   (@interface func (export "sock_get_reuse_port")
     ;;; Socket descriptor
     (param $fd $fd)
-    (result $error (expected $size (error $errno)))
+    (result $error (expected $bool (error $errno)))
+  )
+
+  ;;; Enable socket NO_DELAY which means it will not buffer
+  ;;; data before sending it out over the socket
+  (@interface func (export "sock_set_nodelay")
+    ;;; Socket descriptor
+    (param $fd $fd)
+    ;;; Should the socket not delay packets
+    (param $reuse $bool)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Retrieve status of no_delay flag, which means the socket
+  ;;; will not buffer data before it sends it over the socket
+  (@interface func (export "sock_get_nodelay")
+    ;;; Socket descriptor
+    (param $fd $fd)
+    (result $error (expected $bool (error $errno)))
   )
 
   ;;; Set size of receive buffer
