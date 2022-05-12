@@ -853,7 +853,7 @@
     ;;; Socket descriptor
     (param $fd $fd)
     ;;; Socket option to be set
-    (param &opt $sock_option)
+    (param $sockopt $sock_option)
     ;;; Value to set the option to
     (param $reuse $bool)
     (result $error (expected (error $errno)))
@@ -865,7 +865,7 @@
     ;;; Socket descriptor
     (param $fd $fd)
     ;;; Socket option to be retrieved
-    (param &opt $sock_option)
+    (param $sockopt $sock_option)
     (result $error (expected $bool (error $errno)))
   )
 
