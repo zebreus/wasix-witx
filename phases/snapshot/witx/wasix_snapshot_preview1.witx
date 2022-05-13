@@ -902,7 +902,7 @@
     (param $fd $fd)
     ;;; Type of timeout to be retrieved
     (param $ty $timeout_type)
-    (result $error (expected $timestamp (error $errno)))
+    (result $error (expected $option_timestamp (error $errno)))
   )
 
   ;;; Set TTL for this socket
