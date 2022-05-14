@@ -348,8 +348,8 @@
 ;;; Bool type
 (typename $bool
   (enum (@witx tag u8)
-    $true
     $false
+    $true
   )
 )
 
