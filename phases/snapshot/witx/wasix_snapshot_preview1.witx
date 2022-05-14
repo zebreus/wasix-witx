@@ -954,7 +954,7 @@
     ;;; Socket option to be set
     (param $sockopt $sock_option)
     ;;; Value to set the option to
-    (param $reuse $bool)
+    (param $flag $bool)
     (result $error (expected (error $errno)))
   )
 
@@ -973,7 +973,7 @@
     ;;; Socket descriptor
     (param $fd $fd)
     ;;; Value to set the linger to
-    (param $reuse $option_timestamp)
+    (param $linger $option_timestamp)
     (result $error (expected (error $errno)))
   )
 
