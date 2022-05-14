@@ -787,11 +787,31 @@
   )
 )
 
+;;; Serialization format of data on the bus
+(typename $bus_data_format
+  (enum (@witx tag u8)
+    ;;; Raw binary data
+    $raw
+    ;;; Uses the bincode serializer
+    $bincode
+    ;;; Uses the message pack serializer
+    $message_pack
+    ;;; JSON
+    $json
+    ;;; YAML
+    $yaml
+    ;;; XML
+    $xml
+  )
+)
+
 ;;; Bus data for a callback, call or reply event.
 (typename $bus_event_data
   (record
     ;;; Type of event data that is held here
     (field $ty $bus_data_type)
+    ;;; Format of the data on the bus
+    (field $format $bus_data_format)
     ;;; Handle of the call that has made a callback
     (field $cid $cid)
     ;;; The topic that describes the event that happened

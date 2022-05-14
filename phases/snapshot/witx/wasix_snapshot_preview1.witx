@@ -660,6 +660,8 @@
     (param $keep_alive $bool)
     ;;; Topic that describes the type of call to made
     (param $topic string)
+    ;;; Format of the data pushed onto the bus
+    (param $format $bus_data_format)
     ;;; The buffer where data to be transmitted is stored
     (param $buf $buf_array)
     (result $error (expected $cid (error $bus_error)))
@@ -690,6 +692,8 @@
   (@interface func (export "bus_reply")
     ;;; Handle of the call to send a reply on
     (param $cid $cid)
+    ;;; Format of the data pushed onto the bus
+    (param $format $bus_data_format)
     ;;; The buffer where data to be transmitted is stored
     (param $buf $buf_array)
     (result $error (expected (error $bus_error)))
@@ -702,6 +706,8 @@
     (param $cid $cid)
     ;;; Topic that describes the type of callback
     (param $topic string)
+    ;;; Format of the data pushed onto the bus
+    (param $format $bus_data_format)
     ;;; The buffer where data to be transmitted is stored
     (param $buf $buf_array)
     (result $error (expected (error $bus_error)))
