@@ -755,7 +755,7 @@
     (param $buf (@witx pointer u8))
     (param $buf_len $size)
     ;;; Returns the number of events that have occured
-    (result $error (expected (error $bus_error)))
+    (result $error (expected $bus_event_data (error $bus_error)))
   )
 
   ;;; Connects to a websocket at a particular network URL
