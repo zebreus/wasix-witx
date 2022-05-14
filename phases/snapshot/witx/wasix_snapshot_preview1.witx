@@ -884,8 +884,8 @@
   ;;; This function fills the output buffer as much as possible.
   (@interface func (export "port_route_list")
     ;;; The buffer where routes will be stored
-    (param $ips (@witx pointer $route))
-    (param $nips $size)
+    (param $routes (@witx pointer $route))
+    (param $nroutes $size)
     ;;; The number of routes returned.
     (result $error (expected $size (error $errno)))
   )
