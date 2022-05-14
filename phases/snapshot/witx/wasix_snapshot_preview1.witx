@@ -744,6 +744,9 @@
     ;;; Handle of the bus process to poll for new events
     ;;; (if no process is supplied then it polls for the current process)
     (param $bid $option_bid)
+    ;;; Timeout before the poll returns, if one passed 0
+    ;;; as the timeout then this call is non blocking.
+    (param $timeout $timestamp)
     ;;; The topic that describes the event that happened
     (param $topic (@witx pointer u8))
     (param $topic_len $size)
