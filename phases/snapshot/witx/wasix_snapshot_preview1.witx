@@ -791,6 +791,99 @@
     (result $error (expected $size (error $errno)))
   )
 
+  ;;; Securely connects to a particular remote network
+  (@interface func (export "port_connect")
+    ;;; Fully qualified identifier for the network
+    (param $network string)
+    ;;; Access token used to authenticate with the network
+    (param $token string)
+    ;;; Level of encryption to encapsulate the network connection with
+    (param $security $stream_security)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Disconnects from a remote network
+  (@interface func (export "port_disconnect")
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Acquires a set of IP addresses using DHCP
+  (@interface func (export "port_dhcp_acquire")
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Adds another static IP address to the local port
+  (@interface func (export "port_ip_add")
+    ;;; IP address to be added
+    (param $ip $addr_ip)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Removes an IP address from the local port
+  (@interface func (export "port_ip_remove")
+    ;;; IP address to be removed
+    (param $ip $addr_ip)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Clears all the IP addresses on the local port
+  (@interface func (export "port_ip_clear")
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Returns the MAC address of the local port
+  (@interface func (export "port_mac")
+    (result $error (expected $hardware_address (error $errno)))
+  )
+
+  ;;; Returns a list of all the IP addresses owned by the local port
+  ;;; This function fills the output buffer as much as possible.
+  (@interface func (export "port_ip_list")
+    ;;; The buffer where IP addresses will be stored
+    (param $ips (@witx pointer $addr_cidr))
+    (param $nips $size)
+    ;;; The number of IP addresses returned.
+    (result $error (expected $size (error $errno)))
+  )
+
+  ;;; Adds a default gateway to the port
+  (@interface func (export "port_gateway_set")
+    ;;; IP address of the default gateway
+    (param $ip $addr_ip)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Adds a new route to the local port
+  (@interface func (export "port_route_add")
+    (param $cidr $addr_cidr)
+    (param $via_router $addr_ip)
+    (param $preferred_until $option_timestamp)
+    (param $expires_at $option_timestamp)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Removes an existing route from the local port
+  (@interface func (export "port_route_remove")
+    (param $cidr $addr_cidr)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Clears all the routes in the local port
+  (@interface func (export "port_route_clear")
+    (param $cidr $addr_cidr)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Returns a list of all the routes owned by the local port
+  ;;; This function fills the output buffer as much as possible.
+  (@interface func (export "port_route_list")
+    ;;; The buffer where routes will be stored
+    (param $ips (@witx pointer $route))
+    (param $nips $size)
+    ;;; The number of routes returned.
+    (result $error (expected $size (error $errno)))
+  )
+
   ;;; Shut down socket send and receive channels.
   ;;; Note: This is similar to `shutdown` in POSIX.
   (@interface func (export "sock_shutdown")

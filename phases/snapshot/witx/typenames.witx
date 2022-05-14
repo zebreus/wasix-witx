@@ -996,16 +996,42 @@
   )
 )
 
+;;; Level of security to allow to the streaming connection
+(typename $stream_security
+  (flags (@witx repr u8)
+    ;;; Unencrypted
+    $unencrypted
+    ;;; Any encryption
+    $any_encryption
+    ;;; Classic encryption
+    $classic_encryption
+    ;;; Double encryption
+    $double_encryption
+  )
+)
+
+;;; Hardware address (MAC)
+(typename $hardware_address
+  (record
+    (field $n0 u8)
+    (field $n1 u8)
+    (field $n2 u8)
+    (field $h0 u8)
+    (field $h1 u8)
+    (field $h2 u8)
+  )
+)
+
 ;;; IP port number
 (typename $ip_port u16)
 
-;;; Address type
-(typename $addr_type
+;;; Address family
+(typename $address_family
   (enum (@witx tag u8)
-    ;;; IPv4 address
-    $ip4
-    ;;; IPv6 address
-    $ip6
+    ;;; IP v4
+    $inet4
+    ;;; IP v6
+    $inet6
   )
 )
 
@@ -1024,6 +1050,14 @@
   (record
     (field $addr $addr_ip4)
     (field $port $ip_port)
+  )
+)
+
+;;; An IPv4 address CIDR
+(typename $addr_ip4_cidr
+  (record
+    (field $addr $addr_ip4)
+    (field $prefix u8)
   )
 )
 
@@ -1049,10 +1083,18 @@
   )
 )
 
+;;; An IPv6 address CIDR
+(typename $addr_ip6_cidr
+  (record
+    (field $addr $addr_ip6)
+    (field $prefix u8)
+  )
+)
+
 ;;; Union of all possible addresses type
 (typename $addr_ip
   (union
-    (@witx tag $addr_type)
+    (@witx tag $address_family)
     $addr_ip4
     $addr_ip6
   )
@@ -1060,10 +1102,10 @@
 
 (typename $addr_ip_array (list $addr_ip))
 
-;;; Union of all possible addresses type
+;;; Union that makes a generic IP address and port
 (typename $addr_port
   (union
-    (@witx tag $addr_type)
+    (@witx tag $address_family)
     $addr_ip4_port
     $addr_ip6_port
   )
@@ -1071,13 +1113,23 @@
 
 (typename $addr_port_array (list $addr_port))
 
-;;; Address family
-(typename $address_family
-  (enum (@witx tag u8)
-    ;;; IP v4
-    $inet4
-    ;;; IP v6
-    $inet6
+;;; Union that makes a generic IP address and prefix. a.k.a. CIDR
+(typename $addr_cidr
+  (union
+    (@witx tag $address_family)
+    $addr_ip4_cidr
+    $addr_ip6_cidr
+  )
+)
+
+(typename $addr_cidr_array (list $addr_cidr))
+
+(typename $route
+  (record
+    (field $cidr $addr_cidr)
+    (field $via_router $addr_ip)
+    (field $preferred_until $option_timestamp)
+    (field $expires_at $option_timestamp)
   )
 )
 
