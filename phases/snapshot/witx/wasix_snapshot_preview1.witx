@@ -744,10 +744,6 @@
     ;;; Handle of the bus process to poll for new events
     ;;; (if no process is supplied then it polls for the current process)
     (param $bid $option_bid)
-    ;;; Type of event data that is held here
-    (param $ty (@witx pointer $bus_data_type))
-    ;;; Handle of the call this data is related to
-    (param $cid (@witx pointer $cid))
     ;;; The topic that describes the event that happened
     (param $topic (@witx pointer u8))
     (param $topic_len $size)
