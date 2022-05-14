@@ -876,7 +876,6 @@
 
   ;;; Clears all the routes in the local port
   (@interface func (export "port_route_clear")
-    (param $cidr $addr_cidr)
     (result $error (expected (error $errno)))
   )
 
