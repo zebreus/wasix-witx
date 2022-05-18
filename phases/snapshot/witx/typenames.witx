@@ -1013,6 +1013,8 @@
     $multicast_loop_v4
     ;;; Multicast Loop IPv6
     $multicast_loop_v6
+    ;;; Promiscuous
+    $promiscuous
   )
 )
 

@@ -791,13 +791,17 @@
     (param $status (@witx pointer $http_status))
     ;;; Buffer that will hold the status text
     (param $status_text (@witx pointer u8))
-    (param $status_text_len $size)
-    ;;; Returns the number of bytes held in the status text field
-    (result $error (expected $size (error $errno)))
+    ;;; This field will also be filled with the number of bytes returned in the status text
+    (param $status_text_len (@witx pointer $size))
+    ;;; Buffer that will hold the response headers
+    (param $headers (@witx pointer u8))
+    ;;; This field will also be filled with the number of bytes returned in the response headers
+    (param $headers_len (@witx pointer $size))
+    (result $error (expected (error $errno)))
   )
 
   ;;; Securely connects to a particular remote network
-  (@interface func (export "port_connect")
+  (@interface func (export "port_bridge")
     ;;; Fully qualified identifier for the network
     (param $network string)
     ;;; Access token used to authenticate with the network
@@ -808,7 +812,7 @@
   )
 
   ;;; Disconnects from a remote network
-  (@interface func (export "port_disconnect")
+  (@interface func (export "port_unbridge")
     (result $error (expected (error $errno)))
   )
 
@@ -820,7 +824,7 @@
   ;;; Adds another static IP address to the local port
   (@interface func (export "port_ip_add")
     ;;; IP address to be added
-    (param $ip $addr_ip)
+    (param $ip $addr_cidr)
     (result $error (expected (error $errno)))
   )
 
@@ -843,12 +847,14 @@
 
   ;;; Returns a list of all the IP addresses owned by the local port
   ;;; This function fills the output buffer as much as possible.
+  ;;; If the buffer is not big enough then the nips address will be
+  ;;; filled with the buffer size needed and the EOVERFLOW will be returned
   (@interface func (export "port_ip_list")
     ;;; The buffer where IP addresses will be stored
     (param $ips (@witx pointer $addr_cidr))
-    (param $nips $size)
+    (param $nips (@witx pointer $size))
     ;;; The number of IP addresses returned.
-    (result $error (expected $size (error $errno)))
+    (result $error (expected (error $errno)))
   )
 
   ;;; Adds a default gateway to the port
@@ -869,7 +875,7 @@
 
   ;;; Removes an existing route from the local port
   (@interface func (export "port_route_remove")
-    (param $cidr $addr_cidr)
+    (param $cidr $addr_ip)
     (result $error (expected (error $errno)))
   )
 
@@ -880,12 +886,13 @@
 
   ;;; Returns a list of all the routes owned by the local port
   ;;; This function fills the output buffer as much as possible.
+  ;;; If the buffer is too small this will return EOVERFLOW and
+  ;;; fill nroutes with the size of the buffer needed.
   (@interface func (export "port_route_list")
     ;;; The buffer where routes will be stored
     (param $routes (@witx pointer $route))
-    (param $nroutes $size)
-    ;;; The number of routes returned.
-    (result $error (expected $size (error $errno)))
+    (param $nroutes (@witx pointer $size))
+    (result $error (expected (error $errno)))
   )
 
   ;;; Shut down socket send and receive channels.
@@ -912,7 +919,7 @@
   (@interface func (export "sock_addr_local")
     ;;; Socket that the address is bound to
     (param $fd $fd)
-    (result $error (expected $addr_ip (error $errno)))
+    (result $error (expected $addr_port (error $errno)))
   )
 
   ;;; Returns the remote address to which the socket is connected to.
@@ -921,10 +928,10 @@
   ;;;
   ;;; When successful, the contents of the output buffer consist of an IP address,
   ;;; either IP4 or IP6.
-  (@interface func (export "sock_addr_remote")
+  (@interface func (export "sock_addr_peer")
     ;;; Socket that the address is bound to
     (param $fd $fd)
-    (result $error (expected $addr_ip (error $errno)))
+    (result $error (expected $addr_port (error $errno)))
   )
 
   ;;; Create an endpoint for communication.
@@ -989,7 +996,7 @@
     ;;; Type of timeout to be changed
     (param $ty $timeout_type)
     ;;; Value to set the timeout to
-    (param $timeout $option_timestamp)
+    (param $timeout $timestamp)
     (result $error (expected (error $errno)))
   )
 
@@ -999,7 +1006,7 @@
     (param $fd $fd)
     ;;; Type of timeout to be retrieved
     (param $ty $timeout_type)
-    (result $error (expected $option_timestamp (error $errno)))
+    (result $error (expected $timestamp (error $errno)))
   )
 
   ;;; Set TTL for this socket
