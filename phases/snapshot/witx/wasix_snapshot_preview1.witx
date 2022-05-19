@@ -487,25 +487,15 @@
     (result $error (expected (error $errno)))
   )
 
-  ;;; Opens the STDIN from TTY
-  (@interface func (export "tty_stdin")
-    (result $error (expected $fd (error $errno)))
+  ;;; Retrieves the current state of the TTY
+  (@interface func (export "tty_get")
+    (param $state (@witx pointer $tty))
+    (result $error (expected (error $errno)))
   )
 
-  ;;; Opens the STDOUT from TTY
-  (@interface func (export "tty_stdout")
-    (result $error (expected $fd (error $errno)))
-  )
-
-  ;;; Opens the STDERR from TTY
-  (@interface func (export "tty_stderr")
-    (result $error (expected $fd (error $errno)))
-  )
-
-  ;;; Retrieves the rect of the TTY display
-  (@interface func (export "tty_rect")
-    ;;; The rect which will be filled by this call
-    (param $rect (@witx pointer $rect))
+  ;;; Updates the properties of the rect
+  (@interface func (export "tty_set")
+    (param $state (@witx pointer $tty))
     (result $error (expected (error $errno)))
   )
 

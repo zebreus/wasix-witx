@@ -670,7 +670,7 @@
 (typename $exitcode u32)
 
 ;;; Rect that represents the TTY.
-(typename $rect
+(typename $tty
   (record
     ;;; Number of columns
     (field $cols u32)
@@ -680,6 +680,16 @@
     (field $width u32)
     ;;; Height of the screen in pixels
     (field $height u32)
+    ;;; Indicates if stdin is a TTY
+    (field $stdin_tty $bool)
+    ;;; Indicates if stdout is a TTY
+    (field $stdout_tty $bool)
+    ;;; Indicates if stderr is a TTY
+    (field $stderr_tty $bool)
+    ;;; When enabled the TTY will echo input to console
+    (field $echo $bool)
+    ;;; When enabled buffers the input until the return key is pressed
+    (field $line_buffered $bool)
   )
 )
 
