@@ -290,9 +290,9 @@
 
   ;;; Opens a pipe with two file handles
   ;;;
-  ;;; Pipes are bidirectional meaning 
+  ;;; Pipes are bidirectional
   (@interface func (export "pipe")
-    (result $error (expected $pipe_handles (error $errno)))
+    (result $error (expected (tuple $fd $fd) (error $errno)))
   )
 
   ;;; Create a directory.

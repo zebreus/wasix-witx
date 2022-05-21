@@ -739,16 +739,6 @@
   )
 )
 
-;;; Pipe handles.
-(typename $pipe_handles
-  (record
-    ;;; File handle for data on one side of the pipe
-    (field $pipe $fd)
-    ;;; File handle for data on the other side of hte pipe
-    (field $other $fd)
-  )
-)
-
 ;;; Type of stdio mode to run for the sub process
 (typename $stdio_mode
   (enum (@witx tag u8)
