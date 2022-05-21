@@ -500,12 +500,13 @@
   )
 
   ;;; Returns the current working directory
+  ;;; If the path exceeds the size of the buffer then this function
+  ;;; will fill the path_len with the needed size and return EOVERFLOW
   (@interface func (export "getcwd")
     ;;; The buffer where current directory is stored
     (param $path (@witx pointer u8))
-    (param $path_len $size)
-    ;;; Number of bytes returned in the path buffer
-    (result $error (expected $size (error $errno)))
+    (param $path_len (@witx pointer $size))
+    (result $error (expected (error $errno)))
   )
 
   ;;; Sets the current working directory
