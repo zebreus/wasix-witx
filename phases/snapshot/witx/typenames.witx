@@ -9,7 +9,7 @@
 (typename $pointersize u64)
 
 ;;; Represents a number of items
-(typename $count u32)
+(typename $size u32)
 
 ;;; Non-negative file size or length of a region within a file.
 (typename $filesize u64)

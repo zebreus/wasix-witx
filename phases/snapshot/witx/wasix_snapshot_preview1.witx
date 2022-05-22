@@ -24,7 +24,7 @@
   (@interface func (export "args_sizes_get")
     ;;; Returns the number of arguments and the size of the argument string
     ;;; data, or an error.
-    (result $error (expected (tuple $count $pointersize) (error $errno)))
+    (result $error (expected (tuple $size $pointersize) (error $errno)))
   )
 
   ;;; Read environment variable data.
@@ -39,7 +39,7 @@
   (@interface func (export "environ_sizes_get")
     ;;; Returns the number of environment variable arguments and the size of the
     ;;; environment variable data.
-    (result $error (expected (tuple $count $pointersize) (error $errno)))
+    (result $error (expected (tuple $size $pointersize) (error $errno)))
   )
 
   ;;; Return the resolution of a clock.
@@ -166,7 +166,7 @@
     ;;; The offset within the file at which to read.
     (param $offset $filesize)
     ;;; The number of bytes read.
-    (result $error (expected $filesize (error $errno)))
+    (result $error (expected $size (error $errno)))
   )
 
   ;;; Return a description of the given preopened file descriptor.
@@ -194,7 +194,7 @@
     ;;; The offset within the file at which to write.
     (param $offset $filesize)
     ;;; The number of bytes written.
-    (result $error (expected $filesize (error $errno)))
+    (result $error (expected $size (error $errno)))
   )
 
   ;;; Read from a file descriptor.
@@ -225,7 +225,7 @@
     ;;; The location within the directory to start reading
     (param $cookie $dircookie)
     ;;; The number of bytes stored in the read buffer. If less than the size of the read buffer, the end of the directory has been reached.
-    (result $error (expected $pointersize (error $errno)))
+    (result $error (expected $size (error $errno)))
   )
 
   ;;; Atomically replace a file descriptor by renumbering another file descriptor.
@@ -285,7 +285,7 @@
     (param $fd $fd)
     ;;; List of scatter/gather vectors from which to retrieve data.
     (param $iovs $ciovec_array)
-    (result $error (expected $filesize (error $errno)))
+    (result $error (expected $size (error $errno)))
   )
 
   ;;; Opens a pipe with two file handles
@@ -391,7 +391,7 @@
     (param $buf (@witx pointer u8))
     (param $buf_len $pointersize)
     ;;; The number of bytes placed in the buffer.
-    (result $error (expected $pointersize (error $errno)))
+    (result $error (expected $size (error $errno)))
   )
 
   ;;; Remove a directory.
@@ -446,9 +446,9 @@
     ;;; The events that have occurred.
     (param $out (@witx pointer $event))
     ;;; Both the number of subscriptions and events.
-    (param $nsubscriptions $count)
+    (param $nsubscriptions $size)
     ;;; The number of events stored.
-    (result $error (expected $count (error $errno)))
+    (result $error (expected $size (error $errno)))
   )
 
   ;;; Terminate the process normally. An exit code of 0 indicates successful
@@ -558,7 +558,7 @@
   ;;; Returns the available parallelism which is normally the
   ;;; number of available cores that can run concurrently
   (@interface func (export "thread_parallelism")
-    (result $error (expected $count (error $errno)))
+    (result $error (expected $size (error $errno)))
   )
 
   ;;; Returns the handle of the current process
@@ -725,9 +725,9 @@
     (param $timeout $timestamp)
     ;;; An events buffer that will hold any received bus events
     (param $events (@witx pointer $bus_event))
-    (param $nevents $count)
+    (param $nevents $size)
     ;;; Returns the number of events that have occured
-    (result $error (expected $count (error $bus_error)))
+    (result $error (expected $size (error $bus_error)))
   )
 
   ;;; Receives the next event data from the bus
@@ -843,7 +843,7 @@
   (@interface func (export "port_ip_list")
     ;;; The buffer where IP addresses will be stored
     (param $ips (@witx pointer $addr_cidr))
-    (param $nips (@witx pointer $count))
+    (param $nips (@witx pointer $size))
     ;;; The number of IP addresses returned.
     (result $error (expected (error $errno)))
   )
@@ -882,7 +882,7 @@
   (@interface func (export "port_route_list")
     ;;; The buffer where routes will be stored
     (param $routes (@witx pointer $route))
-    (param $nroutes (@witx pointer $count))
+    (param $nroutes (@witx pointer $size))
     (result $error (expected (error $errno)))
   )
 
@@ -1005,7 +1005,7 @@
     ;;; Socket descriptor
     (param $fd $fd)
     ;;; Time to live
-    (param $ttl $count)
+    (param $ttl $size)
     (result $error (expected (error $errno)))
   )
 
@@ -1013,7 +1013,7 @@
   (@interface func (export "sock_get_ttl")
     ;;; Socket descriptor
     (param $fd $fd)
-    (result $error (expected $count (error $errno)))
+    (result $error (expected $size (error $errno)))
   )
 
   ;;; Set TTL for IPv4 multicast for this socket
@@ -1021,7 +1021,7 @@
     ;;; Socket descriptor
     (param $fd $fd)
     ;;; Time to live
-    (param $ttl $count)
+    (param $ttl $size)
     (result $error (expected (error $errno)))
   )
 
@@ -1029,7 +1029,7 @@
   (@interface func (export "sock_get_multicast_ttl_v4")
     ;;; Socket descriptor
     (param $fd $fd)
-    (result $error (expected $count (error $errno)))
+    (result $error (expected $size (error $errno)))
   )
 
   ;;; Joins a particular multicast IPv4 group
@@ -1132,7 +1132,7 @@
     ;;; File descriptor of the socket to be bind
     (param $fd $fd)
     ;;; Maximum size of the queue for pending connections
-    (param $backlog $count)
+    (param $backlog $size)
     (result $error (expected (error $errno)))
   )
   
@@ -1230,8 +1230,8 @@
     (param $port u16)
     ;;; The buffer where IP addresses will be stored
     (param $ips (@witx pointer $addr_ip))
-    (param $nips $count)
+    (param $nips $size)
     ;;; The number of IP addresses returned during the DNS resolution.
-    (result $error (expected $count (error $errno)))
+    (result $error (expected $size (error $errno)))
   )
 )
