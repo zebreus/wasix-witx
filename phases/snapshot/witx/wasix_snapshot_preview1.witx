@@ -204,7 +204,7 @@
     ;;; List of scatter/gather vectors to which to store data.
     (param $iovs $iovec_array)
     ;;; The number of bytes read.
-    (result $error (expected $filesize (error $errno)))
+    (result $error (expected $size (error $errno)))
   )
 
   ;;; Read directory entries from a directory.
@@ -225,7 +225,7 @@
     ;;; The location within the directory to start reading
     (param $cookie $dircookie)
     ;;; The number of bytes stored in the read buffer. If less than the size of the read buffer, the end of the directory has been reached.
-    (result $error (expected $filesize (error $errno)))
+    (result $error (expected $size (error $errno)))
   )
 
   ;;; Atomically replace a file descriptor by renumbering another file descriptor.
