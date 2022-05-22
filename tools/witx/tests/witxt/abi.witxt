@@ -69,8 +69,8 @@
 (assert_abi
   (witx (module $x (@interface func (export "f") (param $p (@witx usize)))))
   (wasm (param i32))
-  (call_wasm get-arg0 i32.from_usize call.wasm return)
-  (call_interface get-arg0 usize.from_i32 call.interface return)
+  (call_wasm get-arg0 i64.from_usize call.wasm return)
+  (call_interface get-arg0 usize.from_i64 call.interface return)
 )
 (assert_abi
   (witx (module $x (@interface func (export "f") (param $p (@witx char8)))))
@@ -86,15 +86,15 @@
 )
 (assert_abi
   (witx (module $x (@interface func (export "f") (param $p (@witx pointer u8)))))
-  (wasm (param i32))
-  (call_wasm get-arg0 i32.from_pointer call.wasm return)
-  (call_interface get-arg0 pointer.from_i32 call.interface return)
+  (wasm (param i64))
+  (call_wasm get-arg0 i64.from_pointer call.wasm return)
+  (call_interface get-arg0 pointer.from_i64 call.interface return)
 )
 (assert_abi
   (witx (module $x (@interface func (export "f") (param $p (@witx const_pointer u8)))))
-  (wasm (param i32))
-  (call_wasm get-arg0 i32.from_const_pointer call.wasm return)
-  (call_interface get-arg0 const_pointer.from_i32 call.interface return)
+  (wasm (param i64))
+  (call_wasm get-arg0 i64.from_const_pointer call.wasm return)
+  (call_interface get-arg0 const_pointer.from_i64 call.interface return)
 )
 
 ;; flags parameter
@@ -144,7 +144,7 @@
   (witx
     (module $x (@interface func (export "f") (param $p (list u8))))
   )
-  (wasm (param i32 i32))
+  (wasm (param i64 i64))
   (call_wasm get-arg0 list.pointer_length call.wasm return)
   (call_interface get-arg0 get-arg1 list.from_pointer_length call.interface return)
 )
@@ -233,8 +233,8 @@
 (assert_abi
   (witx (module $x (@interface func (export "f") (result $p (@witx usize)))))
   (wasm (result i32))
-  (call_wasm call.wasm usize.from_i32 return)
-  (call_interface call.interface i32.from_usize return)
+  (call_wasm call.wasm usize.from_i64 return)
+  (call_interface call.interface i64.from_usize return)
 )
 (assert_abi
   (witx (module $x (@interface func (export "f") (result $p (@witx char8)))))
@@ -250,15 +250,15 @@
 )
 (assert_abi
   (witx (module $x (@interface func (export "f") (result $p (@witx pointer u8)))))
-  (wasm (result i32))
-  (call_wasm call.wasm pointer.from_i32 return)
-  (call_interface call.interface i32.from_pointer return)
+  (wasm (result i64))
+  (call_wasm call.wasm pointer.from_i64 return)
+  (call_interface call.interface i64.from_pointer return)
 )
 (assert_abi
   (witx (module $x (@interface func (export "f") (result $p (@witx const_pointer u8)))))
-  (wasm (result i32))
-  (call_wasm call.wasm const_pointer.from_i32 return)
-  (call_interface call.interface i32.from_const_pointer return)
+  (wasm (result i64))
+  (call_wasm call.wasm const_pointer.from_i64 return)
+  (call_interface call.interface i64.from_const_pointer return)
 )
 
 ;; flags return

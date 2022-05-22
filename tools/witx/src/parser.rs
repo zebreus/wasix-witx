@@ -74,12 +74,12 @@ impl Parse<'_> for BuiltinType {
             Ok(BuiltinType::U16)
         } else if l.peek::<kw::u32>() {
             parser.parse::<kw::u32>()?;
-            Ok(BuiltinType::U32 {
-                lang_ptr_size: false,
-            })
+            Ok(BuiltinType::U32)
         } else if l.peek::<kw::u64>() {
             parser.parse::<kw::u64>()?;
-            Ok(BuiltinType::U64)
+            Ok(BuiltinType::U64 {
+                lang_ptr_size: false
+            })
         } else if l.peek::<kw::s8>() {
             parser.parse::<kw::s8>()?;
             Ok(BuiltinType::S8)
@@ -343,7 +343,7 @@ impl<'a> Parse<'a> for TypedefSyntax<'a> {
                         Ok(TypedefSyntax::Pointer(Box::new(parser.parse()?)))
                     } else if l.peek::<kw::usize>() {
                         parser.parse::<kw::usize>()?;
-                        Ok(TypedefSyntax::Builtin(BuiltinType::U32 {
+                        Ok(TypedefSyntax::Builtin(BuiltinType::U64 {
                             lang_ptr_size: true,
                         }))
                     } else if l.peek::<kw::char8>() {

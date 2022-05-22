@@ -5,11 +5,8 @@
 ;; This is a `witx` file. See [here](https://github.com/WebAssembly/WASI/tree/master/docs/witx.md)
 ;; for an explanation of what that means.
 
-;;; WASI size types are 32-bits wide by default
-(typename $size u32)
-
-;;; Specific WASIX types are 64-bits wide in size
-(typename $size64 u64)
+;;; WASI size types are 64-bits wide by default
+(typename $size usize)
 
 ;;; Non-negative file size or length of a region within a file.
 (typename $filesize u64)
@@ -377,30 +374,8 @@
   )
 )
 
-;;; A region of memory for scatter/gather reads.
-(typename $iovec64
-  (record
-    ;;; The address of the buffer to be filled.
-    (field $buf u64)
-    ;;; The length of the buffer to be filled.
-    (field $buf_len $size64)
-  )
-)
-
-;;; A region of memory for scatter/gather writes.
-(typename $ciovec64
-  (record
-    ;;; The address of the buffer to be written.
-    (field $buf u64)
-    ;;; The length of the buffer to be written.
-    (field $buf_len $size64)
-  )
-)
-
 (typename $iovec_array (list $iovec))
 (typename $ciovec_array (list $ciovec))
-(typename $iovec64_array (list $iovec64))
-(typename $ciovec64_array (list $ciovec64))
 
 ;;; Relative offset within a file.
 (typename $filedelta s64)

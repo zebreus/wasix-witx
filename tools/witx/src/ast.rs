@@ -270,10 +270,12 @@ pub enum BuiltinType {
     /// A 16-bit unsigned integer.
     U16,
     /// A 32-bit unsigned integer.
-    U32 {
-        /// Indicates that this 32-bit value should actually be considered a
+    U32,
+    /// A 64-bit unsigned integer.
+    U64 {
+        /// Indicates that this 64-bit value should actually be considered a
         /// pointer-like value in language bindings. At the interface types
-        /// layer this is always a 32-bit unsigned value, but binding
+        /// layer this is always a 64-bit unsigned value, but binding
         /// generators may wish to instead bind this as the equivalent of C's
         /// `size_t` for convenience with other APIs.
         ///
@@ -281,8 +283,6 @@ pub enum BuiltinType {
         /// argument or return-value is pointer-like.
         lang_ptr_size: bool,
     },
-    /// A 64-bit unsigned integer.
-    U64,
     /// An 8-bit signed integer
     S8,
     /// A 16-bit signed integer
@@ -310,10 +310,10 @@ impl IntRepr {
         match self {
             IntRepr::U8 => BuiltinType::U8 { lang_c_char: false },
             IntRepr::U16 => BuiltinType::U16,
-            IntRepr::U32 => BuiltinType::U32 {
+            IntRepr::U32 => BuiltinType::U32,
+            IntRepr::U64 => BuiltinType::U64 {
                 lang_ptr_size: false,
             },
-            IntRepr::U64 => BuiltinType::U64,
         }
     }
 }

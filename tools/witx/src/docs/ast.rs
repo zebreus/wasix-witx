@@ -280,13 +280,13 @@ impl BuiltinType {
             BuiltinType::Char => "char",
             BuiltinType::U8 { .. } => "u8",
             BuiltinType::U16 => "u16",
-            BuiltinType::U32 {
+            BuiltinType::U32 => "u32",
+            BuiltinType::U64 {
                 lang_ptr_size: false,
             } => "u32",
-            BuiltinType::U32 {
+            BuiltinType::U64 {
                 lang_ptr_size: true,
             } => "usize",
-            BuiltinType::U64 => "u64",
             BuiltinType::S8 => "s8",
             BuiltinType::S16 => "s16",
             BuiltinType::S32 => "s32",

@@ -6,9 +6,7 @@
 ;; for an explanation of what that means.
 
 ;;; An array size.
-;;;
-;;; Note: This is similar to `size_t` in POSIX.
-(typename $size (@witx usize))
+(typename $size (@witx u64))
 
 ;;; Non-negative file size or length of a region within a file.
 (typename $filesize u64)

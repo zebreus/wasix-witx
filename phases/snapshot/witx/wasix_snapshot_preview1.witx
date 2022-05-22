@@ -162,7 +162,7 @@
   (@interface func (export "fd_pread")
     (param $fd $fd)
     ;;; List of scatter/gather vectors in which to store data.
-    (param $iovs $iovec64_array)
+    (param $iovs $iovec_array)
     ;;; The offset within the file at which to read.
     (param $offset $filesize)
     ;;; The number of bytes read.
@@ -190,7 +190,7 @@
   (@interface func (export "fd_pwrite")
     (param $fd $fd)
     ;;; List of scatter/gather vectors from which to retrieve data.
-    (param $iovs $ciovec64_array)
+    (param $iovs $ciovec_array)
     ;;; The offset within the file at which to write.
     (param $offset $filesize)
     ;;; The number of bytes written.
@@ -284,7 +284,7 @@
   (@interface func (export "fd_write")
     (param $fd $fd)
     ;;; List of scatter/gather vectors from which to retrieve data.
-    (param $iovs $ciovec64_array)
+    (param $iovs $ciovec_array)
     (result $error (expected $size (error $errno)))
   )
 
@@ -1167,7 +1167,7 @@
   (@interface func (export "sock_recv")
     (param $fd $fd)
     ;;; List of scatter/gather vectors to which to store data.
-    (param $ri_data $iovec64_array)
+    (param $ri_data $iovec_array)
     ;;; Message flags.
     (param $ri_flags $riflags)
     ;;; Number of bytes stored in ri_data and message flags.
@@ -1180,7 +1180,7 @@
   (@interface func (export "sock_recv_from")
     (param $fd $fd)
     ;;; List of scatter/gather vectors to which to store data.
-    (param $ri_data $iovec64_array)
+    (param $ri_data $iovec_array)
     ;;; Message flags.
     (param $ri_flags $riflags)
     ;;; Number of bytes stored in ri_data and message flags.
@@ -1193,7 +1193,7 @@
   (@interface func (export "sock_send")
     (param $fd $fd)
     ;;; List of scatter/gather vectors to which to retrieve data
-    (param $si_data $ciovec64_array)
+    (param $si_data $ciovec_array)
     ;;; Message flags.
     (param $si_flags $siflags)
     ;;; Number of bytes transmitted.
@@ -1206,7 +1206,7 @@
   (@interface func (export "sock_send_to")
     (param $fd $fd)
     ;;; List of scatter/gather vectors to which to retrieve data
-    (param $si_data $ciovec64_array)
+    (param $si_data $ciovec_array)
     ;;; Message flags.
     (param $si_flags $siflags)
     ;;; Address of the socket to send message to

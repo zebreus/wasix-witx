@@ -31,17 +31,17 @@ impl Representable for BuiltinType {
         }
         match self {
             BuiltinType::U8 { .. } => match by {
-                BuiltinType::U64 | BuiltinType::U32 { .. } | BuiltinType::U16 => {
+                BuiltinType::U64 { .. } | BuiltinType::U32 | BuiltinType::U16 => {
                     RepEquality::Superset
                 }
                 _ => RepEquality::NotEq,
             },
             BuiltinType::U16 => match by {
-                BuiltinType::U64 | BuiltinType::U32 { .. } => RepEquality::Superset,
+                BuiltinType::U64 { .. } | BuiltinType::U32 => RepEquality::Superset,
                 _ => RepEquality::NotEq,
             },
-            BuiltinType::U32 { .. } => match by {
-                BuiltinType::U64 => RepEquality::Superset,
+            BuiltinType::U32 => match by {
+                BuiltinType::U64 { .. } => RepEquality::Superset,
                 _ => RepEquality::NotEq,
             },
             _ => RepEquality::NotEq,
