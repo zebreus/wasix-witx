@@ -166,7 +166,7 @@
     ;;; The offset within the file at which to read.
     (param $offset $filesize)
     ;;; The number of bytes read.
-    (result $error (expected $size (error $errno)))
+    (result $error (expected $filesize (error $errno)))
   )
 
   ;;; Return a description of the given preopened file descriptor.
@@ -194,7 +194,7 @@
     ;;; The offset within the file at which to write.
     (param $offset $filesize)
     ;;; The number of bytes written.
-    (result $error (expected $size (error $errno)))
+    (result $error (expected $filesize (error $errno)))
   )
 
   ;;; Read from a file descriptor.
@@ -225,7 +225,7 @@
     ;;; The location within the directory to start reading
     (param $cookie $dircookie)
     ;;; The number of bytes stored in the read buffer. If less than the size of the read buffer, the end of the directory has been reached.
-    (result $error (expected $size (error $errno)))
+    (result $error (expected $filesize (error $errno)))
   )
 
   ;;; Atomically replace a file descriptor by renumbering another file descriptor.
@@ -285,7 +285,7 @@
     (param $fd $fd)
     ;;; List of scatter/gather vectors from which to retrieve data.
     (param $iovs $ciovec_array)
-    (result $error (expected $size (error $errno)))
+    (result $error (expected $filesize (error $errno)))
   )
 
   ;;; Opens a pipe with two file handles
