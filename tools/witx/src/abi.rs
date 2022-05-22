@@ -455,6 +455,9 @@ impl InterfaceFunc {
         let mut results = Vec::new();
         for param in self.params.iter() {
             match &**param.tref.type_() {
+                Type::Varient(v) if v.is_enum()
+                    => params.push(WasmType::I32),
+
                 Type::Pointer(_)
                 | Type::ConstPointer(_)
                 | Type::Variant(_) => params.push(WasmType::I64),
