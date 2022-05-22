@@ -225,7 +225,7 @@
     ;;; The location within the directory to start reading
     (param $cookie $dircookie)
     ;;; The number of bytes stored in the read buffer. If less than the size of the read buffer, the end of the directory has been reached.
-    (result $error (expected $size (error $errno)))
+    (result $error (expected $filesize (error $errno)))
   )
 
   ;;; Atomically replace a file descriptor by renumbering another file descriptor.
