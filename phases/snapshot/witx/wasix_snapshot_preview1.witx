@@ -166,7 +166,7 @@
     ;;; The offset within the file at which to read.
     (param $offset $filesize)
     ;;; The number of bytes read.
-    (result $error (expected $filesize (error $errno)))
+    (result $error (expected $size (error $errno)))
   )
 
   ;;; Return a description of the given preopened file descriptor.
@@ -194,7 +194,7 @@
     ;;; The offset within the file at which to write.
     (param $offset $filesize)
     ;;; The number of bytes written.
-    (result $error (expected $filesize (error $errno)))
+    (result $error (expected $size (error $errno)))
   )
 
   ;;; Read from a file descriptor.
@@ -225,7 +225,7 @@
     ;;; The location within the directory to start reading
     (param $cookie $dircookie)
     ;;; The number of bytes stored in the read buffer. If less than the size of the read buffer, the end of the directory has been reached.
-    (result $error (expected $filesize (error $errno)))
+    (result $error (expected $size (error $errno)))
   )
 
   ;;; Atomically replace a file descriptor by renumbering another file descriptor.
@@ -285,7 +285,7 @@
     (param $fd $fd)
     ;;; List of scatter/gather vectors from which to retrieve data.
     (param $iovs $ciovec_array)
-    (result $error (expected $filesize (error $errno)))
+    (result $error (expected $size (error $errno)))
   )
 
   ;;; Opens a pipe with two file handles
@@ -391,7 +391,7 @@
     (param $buf (@witx pointer u8))
     (param $buf_len $pointersize)
     ;;; The number of bytes placed in the buffer.
-    (result $error (expected $filesize (error $errno)))
+    (result $error (expected $size (error $errno)))
   )
 
   ;;; Remove a directory.
@@ -644,7 +644,7 @@
     ;;; Handle of the bus process to invoke the call within
     (param $bid $bid)
     ;;; Optional parent bus call that this is related to
-    (param $parent $option_cid)
+    (param $parent (@witx const_pointer $option_cid))
     ;;; Causes the call handle to remain open even when A
     ;;; reply is received. It is then the  callers responsibility
     ;;; to invoke 'bus_drop' when they are finished with the call
@@ -708,7 +708,7 @@
   ;;; now listening for bus calls on a particular topic
   (@interface func (export "bus_listen")
     ;;; Optional parent bus call that this is related to
-    (param $parent $option_cid)
+    (param $parent (@witx const_pointer $option_cid))
     ;;; Topic that describes the process will listen forcalls on
     (param $topic string)
     (result $error (expected (error $bus_error)))
@@ -719,7 +719,7 @@
   (@interface func (export "bus_poll")
     ;;; Handle of the bus process to poll for new events
     ;;; (if no process is supplied then it polls for the current process)
-    (param $bid $option_bid)
+    (param $bid (@witx const_pointer $option_bid))
     ;;; Timeout before the poll returns, if one passed 0
     ;;; as the timeout then this call is non blocking.
     (param $timeout $timestamp)
@@ -734,7 +734,7 @@
   (@interface func (export "bus_poll_data")
     ;;; Handle of the bus process to poll for new events
     ;;; (if no process is supplied then it polls for the current process)
-    (param $bid $option_bid)
+    (param $bid (@witx const_pointer $option_bid))
     ;;; Timeout before the poll returns, if one passed 0
     ;;; as the timeout then this call is non blocking.
     (param $timeout $timestamp)
@@ -815,14 +815,14 @@
   ;;; Adds another static IP address to the local port
   (@interface func (export "port_ip_add")
     ;;; IP address to be added
-    (param $ip $addr_cidr)
+    (param $ip (@witx const_pointer $addr_cidr))
     (result $error (expected (error $errno)))
   )
 
   ;;; Removes an IP address from the local port
   (@interface func (export "port_ip_remove")
     ;;; IP address to be removed
-    (param $ip $addr_ip)
+    (param $ip (@witx const_pointer $addr_ip))
     (result $error (expected (error $errno)))
   )
 
@@ -851,22 +851,22 @@
   ;;; Adds a default gateway to the port
   (@interface func (export "port_gateway_set")
     ;;; IP address of the default gateway
-    (param $ip $addr_ip)
+    (param $ip (@witx const_pointer $addr_ip))
     (result $error (expected (error $errno)))
   )
 
   ;;; Adds a new route to the local port
   (@interface func (export "port_route_add")
-    (param $cidr $addr_cidr)
-    (param $via_router $addr_ip)
-    (param $preferred_until $option_timestamp)
-    (param $expires_at $option_timestamp)
+    (param $cidr (@witx const_pointer $addr_cidr))
+    (param $via_router (@witx const_pointer $addr_ip))
+    (param $preferred_until (@witx const_pointer $option_timestamp))
+    (param $expires_at (@witx const_pointer $option_timestamp))
     (result $error (expected (error $errno)))
   )
 
   ;;; Removes an existing route from the local port
   (@interface func (export "port_route_remove")
-    (param $cidr $addr_ip)
+    (param $cidr (@witx const_pointer $addr_ip))
     (result $error (expected (error $errno)))
   )
 
@@ -969,7 +969,7 @@
     ;;; Socket descriptor
     (param $fd $fd)
     ;;; Value to set the linger to
-    (param $linger $option_timestamp)
+    (param $linger (@witx const_pointer $option_timestamp))
     (result $error (expected (error $errno)))
   )
 
@@ -1037,9 +1037,9 @@
     ;;; Socket descriptor
     (param $fd $fd)
     ;;; Multicast group to joined
-    (param $multiaddr $addr_ip4)
+    (param $multiaddr (@witx const_pointer $addr_ip4))
     ;;; Interface that will join
-    (param $interface $addr_ip4)
+    (param $interface (@witx const_pointer $addr_ip4))
     (result $error (expected (error $errno)))
   )
 
@@ -1048,9 +1048,9 @@
     ;;; Socket descriptor
     (param $fd $fd)
     ;;; Multicast group to leave
-    (param $multiaddr $addr_ip4)
+    (param $multiaddr (@witx const_pointer $addr_ip4))
     ;;; Interface that will left
-    (param $interface $addr_ip4)
+    (param $interface (@witx const_pointer $addr_ip4))
     (result $error (expected (error $errno)))
   )
 
@@ -1059,7 +1059,7 @@
     ;;; Socket descriptor
     (param $fd $fd)
     ;;; Multicast group to joined
-    (param $multiaddr $addr_ip6)
+    (param $multiaddr (@witx const_pointer $addr_ip6))
     ;;; Interface that will join
     (param $interface u32)
     (result $error (expected (error $errno)))
@@ -1070,7 +1070,7 @@
     ;;; Socket descriptor
     (param $fd $fd)
     ;;; Multicast group to leave
-    (param $multiaddr $addr_ip6)
+    (param $multiaddr (@witx const_pointer $addr_ip6))
     ;;; Interface that will left
     (param $interface u32)
     (result $error (expected (error $errno)))
@@ -1118,7 +1118,7 @@
     ;;; File descriptor of the socket to be bind
     (param $fd $fd)
     ;;; Address to bind the socket to
-    (param $addr $addr_port)
+    (param $addr (@witx const_pointer $addr_port))
     (result $error (expected (error $errno)))
   )
 
@@ -1157,7 +1157,7 @@
     ;;; Socket descriptor
     (param $fd $fd)
     ;;; Address of the socket to connect to
-    (param $addr $addr_port)
+    (param $addr (@witx const_pointer $addr_port))
     (result $error (expected (error $errno)))
   )
 
@@ -1210,7 +1210,7 @@
     ;;; Message flags.
     (param $si_flags $siflags)
     ;;; Address of the socket to send message to
-    (param $addr $addr_port)
+    (param $addr (@witx const_pointer $addr_port))
     ;;; Number of bytes transmitted.
     (result $error (expected $filesize (error $errno)))
   )

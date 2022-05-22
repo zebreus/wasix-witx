@@ -78,14 +78,14 @@
   ;;; Adds another static IP address to the local port
   (@interface func (export "ip_add")
     ;;; IP address to be added
-    (param $ip $addr_cidr)
+    (param $ip (@witx const_pointer $addr_cidr))
     (result $error (expected (error $errno)))
   )
 
   ;;; Removes an IP address from the local port
   (@interface func (export "ip_remove")
     ;;; IP address to be removed
-    (param $ip $addr_ip)
+    (param $ip (@witx const_pointer $addr_ip))
     (result $error (expected (error $errno)))
   )
 
@@ -114,22 +114,22 @@
   ;;; Adds a default gateway to the port
   (@interface func (export "gateway_set")
     ;;; IP address of the default gateway
-    (param $ip $addr_ip)
+    (param $ip (@witx const_pointer $addr_ip))
     (result $error (expected (error $errno)))
   )
 
   ;;; Adds a new route to the local port
   (@interface func (export "route_add")
-    (param $cidr $addr_cidr)
-    (param $via_router $addr_ip)
-    (param $preferred_until $option_timestamp)
-    (param $expires_at $option_timestamp)
+    (param $cidr (@witx const_pointer $addr_cidr))
+    (param $via_router (@witx const_pointer $addr_ip))
+    (param $preferred_until (@witx const_pointer $option_timestamp))
+    (param $expires_at (@witx const_pointer $option_timestamp))
     (result $error (expected (error $errno)))
   )
 
   ;;; Removes an existing route from the local port
   (@interface func (export "route_remove")
-    (param $cidr $addr_ip)
+    (param $cidr (@witx const_pointer $addr_ip))
     (result $error (expected (error $errno)))
   )
 
@@ -232,7 +232,7 @@
     ;;; Socket descriptor
     (param $fd $fd)
     ;;; Value to set the linger to
-    (param $linger $option_timestamp)
+    (param $linger (@witx const_pointer $option_timestamp))
     (result $error (expected (error $errno)))
   )
 
@@ -300,9 +300,9 @@
     ;;; Socket descriptor
     (param $fd $fd)
     ;;; Multicast group to joined
-    (param $multiaddr $addr_ip4)
+    (param $multiaddr (@witx const_pointer $addr_ip4))
     ;;; Interface that will join
-    (param $interface $addr_ip4)
+    (param $interface (@witx const_pointer $addr_ip4))
     (result $error (expected (error $errno)))
   )
 
@@ -311,9 +311,9 @@
     ;;; Socket descriptor
     (param $fd $fd)
     ;;; Multicast group to leave
-    (param $multiaddr $addr_ip4)
+    (param $multiaddr (@witx const_pointer $addr_ip4))
     ;;; Interface that will left
-    (param $interface $addr_ip4)
+    (param $interface (@witx const_pointer $addr_ip4))
     (result $error (expected (error $errno)))
   )
 
@@ -322,7 +322,7 @@
     ;;; Socket descriptor
     (param $fd $fd)
     ;;; Multicast group to joined
-    (param $multiaddr $addr_ip6)
+    (param $multiaddr (@witx const_pointer $addr_ip6))
     ;;; Interface that will join
     (param $interface u32)
     (result $error (expected (error $errno)))
@@ -333,7 +333,7 @@
     ;;; Socket descriptor
     (param $fd $fd)
     ;;; Multicast group to leave
-    (param $multiaddr $addr_ip6)
+    (param $multiaddr (@witx const_pointer $addr_ip6))
     ;;; Interface that will left
     (param $interface u32)
     (result $error (expected (error $errno)))
@@ -381,7 +381,7 @@
     ;;; File descriptor of the socket to be bind
     (param $fd $fd)
     ;;; Address to bind the socket to
-    (param $addr $addr_port)
+    (param $addr (@witx const_pointer $addr_port))
     (result $error (expected (error $errno)))
   )
 
@@ -420,7 +420,7 @@
     ;;; Socket descriptor
     (param $fd $fd)
     ;;; Address of the socket to connect to
-    (param $addr $addr_port)
+    (param $addr (@witx const_pointer $addr_port))
     (result $error (expected (error $errno)))
   )
 

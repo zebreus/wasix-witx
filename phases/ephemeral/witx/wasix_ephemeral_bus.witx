@@ -77,7 +77,7 @@
     ;;; Handle of the bus process to invoke the call within
     (param $bid $bid)
     ;;; Optional parent bus call that this is related to
-    (param $parent $option_cid)
+    (param $parent (@witx const_pointer $option_cid))
     ;;; Causes the call handle to remain open even when A
     ;;; reply is received. It is then the  callers responsibility
     ;;; to invoke 'bus_drop' when they are finished with the call
@@ -141,7 +141,7 @@
   ;;; now listening for bus calls on a particular topic
   (@interface func (export "listen")
     ;;; Optional parent bus call that this is related to
-    (param $parent $option_cid)
+    (param $parent (@witx const_pointer $option_cid))
     ;;; Topic that describes the process will listen forcalls on
     (param $topic string)
     (result $error (expected (error $bus_error)))
@@ -152,7 +152,7 @@
   (@interface func (export "poll")
     ;;; Handle of the bus process to poll for new events
     ;;; (if no process is supplied then it polls for the current process)
-    (param $bid $option_bid)
+    (param $bid (@witx const_pointer $option_bid))
     ;;; Timeout before the poll returns, if one passed 0
     ;;; as the timeout then this call is non blocking.
     (param $timeout $timestamp)
@@ -167,7 +167,7 @@
   (@interface func (export "poll_data")
     ;;; Handle of the bus process to poll for new events
     ;;; (if no process is supplied then it polls for the current process)
-    (param $bid $option_bid)
+    (param $bid (@witx const_pointer $option_bid))
     ;;; Timeout before the poll returns, if one passed 0
     ;;; as the timeout then this call is non blocking.
     (param $timeout $timestamp)
