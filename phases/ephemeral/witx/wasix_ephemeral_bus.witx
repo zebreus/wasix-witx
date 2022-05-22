@@ -1,0 +1,183 @@
+;; WASI BUS.
+;;
+;; This is a `witx` file. See [here](https://github.com/WebAssembly/WASI/tree/master/docs/witx.md)
+;; for an explanation of what that means.
+
+(use "typenames.witx")
+
+(module $wasi_ephemeral_bus
+  ;;; Linear memory to be accessed by WASI functions that need it.
+  (import "memory" (memory))
+
+  ;;; Spawns a new bus process for a particular web WebAssembly
+  ;;; binary that is referenced by its process name.
+  (@interface func (export "spawn_local")
+    ;;; Name of the process to be spawned
+    (param $name string)
+    ;;; Indicates if the process will chroot or not
+    (param $chroot $bool)
+    ;;; List of the arguments to pass the process
+    ;;; (entries are separated by line feeds)
+    (param $args string)
+    ;;; List of the preopens for this process
+    ;;; (entries are separated by line feeds)
+    (param $preopen string)
+    ;;; How will stdin be handled
+    (param $stdin $stdio_mode)
+    ;;; How will stdout be handled
+    (param $stdout $stdio_mode)
+    ;;; How will stderr be handled
+    (param $stderr $stdio_mode)
+    ;;; Working directory where this process should run
+    ;;; (passing '.' will use the current directory)
+    (param $working_dir string)
+    ;;; Returns a bus process id that can be used to invoke calls
+    (result $error (expected $bus_handles (error $bus_error)))
+  )
+
+  ;;; Spawns a new bus process for a particular web WebAssembly
+  ;;; binary that is referenced by its process name on a remote instance
+  (@interface func (export "spawn_remote")
+    ;;; Name of the process to be spawned
+    (param $name string)
+    ;;; Indicates if the process will chroot or not
+    (param $chroot $bool)
+    ;;; List of the arguments to pass the process
+    ;;; (entries are separated by line feeds)
+    (param $args string)
+    ;;; List of the preopens for this process
+    ;;; (entries are separated by line feeds)
+    (param $preopen string)
+    ;;; Working directory where this process should run
+    ;;; (passing '.' will use the current directory)
+    (param $working_dir string)
+    ;;; How will stdin be handled
+    (param $stdin $stdio_mode)
+    ;;; How will stdout be handled
+    (param $stdout $stdio_mode)
+    ;;; How will stderr be handled
+    (param $stderr $stdio_mode)
+    ;;; Instance identifier where this process will be spawned
+    (param $instance string)
+    ;;; Acceess token used to authenticate with the instance
+    (param $token string)
+    ;;; Returns a bus process id that can be used to invoke calls
+    (result $error (expected $bus_handles (error $bus_error)))
+  )
+
+  ;;; Closes a bus process and releases all associated resources
+  (@interface func (export "close")
+    ;;; Handle of the bus process handle to be closed
+    (param $bid $bid)
+    (result $error (expected (error $bus_error)))
+  )
+
+  ;;; Invokes a call within a running bus process.
+  (@interface func (export "invoke")
+    ;;; Handle of the bus process to invoke the call within
+    (param $bid $bid)
+    ;;; Optional parent bus call that this is related to
+    (param $parent $option_cid)
+    ;;; Causes the call handle to remain open even when A
+    ;;; reply is received. It is then the  callers responsibility
+    ;;; to invoke 'bus_drop' when they are finished with the call
+    (param $keep_alive $bool)
+    ;;; Topic that describes the type of call to made
+    (param $topic string)
+    ;;; Format of the data pushed onto the bus
+    (param $format $bus_data_format)
+    ;;; The buffer where data to be transmitted is stored
+    (param $buf $buf_array)
+    (result $error (expected $cid (error $bus_error)))
+  )
+
+  ;;; Causes a fault on a particular call that was made
+  ;;; to this process from another process; where 'bid'
+  ;;; is the callering process context.
+  (@interface func (export "fault")
+    ;;; Handle of the call to raise a fault on
+    (param $cid $cid)
+    ;;; Fault to be raised on the bus
+    (param $fault $bus_error)
+    (result $error (expected (error $bus_error)))
+  )
+
+  ;;; Closes a bus call based on its bus call handle
+  (@interface func (export "drop")
+    ;;; Handle of the bus call handle to be dropped
+    (param $cid $cid)
+    (result $error (expected (error $bus_error)))
+  )
+
+  ;;; Replies to a call that was made to this process
+  ;;; from another process; where 'cid' is the call context.
+  ;;; This will may also drop the handle and release any
+  ;;; associated resources (if keepalive is not set)
+  (@interface func (export "reply")
+    ;;; Handle of the call to send a reply on
+    (param $cid $cid)
+    ;;; Format of the data pushed onto the bus
+    (param $format $bus_data_format)
+    ;;; The buffer where data to be transmitted is stored
+    (param $buf $buf_array)
+    (result $error (expected (error $bus_error)))
+  )
+
+  ;;; Invokes a callback within the calling process against
+  ;;; a particular bus call represented by 'cid'.
+  (@interface func (export "callback")
+    ;;; Handle of the call where a callback will be send
+    (param $cid $cid)
+    ;;; Topic that describes the type of callback
+    (param $topic string)
+    ;;; Format of the data pushed onto the bus
+    (param $format $bus_data_format)
+    ;;; The buffer where data to be transmitted is stored
+    (param $buf $buf_array)
+    (result $error (expected (error $bus_error)))
+  )
+
+  ;;; Tells the operating system that this process is
+  ;;; now listening for bus calls on a particular topic
+  (@interface func (export "listen")
+    ;;; Optional parent bus call that this is related to
+    (param $parent $option_cid)
+    ;;; Topic that describes the process will listen forcalls on
+    (param $topic string)
+    (result $error (expected (error $bus_error)))
+  )
+
+  ;;; Polls for any outstanding events from a particular
+  ;;; bus process by its handle
+  (@interface func (export "poll")
+    ;;; Handle of the bus process to poll for new events
+    ;;; (if no process is supplied then it polls for the current process)
+    (param $bid $option_bid)
+    ;;; Timeout before the poll returns, if one passed 0
+    ;;; as the timeout then this call is non blocking.
+    (param $timeout $timestamp)
+    ;;; An events buffer that will hold any received bus events
+    (param $events (@witx pointer $bus_event))
+    (param $nevents $size)
+    ;;; Returns the number of events that have occured
+    (result $error (expected $size (error $bus_error)))
+  )
+
+  ;;; Receives the next event data from the bus
+  (@interface func (export "poll_data")
+    ;;; Handle of the bus process to poll for new events
+    ;;; (if no process is supplied then it polls for the current process)
+    (param $bid $option_bid)
+    ;;; Timeout before the poll returns, if one passed 0
+    ;;; as the timeout then this call is non blocking.
+    (param $timeout $timestamp)
+    ;;; The topic that describes the event that happened
+    (param $topic (@witx pointer u8))
+    (param $topic_len $pointersize)
+    ;;; The buffer where event data is stored
+    (param $buf (@witx pointer u8))
+    (param $buf_len $pointersize)
+    ;;; Returns the number of events that have occured
+    (result $error (expected $bus_event_data (error $bus_error)))
+  )
+)

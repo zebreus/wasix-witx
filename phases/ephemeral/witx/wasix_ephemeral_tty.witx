@@ -1,0 +1,23 @@
+;; WASI TTY.
+;;
+;; This is a `witx` file. See [here](https://github.com/WebAssembly/WASI/tree/master/docs/witx.md)
+;; for an explanation of what that means.
+
+(use "typenames.witx")
+
+(module $wasi_ephemeral_tty
+  ;;; Linear memory to be accessed by WASI functions that need it.
+  (import "memory" (memory))
+
+  ;;; Retrieves the current state of the TTY
+  (@interface func (export "get")
+    (param $state (@witx pointer $tty))
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Updates the properties of the rect
+  (@interface func (export "set")
+    (param $state (@witx pointer $tty))
+    (result $error (expected (error $errno)))
+  )
+)

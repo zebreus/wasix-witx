@@ -5,8 +5,11 @@
 ;; This is a `witx` file. See [here](https://github.com/WebAssembly/WASI/tree/master/docs/witx.md)
 ;; for an explanation of what that means.
 
-;;; An array size.
-(typename $size (@witx u64))
+;;; Represents the length of a piece of data referenced by a pointer
+(typename $pointersize u64)
+
+;;; Represents a number of items
+(typename $size u32)
 
 ;;; Non-negative file size or length of a region within a file.
 (typename $filesize u64)
@@ -25,6 +28,10 @@
     ;;; clock jumps. The epoch of this clock is undefined. The absolute time
     ;;; value of this clock therefore has no meaning.
     $monotonic
+    ;;; The CPU-time clock associated with the current process.
+    $process_cputime_id
+    ;;; The CPU-time clock associated with the current thread.
+    $thread_cputime_id
   )
 )
 
@@ -39,7 +46,7 @@
     ;;; Argument list too long.
     $2big
     ;;; Permission denied.
-    $access
+    $acces
     ;;; Address in use.
     $addrinuse
     ;;; Address not available.
@@ -225,7 +232,7 @@
     $fd_allocate
     ;;; The right to invoke `path_create_directory`.
     $path_create_directory
-    ;;; If `path_open` is set, the right to invoke `path_open` with `oflags::create`.
+    ;;; If `path_open` is set, the right to invoke `path_open` with `oflags::creat`.
     $path_create_file
     ;;; The right to invoke `path_link` with the file descriptor as the
     ;;; source directory.
@@ -245,26 +252,17 @@
     $path_rename_target
     ;;; The right to invoke `path_filestat_get`.
     $path_filestat_get
-    ;;; The right to change a file's size.
+    ;;; The right to change a file's size (there is no `path_filestat_set_size`).
     ;;; If `path_open` is set, includes the right to invoke `path_open` with `oflags::trunc`.
-    ;;; Note: there is no function named `path_filestat_set_size`. This follows POSIX design,
-    ;;; which only has `ftruncate` and does not provide `ftruncateat`.
-    ;;; While such function would be desirable from the API design perspective, there are virtually
-    ;;; no use cases for it since no code written for POSIX systems would use it.
-    ;;; Moreover, implementing it would require multiple syscalls, leading to inferior performance.
     $path_filestat_set_size
     ;;; The right to invoke `path_filestat_set_times`.
     $path_filestat_set_times
-    ;;; The right to invoke `path_permissions_set`.
-    $path_permissions_set
     ;;; The right to invoke `fd_filestat_get`.
     $fd_filestat_get
     ;;; The right to invoke `fd_filestat_set_size`.
     $fd_filestat_set_size
     ;;; The right to invoke `fd_filestat_set_times`.
     $fd_filestat_set_times
-    ;;; The right to invoke `fd_permissions_set`.
-    $fd_permissions_set
     ;;; The right to invoke `path_symlink`.
     $path_symlink
     ;;; The right to invoke `path_remove_directory`.
@@ -276,11 +274,88 @@
     $poll_fd_readwrite
     ;;; The right to invoke `sock_shutdown`.
     $sock_shutdown
+    ;;; Connect to an address
+    $sock_connect
+    ;;; Listen for incoming connection on an address
+    $sock_listen
+    ;;; Bind an address to a socket
+    $sock_bind
+    ;;; Accept incoming connection
+    $sock_accept
+    ;;; Receive data on a socket
+    $sock_recv
+    ;;; Send data on a socket
+    $sock_send
+    ;;; Retrieve locally bound address on a socket
+    $sock_addr_local
+    ;;; Retrieve remote address on a socket
+    $sock_addr_remote
+    ;;; Receive datagram on a socket
+    $sock_recv_from
+    ;;; Send datagram on a socket
+    $sock_send_to
+  )
+)
+
+(typename $buf_array (list u8))
+
+;;; Option type
+(typename $option
+  (enum (@witx tag u8)
+    $none
+    $some
+  )
+)
+
+;;; Represents an optional timestamp
+(typename $option_timestamp
+  (union
+    (@witx tag $option)
+    u8
+    $timestamp
   )
 )
 
 ;;; A file descriptor handle.
 (typename $fd (handle))
+
+;;; A process descriptor handle.
+(typename $pid (handle))
+
+;;; A thread handle
+(typename $tid (handle))
+
+;;; A bus process handle
+(typename $bid (handle))
+
+;;; Represents an optional bus process
+(typename $option_bid
+  (union
+    (@witx tag $option)
+    u8
+    $bid
+  )
+)
+
+;;; A bus call handle
+(typename $cid (handle))
+
+;;; Represents an optional call handle
+(typename $option_cid
+  (union
+    (@witx tag $option)
+    u8
+    $cid
+  )
+)
+
+;;; Bool type
+(typename $bool
+  (enum (@witx tag u8)
+    $false
+    $true
+  )
+)
 
 ;;; A region of memory for scatter/gather reads.
 (typename $iovec
@@ -288,7 +363,7 @@
     ;;; The address of the buffer to be filled.
     (field $buf (@witx pointer u8))
     ;;; The length of the buffer to be filled.
-    (field $buf_len $size)
+    (field $buf_len $pointersize)
   )
 )
 
@@ -298,7 +373,7 @@
     ;;; The address of the buffer to be written.
     (field $buf (@witx const_pointer u8))
     ;;; The length of the buffer to be written.
-    (field $buf_len $size)
+    (field $buf_len $pointersize)
   )
 )
 
@@ -321,12 +396,11 @@
 )
 
 ;;; A reference to the offset of a directory entry.
+;;;
+;;; The value 0 signifies the start of the directory.
 (typename $dircookie u64)
 
-;;; In an `fd_readdir` call, this value signifies the start of the directory.
-(@witx const $dircookie $start 0)
-
-;;; The type for the `dirent::d_namlen` field of `dirent`.
+;;; The type for the `dirent::d_namlen` field of `dirent` struct.
 (typename $dirnamlen u32)
 
 ;;; File serial number that is unique within its file system.
@@ -351,8 +425,6 @@
     $socket_stream
     ;;; The file refers to a symbolic link inode.
     $symbolic_link
-    ;;; The file descriptor or file refers to a FIFO.
-    $fifo
   )
 )
 
@@ -363,10 +435,10 @@
     (field $d_next $dircookie)
     ;;; The serial number of the file referred to by this directory entry.
     (field $d_ino $inode)
-    ;;; The type of the file referred to by this directory entry.
-    (field $d_type $filetype)
     ;;; The length of the name of the directory entry.
     (field $d_namlen $dirnamlen)
+    ;;; The type of the file referred to by this directory entry.
+    (field $d_type $filetype)
   )
 )
 
@@ -451,7 +523,7 @@
 (typename $oflags
   (flags (@witx repr u16)
     ;;; Create file if it does not exist.
-    $create
+    $creat
     ;;; Fail if not a directory.
     $directory
     ;;; Fail if file already exists.
@@ -464,37 +536,6 @@
 ;;; Number of hard links to an inode.
 (typename $linkcount u64)
 
-;;; File permissions. This represents the permissions associated with a
-;;; file in a filesystem, and don't fully reflect all the conditions
-;;; which determine whether a given WASI program can access the file.
-(typename $permissions
-  (flags (@witx repr u8)
-    ;;; For files, permission to read the file.
-    ;;; For directories, permission to do `readdir` and access files
-    ;;; within the directory.
-    ;;;
-    ;;; Note: This is similar to the read bit being set on files, and the
-    ;;; read *and* execute bits being set on directories, in POSIX.
-    $read
-
-    ;;; For files, permission to mutate the file.
-    ;;; For directories, permission to create, remove, and rename items
-    ;;; within the directory.
-    $write
-
-    ;;; For files, permission to "execute" the file, using whatever
-    ;;; concept of "executing" the host filesystem has.
-    ;;; This flag is not valid for directories.
-    $execute
-
-    ;;; For filesystems which have a concept of multiple "users", this flag
-    ;;; indicates that the file is only accessible by the effective "user"
-    ;;; that the WASI store uses to access the filesystem, and inaccessible
-    ;;; to other "users".
-    $private
-  )
-)
-
 ;;; File attributes.
 (typename $filestat
   (record
@@ -504,8 +545,6 @@
     (field $ino $inode)
     ;;; File type.
     (field $filetype $filetype)
-    ;;; File permissions.
-    (field $permissions $permissions)
     ;;; Number of hard links to the file.
     (field $nlink $linkcount)
     ;;; For regular files, the file size in bytes. For symbolic links, the length in bytes of the pathname contained in the symbolic link.
@@ -529,10 +568,10 @@
     ;;; The time value of clock `subscription_clock::id` has
     ;;; reached timestamp `subscription_clock::timeout`.
     $clock
-    ;;; File descriptor `subscription_fd_readwrite::fd` has data
+    ;;; File descriptor `subscription_fd_readwrite::file_descriptor` has data
     ;;; available for reading. This event always triggers for regular files.
     $fd_read
-    ;;; File descriptor `subscription_fd_readwrite::fd` has capacity
+    ;;; File descriptor `subscription_fd_readwrite::file_descriptor` has capacity
     ;;; available for writing. This event always triggers for regular files.
     $fd_write
   )
@@ -558,15 +597,6 @@
   )
 )
 
-;;; The contents of an `event`.
-(typename $event_u
-  (variant (@witx tag $eventtype)
-    (case $fd_read $event_fd_readwrite)
-    (case $fd_write $event_fd_readwrite)
-    (case $clock)
-  )
-)
-
 ;;; An event that occurred.
 (typename $event
   (record
@@ -574,8 +604,11 @@
     (field $userdata $userdata)
     ;;; If non-zero, an error that occurred while processing the subscription request.
     (field $error $errno)
-    ;;; The type of the event that occurred, and the contents of the event
-    (field $u $event_u)
+    ;;; The type of event that occured
+    (field $type $eventtype)
+    ;;; The contents of the event, if it is an `eventtype::fd_read` or
+    ;;; `eventtype::fd_write`. `eventtype::clock` events ignore this field.
+    (field $fd_readwrite $event_fd_readwrite)
   )
 )
 
@@ -612,13 +645,14 @@
 (typename $subscription_fd_readwrite
   (record
     ;;; The file descriptor on which to wait for it to become ready for reading or writing.
-    (field $fd $fd)
+    (field $file_descriptor $fd)
   )
 )
 
 ;;; The contents of a `subscription`.
 (typename $subscription_u
-  (union (@witx tag $eventtype)
+  (union
+    (@witx tag $eventtype)
     $subscription_clock
     $subscription_fd_readwrite
     $subscription_fd_readwrite
@@ -631,23 +665,298 @@
     ;;; User-provided value that is attached to the subscription in the
     ;;; implementation and returned through `event::userdata`.
     (field $userdata $userdata)
-    ;;; The type of the event to which to subscribe, and the contents of the subscription.
+    ;;; The type of the event to which to subscribe, and its contents
     (field $u $subscription_u)
   )
 )
 
-;;; Exit code generated by a program when exiting.
-(typename $exitcode u8)
+;;; Exit code generated by a process when exiting.
+(typename $exitcode u32)
 
-;;; Indicate the program exited successfully.
-;;;
-;;; Note: This is similar to `EXIT_SUCCESS` in POSIX.
-(@witx const $exitcode $success 0)
+;;; Rect that represents the TTY.
+(typename $tty
+  (record
+    ;;; Number of columns
+    (field $cols u32)
+    ;;; Number of rows
+    (field $rows u32)
+    ;;; Width of the screen in pixels
+    (field $width u32)
+    ;;; Height of the screen in pixels
+    (field $height u32)
+    ;;; Indicates if stdin is a TTY
+    (field $stdin_tty $bool)
+    ;;; Indicates if stdout is a TTY
+    (field $stdout_tty $bool)
+    ;;; Indicates if stderr is a TTY
+    (field $stderr_tty $bool)
+    ;;; When enabled the TTY will echo input to console
+    (field $echo $bool)
+    ;;; When enabled buffers the input until the return key is pressed
+    (field $line_buffered $bool)
+  )
+)
 
-;;; Indicate the program exited unsuccessfully.
-;;;
-;;; Note: This is similar to `EXIT_FAILURE` in POSIX.
-(@witx const $exitcode $failure 1)
+;;; Fault codes that can be raised on a bus session.
+(typename $bus_error
+  (enum (@witx tag u32)
+    ;;; operation successful
+    $success
+    ;;; there was an error while serializing the request or response.
+    $serialization
+    ;;; there was an error while deserializing the request or response.
+    $deserialization
+    ;;; the specified WAPM module does not exist.
+    $invalid_wapm
+    ;;; failed to fetch the WAPM module.
+    $fetch_wapm
+    ;;; failed to compile the WAPM module.
+    $compile_error
+    ;;; the ABI is invalid for cross module calls.
+    $invalid_abi
+    ;;; the request has been aborted.
+    $aborted
+    ;;; the handle is not valid.
+    $invalid_handle
+    ;; the topic name is invalid
+    $invalid_topic
+    ;;; some mandatory callbacks were not registered.
+    $missing_callback
+    ;;; this operation is not supported on this platform.
+    $unsupported
+    ;;; invalid input was supplied in the call resulting in a bad request.
+    $bad_request
+    ;;; access denied
+    $access_denied
+    ;;; an internal failure has occured
+    $internal_failure
+    ;;; memory allocation has failed
+    $memory_allocation_failed
+    ;;; bus invocation has failed
+    $bus_invocation_failed
+    ;;; result already consumed
+    $already_consumed
+    ;;; memory access violation
+    $memory_access_violation
+    ;;; unknown error
+    $unknown_error
+  )
+)
+
+;;; Type of stdio mode to run for the sub process
+(typename $stdio_mode
+  (enum (@witx tag u8)
+    ;;; The stdio will be piped
+    $piped
+    ;;; The stdio will inherit from its parent
+    $inherit
+    ;;; The stdio will be dumped to null
+    $null
+    ;;; The stdio will be written to the log file
+    $log
+  )
+)
+
+;;; Bus process handles.
+(typename $bus_handles
+  (record
+    ;;; Handle of the bus process
+    (field $handle $bid)
+    ;;; File handle for STDIN
+    (field $stdin $fd)
+    ;;; File handle for STDOUT
+    (field $stdout $fd)
+    ;;; File handle for STDERR
+    (field $stderr $fd)
+  )
+)
+
+;;; Bus process event.
+(typename $bus_event_exit
+  (record
+    ;;; Exit code of the bus process that has exited
+    (field $rval $exitcode)
+  )
+)
+
+;;; Type of a subscription to an event or its occurrence.
+(typename $bus_data_type
+  (enum (@witx tag u8)
+    ;;; The bus process has been invoked by a caller
+    $call
+    ;;; Callback with some out-of-band data to the caller
+    $callback
+    ;;; Call within the bus process has returned
+    $reply
+  )
+)
+
+;;; Serialization format of data on the bus
+(typename $bus_data_format
+  (enum (@witx tag u8)
+    ;;; Raw binary data
+    $raw
+    ;;; Uses the bincode serializer
+    $bincode
+    ;;; Uses the message pack serializer
+    $message_pack
+    ;;; JSON
+    $json
+    ;;; YAML
+    $yaml
+    ;;; XML
+    $xml
+  )
+)
+
+;;; Bus data for a callback, call or reply event.
+(typename $bus_event_data
+  (record
+    ;;; Type of event data that is held here
+    (field $ty $bus_data_type)
+    ;;; Format of the data on the bus
+    (field $format $bus_data_format)
+    ;;; Handle of the call that has made a callback
+    (field $cid $cid)
+    ;;; The topic that describes the event that happened
+    (field $topic_len $pointersize)
+    ;;; The buffer where event data is stored
+    (field $buf_len $pointersize)
+  )
+)
+
+;;; Bus process reply event.
+(typename $bus_event_fault
+  (record
+    ;;; Handle of the call where this event occurs for
+    (field $cid $cid)    
+    ;;; Fault that was raised against this call
+    (field $fault $bus_error)
+  )
+)
+
+;;; Type of a subscription to an event or its occurrence.
+(typename $bus_event_type
+  (enum (@witx tag u8)
+    ;;; The bus process has exited
+    $exit
+    ;;; The bus data recevied for a specific event
+    $data
+    ;;; Fault has occured on one of the calls
+    $fault
+  )
+)
+
+;;; The contents of a `subscription`.
+(typename $bus_event
+  (union
+    (@witx tag $bus_event_type)
+    $bus_event_exit
+    $bus_event_data
+    $bus_event_fault
+  )
+)
+
+(typename $bus_event_array (list $bus_event))
+
+;;; Signal condition.
+(typename $signal
+  (enum (@witx tag u8)
+    ;;; No signal. Note that POSIX has special semantics for `kill(pid, 0)`,
+    ;;; so this value is reserved.
+    $none
+    ;;; Hangup.
+    ;;; Action: Terminates the process.
+    $hup
+    ;;; Terminate interrupt signal.
+    ;;; Action: Terminates the process.
+    $int
+    ;;; Terminal quit signal.
+    ;;; Action: Terminates the process.
+    $quit
+    ;;; Illegal instruction.
+    ;;; Action: Terminates the process.
+    $ill
+    ;;; Trace/breakpoint trap.
+    ;;; Action: Terminates the process.
+    $trap
+    ;;; Process abort signal.
+    ;;; Action: Terminates the process.
+    $abrt
+    ;;; Access to an undefined portion of a memory object.
+    ;;; Action: Terminates the process.
+    $bus
+    ;;; Erroneous arithmetic operation.
+    ;;; Action: Terminates the process.
+    $fpe
+    ;;; Kill.
+    ;;; Action: Terminates the process.
+    $kill
+    ;;; User-defined signal 1.
+    ;;; Action: Terminates the process.
+    $usr1
+    ;;; Invalid memory reference.
+    ;;; Action: Terminates the process.
+    $segv
+    ;;; User-defined signal 2.
+    ;;; Action: Terminates the process.
+    $usr2
+    ;;; Write on a pipe with no one to read it.
+    ;;; Action: Ignored.
+    $pipe
+    ;;; Alarm clock.
+    ;;; Action: Terminates the process.
+    $alrm
+    ;;; Termination signal.
+    ;;; Action: Terminates the process.
+    $term
+    ;;; Child process terminated, stopped, or continued.
+    ;;; Action: Ignored.
+    $chld
+    ;;; Continue executing, if stopped.
+    ;;; Action: Continues executing, if stopped.
+    $cont
+    ;;; Stop executing.
+    ;;; Action: Stops executing.
+    $stop
+    ;;; Terminal stop signal.
+    ;;; Action: Stops executing.
+    $tstp
+    ;;; Background process attempting read.
+    ;;; Action: Stops executing.
+    $ttin
+    ;;; Background process attempting write.
+    ;;; Action: Stops executing.
+    $ttou
+    ;;; High bandwidth data is available at a socket.
+    ;;; Action: Ignored.
+    $urg
+    ;;; CPU time limit exceeded.
+    ;;; Action: Terminates the process.
+    $xcpu
+    ;;; File size limit exceeded.
+    ;;; Action: Terminates the process.
+    $xfsz
+    ;;; Virtual timer expired.
+    ;;; Action: Terminates the process.
+    $vtalrm
+    ;;; Profiling timer expired.
+    ;;; Action: Terminates the process.
+    $prof
+    ;;; Window changed.
+    ;;; Action: Ignored.
+    $winch
+    ;;; I/O possible.
+    ;;; Action: Terminates the process.
+    $poll
+    ;;; Power failure.
+    ;;; Action: Terminates the process.
+    $pwr
+    ;;; Bad system call.
+    ;;; Action: Terminates the process.
+    $sys
+  )
+)
 
 ;;; Flags provided to `sock_recv`.
 (typename $riflags
@@ -667,6 +976,214 @@
   )
 )
 
+;;; Socket type
+(typename $sock_type
+  (enum (@witx tag u8)
+    ;;; The file descriptor or file refers to a datagram socket.
+    $socket_dgram
+    ;;; The file descriptor or file refers to a byte-stream socket.
+    $socket_stream
+  )
+)
+
+;;; Socket status
+(typename $sock_status
+  (enum (@witx tag u8)
+    ;;; The socket is still opening
+    $opening
+    ;;; The socket has fully opened
+    $opened
+    ;;; The socket has closed
+    $closed
+    ;;; The socket has failed
+    $failed
+  )
+)
+
+;;; Socket option
+(typename $sock_option
+  (enum (@witx tag u8)
+    ;;; Reuse Port
+    $reuse_port
+    ;;; Reuse Address
+    $reuse_addr
+    ;;; No delay
+    $nodelay
+    ;;; Only accept IPv6
+    $only_v6
+    ;;; Broadcast
+    $broadcast
+    ;;; Multicast Loop IPv4
+    $multicast_loop_v4
+    ;;; Multicast Loop IPv6
+    $multicast_loop_v6
+    ;;; Promiscuous
+    $promiscuous
+  )
+)
+
+;;; Level of security to allow to the streaming connection
+(typename $stream_security
+  (flags (@witx repr u8)
+    ;;; Unencrypted
+    $unencrypted
+    ;;; Any encryption
+    $any_encryption
+    ;;; Classic encryption
+    $classic_encryption
+    ;;; Double encryption
+    $double_encryption
+  )
+)
+
+;;; Hardware address (MAC)
+(typename $hardware_address
+  (record
+    (field $n0 u8)
+    (field $n1 u8)
+    (field $n2 u8)
+    (field $h0 u8)
+    (field $h1 u8)
+    (field $h2 u8)
+  )
+)
+
+;;; IP port number
+(typename $ip_port u16)
+
+;;; Address family
+(typename $address_family
+  (enum (@witx tag u8)
+    ;;; IP v4
+    $inet4
+    ;;; IP v6
+    $inet6
+  )
+)
+
+;;; An IPv4 address is a 32-bit number that uniquely identifies a network interface on a machine.
+(typename $addr_ip4
+  (record
+    (field $n0 u8)
+    (field $n1 u8)
+    (field $h0 u8)
+    (field $h1 u8)
+  )
+)
+
+;;; An IPv4 address with a port number
+(typename $addr_ip4_port
+  (record
+    (field $addr $addr_ip4)
+    (field $port $ip_port)
+  )
+)
+
+;;; An IPv4 address CIDR
+(typename $addr_ip4_cidr
+  (record
+    (field $addr $addr_ip4)
+    (field $prefix u8)
+  )
+)
+
+;;; An IPv6 address is a 128-bit number that uniquely identifies a network interface on a machine.
+(typename $addr_ip6
+  (record
+    (field $n0 u16)
+    (field $n1 u16)
+    (field $n2 u16)
+    (field $n3 u16)
+    (field $h0 u16)
+    (field $h1 u16)
+    (field $h2 u16)
+    (field $h3 u16)
+  )
+)
+
+;;; An IPv6 address with a port number
+(typename $addr_ip6_port
+  (record
+    (field $addr $addr_ip6)
+    (field $port $ip_port)
+  )
+)
+
+;;; An IPv6 address CIDR
+(typename $addr_ip6_cidr
+  (record
+    (field $addr $addr_ip6)
+    (field $prefix u8)
+  )
+)
+
+;;; Union of all possible addresses type
+(typename $addr_ip
+  (union
+    (@witx tag $address_family)
+    $addr_ip4
+    $addr_ip6
+  )
+)
+
+(typename $addr_ip_array (list $addr_ip))
+
+;;; Union that makes a generic IP address and port
+(typename $addr_port
+  (union
+    (@witx tag $address_family)
+    $addr_ip4_port
+    $addr_ip6_port
+  )
+)
+
+(typename $addr_port_array (list $addr_port))
+
+;;; Union that makes a generic IP address and prefix. a.k.a. CIDR
+(typename $addr_cidr
+  (union
+    (@witx tag $address_family)
+    $addr_ip4_cidr
+    $addr_ip6_cidr
+  )
+)
+
+(typename $addr_cidr_array (list $addr_cidr))
+
+(typename $route
+  (record
+    (field $cidr $addr_cidr)
+    (field $via_router $addr_ip)
+    (field $preferred_until $option_timestamp)
+    (field $expires_at $option_timestamp)
+  )
+)
+
+;;; HTTP request handles used to send and receive data to the server
+(typename $http_handles
+  (record
+    ;;; File handle used to write the request data
+    (field $request $fd)
+    ;;; File handle used to receive the response data
+    (field $response $fd)
+    ;;; File handle used to read the response headers
+    ;;; (entries are separated by line feeds)
+    (field $headers $fd)
+  )
+)
+
+;;; HTTP response status
+(typename $http_status
+  (record
+    (field $ok $bool)
+    (field $redirected $bool)
+    ;;; Size of the response
+    (field $size $filesize)
+    ;;; HTTP status code for this response
+    (field $status u16)
+  )
+)
+
 ;;; Flags provided to `sock_send`. As there are currently no flags
 ;;; defined, it must be set to zero.
 (typename $siflags u16)
@@ -681,6 +1198,20 @@
   )
 )
 
+;;; Describes the type of timeout what will be changed
+(typename $timeout_type
+  (flags (@witx repr u8)
+    ;;; Read operation timeout
+    $read
+    ;;; Write operation timeout
+    $write
+    ;;; Connections to other sockets
+    $connect
+    ;;; Accept connection timeout
+    $accept
+  )
+)
+
 ;;; Identifiers for preopened capabilities.
 (typename $preopentype
   (enum (@witx tag u8)
@@ -689,18 +1220,17 @@
   )
 )
 
-;;; The contents of a `prestat` when its type is `preopentype::dir`.
+;;; The contents of a $prestat when type is `preopentype::dir`.
 (typename $prestat_dir
   (record
     ;;; The length of the directory name for use with `fd_prestat_dir_name`.
-    (field $pr_name_len $size)
+    (field $pr_name_len u32)
   )
 )
 
 ;;; Information about a pre-opened capability.
 (typename $prestat
   (union (@witx tag $preopentype)
-    ;;; When type is `preopentype::dir`:
     $prestat_dir
   )
 )

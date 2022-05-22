@@ -1,0 +1,71 @@
+;; WASI Threading.
+;;
+;; This is a `witx` file. See [here](https://github.com/WebAssembly/WASI/tree/master/docs/witx.md)
+;; for an explanation of what that means.
+
+(use "typenames.witx")
+
+(module $wasi_ephemeral_thread
+  ;;; Linear memory to be accessed by WASI functions that need it.
+  (import "memory" (memory))
+
+  ;;; Creates a new thread by spawning that shares the same
+  ;;; memory address space, file handles and main event loops.
+  ;;; The function referenced by the fork call must be
+  ;;; exported by the web assembly process.
+  (@interface func (export "spawn")
+    ;;; Name of the function that will be invoked as a new thread
+    (param $name string)
+    ;;; User data that will be supplied to the function when its called
+    (param $user_data u64)
+    ;;; Indicates if the function will operate as a reactor or
+    ;;; as a normal thread. Reactors will be repeatable called
+    ;;; whenever IO work is available to be processed.
+    (param $reactor $bool)
+    ;;; Returns the thread index of the newly created thread
+    ;;; (indices always start from zero)
+    (result $error (expected $tid (error $errno)))
+  )
+
+  ;;; Sends the current thread to sleep for a period of time
+  (@interface func (export "sleep")
+    ;;; Amount of time that the thread should sleep
+    (param $duration $timestamp)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Returns the index of the current thread
+  ;;; (threads indices are sequencial from zero)
+  (@interface func (export "id")
+    (result $error (expected $tid (error $errno)))
+  )
+
+  ;;; Joins this thread with another thread, blocking this
+  ;;; one until the other finishes
+  (@interface func (export "join")
+    ;;; Handle of the thread to wait on
+    (param $tid $tid)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Returns the available parallelism which is normally the
+  ;;; number of available cores that can run concurrently
+  (@interface func (export "parallelism")
+    (result $error (expected $size (error $errno)))
+  )
+
+  ;;; Returns the handle of the current process
+  (@interface func (export "getpid")
+    (result $error (expected $pid (error $errno)))
+  )
+
+  ;;; Terminates the current running thread, if this is the last thread then
+  ;;; the process will also exit with the specified exit code. An exit code
+  ;;; of 0 indicates successful termination of the thread. The meanings of
+  ;;; other values is dependent on the environment.
+  (@interface func (export "exit")
+    ;;; The exit code returned by the process.
+    (param $rval $exitcode)
+    (@witx noreturn)
+  )
+)
