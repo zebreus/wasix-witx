@@ -470,7 +470,7 @@ impl InterfaceFunc {
 
                 Type::Record(r) => match r.bitflags_repr() {
                     Some(repr) => params.push(WasmType::from(repr)),
-                    None => params.push(WasmType::I32),
+                    None => params.push(WasmType::I64),
                 },
 
                 Type::Builtin(BuiltinType::S64) | Type::Builtin(BuiltinType::U64 { .. }) => {
