@@ -456,7 +456,8 @@ impl InterfaceFunc {
         for param in self.params.iter() {
             match &**param.tref.type_() {
                 Type::Pointer(_)
-                | Type::ConstPointer(_) => params.push(WasmType::I64),
+                | Type::ConstPointer(_)
+                | Type::Variant(_) => params.push(WasmType::I64),
 
                 Type::Builtin(BuiltinType::S8)
                 | Type::Builtin(BuiltinType::U8 { .. })
@@ -465,8 +466,7 @@ impl InterfaceFunc {
                 | Type::Builtin(BuiltinType::S32)
                 | Type::Builtin(BuiltinType::U32)
                 | Type::Builtin(BuiltinType::Char)
-                | Type::Handle(_)
-                | Type::Variant(_) => params.push(WasmType::I32),
+                | Type::Handle(_) => params.push(WasmType::I32),
 
                 Type::Record(r) => match r.bitflags_repr() {
                     Some(repr) => params.push(WasmType::from(repr)),

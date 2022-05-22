@@ -5,8 +5,11 @@
 ;; This is a `witx` file. See [here](https://github.com/WebAssembly/WASI/tree/master/docs/witx.md)
 ;; for an explanation of what that means.
 
-;;; WASI size types are 64-bits wide by default
-(typename $size usize)
+;;; Represents the length of a piece of data referenced by a pointer
+(typename $pointersize u64)
+
+;;; Represents a number of items
+(typename $count u32)
 
 ;;; Non-negative file size or length of a region within a file.
 (typename $filesize u64)
@@ -37,7 +40,7 @@
 ;;; API; some are used in higher-level library layers, and others are provided
 ;;; merely for alignment with POSIX.
 (typename $errno
-  (enum (@witx tag u16)
+  (enum (@witx tag u32)
     ;;; No error occurred. System call completed successfully.
     $success
     ;;; Argument list too long.
@@ -360,7 +363,7 @@
     ;;; The address of the buffer to be filled.
     (field $buf (@witx pointer u8))
     ;;; The length of the buffer to be filled.
-    (field $buf_len $size)
+    (field $buf_len $pointersize)
   )
 )
 
@@ -370,7 +373,7 @@
     ;;; The address of the buffer to be written.
     (field $buf (@witx const_pointer u8))
     ;;; The length of the buffer to be written.
-    (field $buf_len $size)
+    (field $buf_len $pointersize)
   )
 )
 
@@ -816,9 +819,9 @@
     ;;; Handle of the call that has made a callback
     (field $cid $cid)
     ;;; The topic that describes the event that happened
-    (field $topic_len $size)
+    (field $topic_len $pointersize)
     ;;; The buffer where event data is stored
-    (field $buf_len $size)
+    (field $buf_len $pointersize)
   )
 )
 
@@ -1156,16 +1159,6 @@
   )
 )
 
-;;; Size of the header key and value
-(typename $http_header_sizes
-  (record
-    ;;; Header name length
-    (field $key_len $size)
-    ;;; Header value length
-    (field $val_len $size)
-  )
-)
-
 ;;; HTTP request handles used to send and receive data to the server
 (typename $http_handles
   (record
@@ -1185,7 +1178,7 @@
     (field $ok $bool)
     (field $redirected $bool)
     ;;; Size of the response
-    (field $size $size)
+    (field $size $filesize)
     ;;; HTTP status code for this response
     (field $status u16)
   )
@@ -1231,7 +1224,7 @@
 (typename $prestat_dir
   (record
     ;;; The length of the directory name for use with `fd_prestat_dir_name`.
-    (field $pr_name_len $size)
+    (field $pr_name_len u32)
   )
 )
 
