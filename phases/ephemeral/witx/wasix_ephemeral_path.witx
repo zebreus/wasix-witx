@@ -132,7 +132,7 @@
     (param $buf (@witx pointer (@witx char8)))
     (param $buf_len $size)
     ;;; The number of bytes placed in the buffer.
-    (result $error (expected $size (error $errno)))
+    (result $error (expected $filesize (error $errno)))
   )
 
   ;;; Remove a directory.
