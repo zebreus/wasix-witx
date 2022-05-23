@@ -274,14 +274,14 @@
     $poll_fd_readwrite
     ;;; The right to invoke `sock_shutdown`.
     $sock_shutdown
+    ;;; Accept incoming connection
+    $sock_accept
     ;;; Connect to an address
     $sock_connect
     ;;; Listen for incoming connection on an address
     $sock_listen
     ;;; Bind an address to a socket
     $sock_bind
-    ;;; Accept incoming connection
-    $sock_accept
     ;;; Receive data on a socket
     $sock_recv
     ;;; Send data on a socket
