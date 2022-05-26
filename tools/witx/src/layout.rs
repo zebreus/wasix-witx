@@ -70,8 +70,20 @@ impl Type {
             },
             Type::Variant(s) => s.mem_size_align(),
             Type::Handle(h) => h.mem_size_align(),
-            Type::List { .. } => SizeAlign { size: 16, align: 8 }, // Pointer and Length
-            Type::Pointer { .. } | Type::ConstPointer { .. } => BuiltinType::S64.mem_size_align(),
+            Type::List { .. } => {
+                if crate::is_64bit_arch() {
+                    SizeAlign { size: 16, align: 8 }, // Pointer and Length
+                } else {
+                    SizeAlign { size: 8, align: 4 }, // Pointer and Length
+                }
+            }
+            Type::Pointer { .. } | Type::ConstPointer { .. } => {
+                if crate::is_64bit_arch() {
+                    BuiltinType::S64.mem_size_align()
+                } else {
+                    BuiltinType::S32.mem_size_align()
+                }
+            },
             Type::Builtin(b) => b.mem_size_align(),
         }
     }
