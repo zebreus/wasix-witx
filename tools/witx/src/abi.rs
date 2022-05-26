@@ -127,7 +127,7 @@ def_instruction! {
         /// interface types parameters.
         GetArg { nth: usize } : [0] => [1],
         /// Takes the value off the top of the stack and writes it into linear
-        /// memory. Pushes the address in linear memory as an `i32`.
+        /// memory. Pushes the address in linear memory as an `i32` or 'i64'.
         AddrOf : [1] => [1],
         /// Converts an interface type `char` value to a 32-bit integer
         /// representing the unicode scalar value.
@@ -136,10 +136,16 @@ def_instruction! {
         I64FromU64 : [1] => [1],
         /// Converts an interface type `s64` value to a wasm `i64`.
         I64FromS64 : [1] => [1],
+        /// Converts a language-specific pointer value to a wasm `i32`.
+        I32FromPointer : [1] => [1],
+        /// Converts a language-specific pointer value to a wasm `i32`.
+        I32FromConstPointer : [1] => [1],
         /// Converts a language-specific pointer value to a wasm `i64`.
         I64FromPointer : [1] => [1],
         /// Converts a language-specific pointer value to a wasm `i64`.
         I64FromConstPointer : [1] => [1],
+        /// Converts a language-specific `usize` value to a wasm `i32`.
+        I32FromUsize : [1] => [1],
         /// Converts a language-specific `usize` value to a wasm `i64`.
         I64FromUsize : [1] => [1],
         /// Converts an interface type `u32` value to a wasm `i32`.
@@ -233,6 +239,8 @@ def_instruction! {
         ///
         /// This will truncate the upper bits of the `i32`.
         Char8FromI32 : [1] => [1],
+        /// Converts a native wasm `i32` to a language-specific `usize`.
+        UsizeFromI32 : [1] => [1],
         /// Converts a native wasm `i64` to a language-specific `usize`.
         UsizeFromI64 : [1] => [1],
         /// Converts a native wasm `f32` to an interface type `f32`.
@@ -241,6 +249,10 @@ def_instruction! {
         If64FromF64 : [1] => [1],
         /// Converts a native wasm `i32` to an interface type `handle`.
         HandleFromI32 { ty: &'a NamedType } : [1] => [1],
+        /// Converts a native wasm `i32` to a language-specific pointer.
+        PointerFromI32 { ty: &'a TypeRef }: [1] => [1],
+        /// Converts a native wasm `i32` to a language-specific pointer.
+        ConstPointerFromI32 { ty: &'a TypeRef } : [1] => [1],
         /// Converts a native wasm `i64` to a language-specific pointer.
         PointerFromI64 { ty: &'a TypeRef }: [1] => [1],
         /// Converts a native wasm `i64` to a language-specific pointer.
@@ -467,7 +479,7 @@ impl InterfaceFunc {
                 | Type::Builtin(BuiltinType::S16)
                 | Type::Builtin(BuiltinType::U16)
                 | Type::Builtin(BuiltinType::S32)
-                | Type::Builtin(BuiltinType::U32)
+                | Type::Builtin(BuiltinType::U32 { .. })
                 | Type::Builtin(BuiltinType::Char)
                 | Type::Handle(_) => params.push(WasmType::I32),
 
@@ -500,7 +512,7 @@ impl InterfaceFunc {
                 | Type::Builtin(BuiltinType::S16)
                 | Type::Builtin(BuiltinType::U16)
                 | Type::Builtin(BuiltinType::S32)
-                | Type::Builtin(BuiltinType::U32)
+                | Type::Builtin(BuiltinType::U32 { .. })
                 | Type::Builtin(BuiltinType::Char)
                 | Type::Handle(_) => results.push(WasmType::I32),
 
@@ -564,6 +576,7 @@ impl InterfaceFunc {
             operands: vec![],
             results: vec![],
             stack: vec![],
+            is64bit: self.is64bit,
         }
         .call_wasm(module, self);
     }
@@ -578,6 +591,7 @@ impl InterfaceFunc {
             operands: vec![],
             results: vec![],
             stack: vec![],
+            is64bit: self.is64bit,
         }
         .call_interface(module, self);
     }
@@ -588,6 +602,7 @@ struct Generator<'a, B: Bindgen> {
     operands: Vec<B::Operand>,
     results: Vec<B::Operand>,
     stack: Vec<B::Operand>,
+    is64bit: bool,
 }
 
 impl<B: Bindgen> Generator<'_, B> {
@@ -694,7 +709,12 @@ impl<B: Bindgen> Generator<'_, B> {
             Type::Builtin(BuiltinType::S16) => self.emit(&I32FromS16),
             Type::Builtin(BuiltinType::U16) => self.emit(&I32FromU16),
             Type::Builtin(BuiltinType::S32) => self.emit(&I32FromS32),
-            Type::Builtin(BuiltinType::U32 ) => self.emit(&I32FromU32),
+            Type::Builtin(BuiltinType::U32 {
+                lang_ptr_size: true,
+            }) => self.emit(&I32FromUsize),
+            Type::Builtin(BuiltinType::U32 {
+                lang_ptr_size: false,
+            }) => self.emit(&I32FromU32),
             Type::Builtin(BuiltinType::S64) => self.emit(&I64FromS64),
             Type::Builtin(BuiltinType::U64 {
                 lang_ptr_size: true,
@@ -703,8 +723,20 @@ impl<B: Bindgen> Generator<'_, B> {
                 lang_ptr_size: false,
             }) => self.emit(&I64FromU64),
             Type::Builtin(BuiltinType::Char) => self.emit(&I32FromChar),
-            Type::Pointer(_) => self.emit(&I64FromPointer),
-            Type::ConstPointer(_) => self.emit(&I64FromConstPointer),
+            Type::Pointer(_) => {
+                if self.is64bit {
+                    self.emit(&I64FromPointer)
+                } else {
+                    self.emit(&I32FromPointer)
+                }
+            },
+            Type::ConstPointer(_) => {
+                if self.is64bit {
+                    self.emit(&I64FromConstPointer)
+                } else {
+                    self.emit(&I32FromConstPointer)
+                }
+            },
             Type::Handle(_) => self.emit(&I32FromHandle {
                 ty: match ty {
                     TypeRef::Name(ty) => ty,
@@ -836,7 +868,12 @@ impl<B: Bindgen> Generator<'_, B> {
             Type::Builtin(BuiltinType::S16) => self.emit(&S16FromI32),
             Type::Builtin(BuiltinType::U16) => self.emit(&U16FromI32),
             Type::Builtin(BuiltinType::S32) => self.emit(&S32FromI32),
-            Type::Builtin(BuiltinType::U32) => self.emit(&U32FromI32),
+            Type::Builtin(BuiltinType::U32 {
+                lang_ptr_size: true,
+            }) => self.emit(&UsizeFromI32),
+            Type::Builtin(BuiltinType::U32 {
+                lang_ptr_size: false,
+            }) => self.emit(&U32FromI32),
             Type::Builtin(BuiltinType::S64) => self.emit(&S64FromI64),
             Type::Builtin(BuiltinType::U64 {
                 lang_ptr_size: true,
@@ -847,8 +884,20 @@ impl<B: Bindgen> Generator<'_, B> {
             Type::Builtin(BuiltinType::Char) => self.emit(&CharFromI32),
             Type::Builtin(BuiltinType::F32) => self.emit(&If32FromF32),
             Type::Builtin(BuiltinType::F64) => self.emit(&If64FromF64),
-            Type::Pointer(ty) => self.emit(&PointerFromI64 { ty }),
-            Type::ConstPointer(ty) => self.emit(&ConstPointerFromI64 { ty }),
+            Type::Pointer(ty) => {
+                if self.is64bit {
+                    self.emit(&PointerFromI64 { ty })
+                } else {
+                    self.emit(&PointerFromI32 { ty })
+                }
+            },
+            Type::ConstPointer(ty) => {
+                if self.is64bit {
+                    self.emit(&ConstPointerFromI64 { ty })
+                } else {
+                    self.emit(&ConstPointerFromI32 { ty })
+                }
+            },
             Type::Handle(_) => self.emit(&HandleFromI32 {
                 ty: match ty {
                     TypeRef::Name(ty) => ty,

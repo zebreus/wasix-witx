@@ -74,7 +74,9 @@ impl Parse<'_> for BuiltinType {
             Ok(BuiltinType::U16)
         } else if l.peek::<kw::u32>() {
             parser.parse::<kw::u32>()?;
-            Ok(BuiltinType::U32)
+            Ok(BuiltinType::U32 {
+                lang_ptr_size: false
+            })
         } else if l.peek::<kw::u64>() {
             parser.parse::<kw::u64>()?;
             Ok(BuiltinType::U64 {

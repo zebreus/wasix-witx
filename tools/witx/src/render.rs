@@ -83,7 +83,12 @@ impl BuiltinType {
             }
             BuiltinType::U8 { lang_c_char: false } => SExpr::word("u8"),
             BuiltinType::U16 => SExpr::word("u16"),
-            BuiltinType::U32 => SExpr::word("u32"),
+            BuiltinType::U32 {
+                lang_ptr_size: true,
+            } => SExpr::Vec(vec![SExpr::annot("witx"), SExpr::word("usize")]),
+            BuiltinType::U32 {
+                lang_ptr_size: false,
+            } => SExpr::word("u32"),
             BuiltinType::U64 {
                 lang_ptr_size: true,
             } => SExpr::Vec(vec![SExpr::annot("witx"), SExpr::word("usize")]),

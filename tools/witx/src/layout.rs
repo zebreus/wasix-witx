@@ -208,7 +208,7 @@ impl Layout for BuiltinType {
         match self {
             BuiltinType::U8 { .. } | BuiltinType::S8 => SizeAlign { size: 1, align: 1 },
             BuiltinType::U16 | BuiltinType::S16 => SizeAlign { size: 2, align: 2 },
-            BuiltinType::Char | BuiltinType::U32 | BuiltinType::S32 | BuiltinType::F32 => {
+            BuiltinType::Char | BuiltinType::U32 { .. } | BuiltinType::S32 | BuiltinType::F32 => {
                 SizeAlign { size: 4, align: 4 }
             }
             BuiltinType::U64 { .. } | BuiltinType::S64 | BuiltinType::F64 => {
