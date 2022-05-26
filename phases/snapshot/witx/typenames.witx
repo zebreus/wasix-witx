@@ -6,7 +6,7 @@
 ;; for an explanation of what that means.
 
 ;;; Represents the length of a piece of data referenced by a pointer
-(typename $pointersize u64)
+(typename $pointersize usize)
 
 ;;; Represents a number of items
 (typename $size u32)
