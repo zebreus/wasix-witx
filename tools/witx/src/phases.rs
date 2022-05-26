@@ -14,7 +14,7 @@ pub fn docs_path(phase_paths: &[PathBuf]) -> PathBuf {
 pub fn snapshot() -> Result<Vec<PathBuf>> {
     let root = repo_root()?;
     let snapshot = root.join("phases/snapshot/witx");
-    let paths = vec![snapshot.join("wasi_snapshot_preview1.witx")];
+    let paths = vec![snapshot.join("wasix_snapshot_preview1.witx")];
     ensure_exists(&paths)?;
     Ok(paths)
 }
@@ -23,16 +23,20 @@ pub fn ephemeral() -> Result<Vec<PathBuf>> {
     let root = repo_root()?;
     let ephemeral = root.join("phases/ephemeral/witx");
     let paths = vec![
-        ephemeral.join("wasi_ephemeral_args.witx"),
-        ephemeral.join("wasi_ephemeral_clock.witx"),
-        ephemeral.join("wasi_ephemeral_environ.witx"),
-        ephemeral.join("wasi_ephemeral_fd.witx"),
-        ephemeral.join("wasi_ephemeral_path.witx"),
-        ephemeral.join("wasi_ephemeral_poll.witx"),
-        ephemeral.join("wasi_ephemeral_proc.witx"),
-        ephemeral.join("wasi_ephemeral_random.witx"),
-        ephemeral.join("wasi_ephemeral_sched.witx"),
-        ephemeral.join("wasi_ephemeral_sock.witx"),
+        ephemeral.join("wasix_ephemeral_args.witx"),
+        ephemeral.join("wasix_ephemeral_bus.witx"),
+        ephemeral.join("wasix_ephemeral_clock.witx"),
+        ephemeral.join("wasix_ephemeral_environ.witx"),
+        ephemeral.join("wasix_ephemeral_fd.witx"),
+        ephemeral.join("wasix_ephemeral_os.witx"),
+        ephemeral.join("wasix_ephemeral_path.witx"),
+        ephemeral.join("wasix_ephemeral_poll.witx"),
+        ephemeral.join("wasix_ephemeral_proc.witx"),
+        ephemeral.join("wasix_ephemeral_random.witx"),
+        ephemeral.join("wasix_ephemeral_sched.witx"),
+        ephemeral.join("wasix_ephemeral_sock.witx"),
+        ephemeral.join("wasix_ephemeral_thread.witx"),
+        ephemeral.join("wasix_ephemeral_tty.witx"),
     ];
     ensure_exists(&paths)?;
     Ok(paths)
