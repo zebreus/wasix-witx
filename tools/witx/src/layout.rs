@@ -72,9 +72,9 @@ impl Type {
             Type::Handle(h) => h.mem_size_align(),
             Type::List { .. } => {
                 if crate::is_64bit_arch() {
-                    SizeAlign { size: 16, align: 8 }, // Pointer and Length
+                    SizeAlign { size: 16, align: 8 } // Pointer and Length
                 } else {
-                    SizeAlign { size: 8, align: 4 }, // Pointer and Length
+                    SizeAlign { size: 8, align: 4 } // Pointer and Length
                 }
             }
             Type::Pointer { .. } | Type::ConstPointer { .. } => {
