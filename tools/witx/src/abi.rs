@@ -472,7 +472,13 @@ impl InterfaceFunc {
 
                 Type::Pointer(_)
                 | Type::ConstPointer(_)
-                | Type::Variant(_) => params.push(WasmType::I64),
+                | Type::Variant(_) => {
+                    if crate::is_64bit_arch() {
+                        params.push(WasmType::I64)
+                    } else {
+                        params.push(WasmType::I32)
+                    }
+                },
 
                 Type::Builtin(BuiltinType::S8)
                 | Type::Builtin(BuiltinType::U8 { .. })
@@ -493,7 +499,13 @@ impl InterfaceFunc {
 
                 Type::Record(r) => match r.bitflags_repr() {
                     Some(repr) => params.push(WasmType::from(repr)),
-                    None => params.push(WasmType::I64),
+                    None => {
+                        if crate::is_64bit_arch() {
+                            params.push(WasmType::I64)
+                        } else {
+                            params.push(WasmType::I32)
+                        }
+                    },
                 },
 
                 Type::Builtin(BuiltinType::S64) | Type::Builtin(BuiltinType::U64 { .. }) => {
@@ -504,8 +516,13 @@ impl InterfaceFunc {
                 Type::Builtin(BuiltinType::F64) => params.push(WasmType::F64),
 
                 Type::List(_) => {
-                    params.push(WasmType::I64);
-                    params.push(WasmType::I64);
+                    if crate::is_64bit_arch() {
+                        params.push(WasmType::I64);
+                        params.push(WasmType::I64);
+                    } else {
+                        params.push(WasmType::I32);
+                        params.push(WasmType::I32);
+                    }
                 }
             }
         }
@@ -513,7 +530,13 @@ impl InterfaceFunc {
         for param in self.results.iter() {
             match &**param.tref.type_() {
                 Type::Pointer(_)
-                | Type::ConstPointer(_) => results.push(WasmType::I64),
+                | Type::ConstPointer(_) => {
+                    if crate::is_64bit_arch() {
+                        results.push(WasmType::I64)
+                    } else {
+                        results.push(WasmType::I32)
+                    }
+                },
 
                 Type::Builtin(BuiltinType::S8)
                 | Type::Builtin(BuiltinType::U8 { .. })
@@ -558,10 +581,20 @@ impl InterfaceFunc {
                         match &**ty.type_() {
                             Type::Record(r) if r.is_tuple() => {
                                 for _ in 0..r.members.len() {
-                                    params.push(WasmType::I64);
+                                    if crate::is_64bit_arch() {
+                                        params.push(WasmType::I64);
+                                    } else {
+                                        params.push(WasmType::I32);
+                                    }
                                 }
                             }
-                            _ => params.push(WasmType::I64),
+                            _ => {
+                                if crate::is_64bit_arch() {
+                                    params.push(WasmType::I64)
+                                } else {
+                                    params.push(WasmType::I64)
+                                }
+                            },
                         }
                     }
                 }
