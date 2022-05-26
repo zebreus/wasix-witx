@@ -1171,7 +1171,7 @@
     ;;; Message flags.
     (param $ri_flags $riflags)
     ;;; Number of bytes stored in ri_data and message flags.
-    (result $error (expected (tuple $filesize $roflags) (error $errno)))
+    (result $error (expected (tuple $size $roflags) (error $errno)))
   )
 
   ;;; Receive a message and its peer address from a socket.
@@ -1184,7 +1184,7 @@
     ;;; Message flags.
     (param $ri_flags $riflags)
     ;;; Number of bytes stored in ri_data and message flags.
-    (result $error (expected (tuple $filesize $roflags $addr_port) (error $errno)))
+    (result $error (expected (tuple $size $roflags $addr_port) (error $errno)))
   )
 
   ;;; Send a message on a socket.
@@ -1197,7 +1197,7 @@
     ;;; Message flags.
     (param $si_flags $siflags)
     ;;; Number of bytes transmitted.
-    (result $error (expected $filesize (error $errno)))
+    (result $error (expected $size (error $errno)))
   )
 
   ;;; Send a message on a socket to a specific address.
@@ -1212,7 +1212,7 @@
     ;;; Address of the socket to send message to
     (param $addr (@witx const_pointer $addr_port))
     ;;; Number of bytes transmitted.
-    (result $error (expected $filesize (error $errno)))
+    (result $error (expected $size (error $errno)))
   )
 
   ;;; Resolves a hostname and a port to one or more IP addresses.
