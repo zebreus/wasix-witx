@@ -22,6 +22,6 @@
   (@interface func (export "sizes_get")
     ;;; Returns the number of arguments and the size of the argument string
     ;;; data, or an error.
-    (result $error (expected (tuple $size $pointersize) (error $errno)))
+    (result $error (expected (tuple $size $size) (error $errno)))
   )
 )

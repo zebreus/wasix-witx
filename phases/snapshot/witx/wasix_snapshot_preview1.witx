@@ -24,7 +24,7 @@
   (@interface func (export "args_sizes_get")
     ;;; Returns the number of arguments and the size of the argument string
     ;;; data, or an error.
-    (result $error (expected (tuple $size $pointersize) (error $errno)))
+    (result $error (expected (tuple $size $size) (error $errno)))
   )
 
   ;;; Read environment variable data.
@@ -39,7 +39,7 @@
   (@interface func (export "environ_sizes_get")
     ;;; Returns the number of environment variable arguments and the size of the
     ;;; environment variable data.
-    (result $error (expected (tuple $size $pointersize) (error $errno)))
+    (result $error (expected (tuple $size $size) (error $errno)))
   )
 
   ;;; Return the resolution of a clock.
