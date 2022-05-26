@@ -578,7 +578,7 @@ impl Witx<'_> {
                 for decl in decls {
                     validator
                         .scope(contents, file)
-                        .validate_decl(&decl.item, &decl.comments, &mut definitions)
+                        .validate_decl(&decl.item, &decl.comments, &mut definitions, false)
                         .map_err(witx::WitxError::Validation)?;
                 }
                 Ok(validator.into_document(definitions))

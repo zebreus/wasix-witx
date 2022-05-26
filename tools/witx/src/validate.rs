@@ -132,16 +132,18 @@ pub struct DocValidation {
     entries: HashMap<Id, Entry>,
     constant_scopes: HashMap<Id, IdentValidation>,
     bool_ty: TypeRef,
+    is64bit: bool,
 }
 
 pub struct DocValidationScope<'a> {
     doc: &'a mut DocValidation,
     text: &'a str,
     path: &'a Path,
+    is64bit: bool,
 }
 
 impl DocValidation {
-    pub fn new() -> Self {
+    pub fn new(is64bit: bool) -> Self {
         Self {
             scope: IdentValidation::new(),
             entries: HashMap::new(),
@@ -161,11 +163,13 @@ impl DocValidation {
                     },
                 ],
             }))),
+            is64bit
         }
     }
 
     pub fn scope<'a>(&'a mut self, text: &'a str, path: &'a Path) -> DocValidationScope<'a> {
         DocValidationScope {
+            is64bit: self.is64bit,
             doc: self,
             text,
             path,
@@ -637,7 +641,7 @@ impl<'a> ModuleValidation<'a> {
             doc,
             scope: IdentValidation::new(),
             entries: HashMap::new(),
-            is64bit: false,
+            is64bit: doc.is64bit,
         }
     }
 

@@ -6,18 +6,18 @@ use crate::WitxError;
 use std::collections::HashSet;
 use std::path::{Path, PathBuf};
 
-pub fn parse_witx(i: &[impl AsRef<Path>]) -> Result<Document, WitxError> {
+pub fn parse_witx(i: &[impl AsRef<Path>], is64bit: bool) -> Result<Document, WitxError> {
     let paths = i.iter().map(|p| p.as_ref()).collect::<Vec<&Path>>();
-    _parse_witx_with(&paths, &Filesystem)
+    _parse_witx_with(&paths, &Filesystem, is64bit)
 }
 
-pub fn parse_witx_with(i: &[impl AsRef<Path>], witxio: impl WitxIo) -> Result<Document, WitxError> {
+pub fn parse_witx_with(i: &[impl AsRef<Path>], witxio: impl WitxIo, is64bit: bool) -> Result<Document, WitxError> {
     let paths = i.iter().map(|p| p.as_ref()).collect::<Vec<&Path>>();
-    _parse_witx_with(&paths, &witxio)
+    _parse_witx_with(&paths, &witxio, is64bit)
 }
 
-fn _parse_witx_with(paths: &[&Path], io: &dyn WitxIo) -> Result<Document, WitxError> {
-    let mut validator = DocValidation::new();
+fn _parse_witx_with(paths: &[&Path], io: &dyn WitxIo, is64bit: bool) -> Result<Document, WitxError> {
+    let mut validator = DocValidation::new(is64bit);
     let mut definitions = Vec::new();
     let mut parsed = HashSet::new();
     for path in paths {

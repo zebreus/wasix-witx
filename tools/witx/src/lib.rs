@@ -36,14 +36,14 @@ use std::path::{Path, PathBuf};
 use thiserror::Error;
 
 /// Load a witx document from the filesystem
-pub fn load<P: AsRef<Path>>(paths: &[P]) -> Result<Document, WitxError> {
-    toplevel::parse_witx(paths)
+pub fn load<P: AsRef<Path>>(paths: &[P], is64bit: bool) -> Result<Document, WitxError> {
+    toplevel::parse_witx(paths, is64bit)
 }
 
 /// Parse a witx document from a str. `(use ...)` directives are not permitted.
-pub fn parse(source: &str) -> Result<Document, WitxError> {
+pub fn parse(source: &str, is64bit: bool) -> Result<Document, WitxError> {
     let mockfs = MockFs::new(&[("-", source)]);
-    toplevel::parse_witx_with(&[Path::new("-")], &mockfs)
+    toplevel::parse_witx_with(&[Path::new("-")], &mockfs, is64bit)
 }
 
 /// Location in the source text
