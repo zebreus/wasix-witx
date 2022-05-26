@@ -95,6 +95,7 @@ impl BuiltinType {
             BuiltinType::U64 {
                 lang_ptr_size: false,
             } => SExpr::word("u64"),
+            BuiltinType::Usize => SExpr::word("usize"),
             BuiltinType::S8 => SExpr::word("s8"),
             BuiltinType::S16 => SExpr::word("s16"),
             BuiltinType::S32 => SExpr::word("s32"),

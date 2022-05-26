@@ -100,6 +100,9 @@ impl Parse<'_> for BuiltinType {
         } else if l.peek::<kw::f64>() {
             parser.parse::<kw::f64>()?;
             Ok(BuiltinType::F64)
+        } else if l.peek::<kw::usize>() {
+            parser.parse::<kw::usize>()?;
+            Ok(BuiltinType::Usize)
         } else {
             Err(l.error())
         }
@@ -119,6 +122,7 @@ impl wast::parser::Peek for BuiltinType {
             || <kw::s64 as Peek>::peek(cursor)
             || <kw::f32 as Peek>::peek(cursor)
             || <kw::f64 as Peek>::peek(cursor)
+            || <kw::usize as Peek>::peek(cursor)
     }
 
     fn display() -> &'static str {
@@ -345,9 +349,7 @@ impl<'a> Parse<'a> for TypedefSyntax<'a> {
                         Ok(TypedefSyntax::Pointer(Box::new(parser.parse()?)))
                     } else if l.peek::<kw::usize>() {
                         parser.parse::<kw::usize>()?;
-                        Ok(TypedefSyntax::Builtin(BuiltinType::U64 {
-                            lang_ptr_size: true,
-                        }))
+                        Ok(TypedefSyntax::Builtin(BuiltinType::Usize))
                     } else if l.peek::<kw::char8>() {
                         parser.parse::<kw::char8>()?;
                         Ok(TypedefSyntax::Builtin(BuiltinType::U8 {

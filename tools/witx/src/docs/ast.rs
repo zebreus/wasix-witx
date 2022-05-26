@@ -292,6 +292,7 @@ impl BuiltinType {
             BuiltinType::U64 {
                 lang_ptr_size: true,
             } => "usize",
+            BuiltinType::Usize => "usize",
             BuiltinType::S8 => "s8",
             BuiltinType::S16 => "s16",
             BuiltinType::S32 => "s32",

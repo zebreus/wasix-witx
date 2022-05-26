@@ -17,7 +17,9 @@ pub fn parse_witx_with(i: &[impl AsRef<Path>], witxio: impl WitxIo, is64bit: boo
 }
 
 fn _parse_witx_with(paths: &[&Path], io: &dyn WitxIo, is64bit: bool) -> Result<Document, WitxError> {
-    let mut validator = DocValidation::new(is64bit);
+    crate::IS_64BIT_ARCH.store(is64bit, std::sync::atomic::Ordering::Release);
+
+    let mut validator = DocValidation::new();
     let mut definitions = Vec::new();
     let mut parsed = HashSet::new();
     for path in paths {

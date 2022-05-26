@@ -306,6 +306,8 @@ pub enum BuiltinType {
     F32,
     /// A 64-bit floating point value.
     F64,
+    /// A signed integer sized by the CPU architecture
+    Usize,
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
@@ -586,7 +588,6 @@ pub struct InterfaceFunc {
     pub results: Vec<InterfaceFuncParam>,
     pub noreturn: bool,
     pub docs: String,
-    pub is64bit: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]

@@ -33,7 +33,14 @@ pub use representation::{RepEquality, Representable};
 pub use validate::{DocValidation, ValidationError};
 
 use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicBool, Ordering};
 use thiserror::Error;
+
+pub static IS_64BIT_ARCH: AtomicBool = AtomicBool::new(false);
+
+pub fn is_64bit_arch() -> bool {
+    IS_64BIT_ARCH.load(Ordering::Acquire)
+}
 
 /// Load a witx document from the filesystem
 pub fn load<P: AsRef<Path>>(paths: &[P], is64bit: bool) -> Result<Document, WitxError> {

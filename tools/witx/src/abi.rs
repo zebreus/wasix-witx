@@ -483,6 +483,14 @@ impl InterfaceFunc {
                 | Type::Builtin(BuiltinType::Char)
                 | Type::Handle(_) => params.push(WasmType::I32),
 
+                Type::Builtin(BuiltinType::Usize) => {
+                    if crate::is_64bit_arch() {
+                        params.push(WasmType::I64)
+                    } else {
+                        params.push(WasmType::I32)
+                    }
+                },
+
                 Type::Record(r) => match r.bitflags_repr() {
                     Some(repr) => params.push(WasmType::from(repr)),
                     None => params.push(WasmType::I64),
@@ -515,6 +523,14 @@ impl InterfaceFunc {
                 | Type::Builtin(BuiltinType::U32 { .. })
                 | Type::Builtin(BuiltinType::Char)
                 | Type::Handle(_) => results.push(WasmType::I32),
+
+                Type::Builtin(BuiltinType::Usize) => {
+                    if crate::is_64bit_arch() {
+                        results.push(WasmType::I64)
+                    } else {
+                        results.push(WasmType::I32)
+                    }
+                }
 
                 Type::Builtin(BuiltinType::S64) | Type::Builtin(BuiltinType::U64 { .. }) => {
                     results.push(WasmType::I64)
@@ -576,7 +592,6 @@ impl InterfaceFunc {
             operands: vec![],
             results: vec![],
             stack: vec![],
-            is64bit: self.is64bit,
         }
         .call_wasm(module, self);
     }
@@ -591,7 +606,6 @@ impl InterfaceFunc {
             operands: vec![],
             results: vec![],
             stack: vec![],
-            is64bit: self.is64bit,
         }
         .call_interface(module, self);
     }
@@ -602,7 +616,6 @@ struct Generator<'a, B: Bindgen> {
     operands: Vec<B::Operand>,
     results: Vec<B::Operand>,
     stack: Vec<B::Operand>,
-    is64bit: bool,
 }
 
 impl<B: Bindgen> Generator<'_, B> {
@@ -722,16 +735,23 @@ impl<B: Bindgen> Generator<'_, B> {
             Type::Builtin(BuiltinType::U64 {
                 lang_ptr_size: false,
             }) => self.emit(&I64FromU64),
+            Type::Builtin(BuiltinType::Usize) => {
+                if crate::is_64bit_arch() {
+                    self.emit(&I64FromUsize)
+                } else {
+                    self.emit(&I32FromUsize)
+                }
+            },
             Type::Builtin(BuiltinType::Char) => self.emit(&I32FromChar),
             Type::Pointer(_) => {
-                if self.is64bit {
+                if crate::is_64bit_arch() {
                     self.emit(&I64FromPointer)
                 } else {
                     self.emit(&I32FromPointer)
                 }
             },
             Type::ConstPointer(_) => {
-                if self.is64bit {
+                if crate::is_64bit_arch() {
                     self.emit(&I64FromConstPointer)
                 } else {
                     self.emit(&I32FromConstPointer)
@@ -881,18 +901,25 @@ impl<B: Bindgen> Generator<'_, B> {
             Type::Builtin(BuiltinType::U64 {
                 lang_ptr_size: false,
             }) => self.emit(&U64FromI64),
+            Type::Builtin(BuiltinType::Usize) => {
+                if crate::is_64bit_arch() {
+                    self.emit(&UsizeFromI64)
+                } else {
+                    self.emit(&UsizeFromI32)
+                }
+            },
             Type::Builtin(BuiltinType::Char) => self.emit(&CharFromI32),
             Type::Builtin(BuiltinType::F32) => self.emit(&If32FromF32),
             Type::Builtin(BuiltinType::F64) => self.emit(&If64FromF64),
             Type::Pointer(ty) => {
-                if self.is64bit {
+                if crate::is_64bit_arch() {
                     self.emit(&PointerFromI64 { ty })
                 } else {
                     self.emit(&PointerFromI32 { ty })
                 }
             },
             Type::ConstPointer(ty) => {
-                if self.is64bit {
+                if crate::is_64bit_arch() {
                     self.emit(&ConstPointerFromI64 { ty })
                 } else {
                     self.emit(&ConstPointerFromI32 { ty })

@@ -211,6 +211,13 @@ impl Layout for BuiltinType {
             BuiltinType::Char | BuiltinType::U32 { .. } | BuiltinType::S32 | BuiltinType::F32 => {
                 SizeAlign { size: 4, align: 4 }
             }
+            BuiltinType::Usize => {
+                if crate::is_64bit_arch() {
+                    SizeAlign { size: 8, align: 8 }
+                } else {
+                    SizeAlign { size: 4, align: 4 }
+                }
+            }
             BuiltinType::U64 { .. } | BuiltinType::S64 | BuiltinType::F64 => {
                 SizeAlign { size: 8, align: 8 }
             }
