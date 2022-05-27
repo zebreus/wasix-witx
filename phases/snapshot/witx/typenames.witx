@@ -1317,6 +1317,10 @@
     $recv_timeout
     ;;; Send timeout
     $send_timeout
+    ;;; Connect timeout
+    $connect_timeout
+    ;;; Accept timeout
+    $accept_timeout
     ;;; Type of socket
     $type
   )
