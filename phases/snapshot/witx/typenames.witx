@@ -1328,14 +1328,10 @@
 ;;; Address family
 (typename $address_family
   (enum (@witx tag u8)
-    ;;; Unspecified
-    $unspec
     ;;; IP v4
     $inet4
     ;;; IP v6
     $inet6
-    ;;; Unix
-    $unix
   )
 )
 
