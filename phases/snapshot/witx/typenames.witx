@@ -1282,7 +1282,9 @@
     ;;; Reuse Address
     $reuse_addr
     ;;; No delay
-    $nodelay
+    $no_delay
+    ;;; Dont route
+    $dont_route
     ;;; Only accept IPv6
     $only_v6
     ;;; Broadcast
@@ -1293,6 +1295,30 @@
     $multicast_loop_v6
     ;;; Promiscuous
     $promiscuous
+    ;;; Socket is listening
+    $listening
+    ;;; Last error
+    $last_error
+    ;;; Keep alive
+    $keep_alive
+    ;;; Linger
+    $linger
+    ;;; Out-of-band inline
+    $oob_inline
+    ;;; Receive buffer size
+    $recv_buf_size
+    ;;; Send buffer size
+    $send_buf_size
+    ;;; Receive lowat
+    $recv_lowat
+    ;;; Send lowat
+    $send_lowat
+    ;;; Receive timeout
+    $recv_timeout
+    ;;; Send timeout
+    $send_timeout
+    ;;; Type of socket
+    $type
   )
 )
 
