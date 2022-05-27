@@ -980,7 +980,7 @@
 
 ;;; Socket type
 (typename $sock_type
-  (enum (@witx tag u16)
+  (enum (@witx tag8)
     ;;; The file descriptor or file refers to a datagram socket.
     $socket_dgram
     ;;; The file descriptor or file refers to a byte-stream socket.
@@ -1327,7 +1327,7 @@
 
 ;;; Address family
 (typename $address_family
-  (enum (@witx tag u16)
+  (enum (@witx tag u8)
     ;;; IP v4
     $inet4
     ;;; IP v6
