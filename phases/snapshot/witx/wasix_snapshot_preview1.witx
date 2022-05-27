@@ -938,6 +938,8 @@
     (param $af $address_family)
     ;;; Socket type, either datagram or stream
     (param $socktype $sock_type)
+    ;;; Socket protocol
+    (param $sock_proto $sock_proto)
     ;;; The file descriptor of the socket that has been opened.
     (result $error (expected $fd (error $errno)))
   )
