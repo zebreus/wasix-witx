@@ -1342,19 +1342,23 @@
 ;;; Represents an unspecified address
 (typename $addr_unspec
   (record
+    (field $n0 u8)
   )
 )
 
 ;;; An unspecified address with a port
 (typename $addr_unspec_port
   (record
-
+    (field $port $ip_port)
+    (field $addr $addr_unspec)
   )
 )
 
 ;;; An unspecified address with a cidr
 (typename $addr_unspec_cidr
   (record
+    (field $addr $addr_unspec)
+    (field $prefix u8)
   )
 )
 
