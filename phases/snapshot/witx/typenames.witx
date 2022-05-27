@@ -965,6 +965,8 @@
     $recv_peek
     ;;; On byte-stream sockets, block until the full amount of data can be returned.
     $recv_waitall
+    ;;; Indicates if the packet should be truncated to the buffer size
+    $recv_trunc
   )
 )
 
@@ -978,11 +980,283 @@
 
 ;;; Socket type
 (typename $sock_type
-  (enum (@witx tag u8)
+  (enum (@witx tag u16)
     ;;; The file descriptor or file refers to a datagram socket.
     $socket_dgram
     ;;; The file descriptor or file refers to a byte-stream socket.
     $socket_stream
+    ;;; The file descriptor or file refers to a raw socket.
+    $socket_raw
+  )
+)
+
+;;; IP protocol type
+(typename $ip_proto
+  (enum (@witx tag u16)
+    $ipproto_ip
+    $ipproto_icmp
+    $ipproto_igmp
+    $ipproto_3
+    $ipproto_ipip
+    $ipproto_5
+    $ipproto_tcp
+    $ipproto_7
+    $ipproto_egp
+    $ipproto_9
+    $ipproto_10
+    $ipproto_11
+    $ipproto_pup
+    $ipproto_13
+    $ipproto_14
+    $ipproto_15
+    $ipproto_16
+    $ipproto_udp
+    $ipproto_18
+    $ipproto_19
+    $ipproto_20
+    $ipproto_21
+    $ipproto_idp
+    $ipproto_23
+    $ipproto_24
+    $ipproto_25
+    $ipproto_26
+    $ipproto_27
+    $ipproto_28
+    $ipproto_tp
+    $ipproto_30
+    $ipproto_31
+    $ipproto_32
+    $ipproto_dccp
+    $ipproto_34
+    $ipproto_35
+    $ipproto_36
+    $ipproto_37
+    $ipproto_38
+    $ipproto_39
+    $ipproto_40
+    $ipproto_ipv6
+    $ipproto_42
+    $ipproto_routing
+    $ipproto_fragment
+    $ipproto_45
+    $ipproto_rsvp
+    $ipproto_gre
+    $ipproto_48
+    $ipproto_49
+    $ipproto_esp
+    $ipproto_ah
+    $ipproto_52
+    $ipproto_53
+    $ipproto_54
+    $ipproto_55
+    $ipproto_56
+    $ipproto_57
+    $ipproto_icmpv6
+    $ipproto_none
+    $ipproto_dstopts
+    $ipproto_61
+    $ipproto_62
+    $ipproto_63
+    $ipproto_64
+    $ipproto_65
+    $ipproto_66
+    $ipproto_67
+    $ipproto_68
+    $ipproto_69
+    $ipproto_70
+    $ipproto_71
+    $ipproto_72
+    $ipproto_73
+    $ipproto_74
+    $ipproto_75
+    $ipproto_76
+    $ipproto_77
+    $ipproto_78
+    $ipproto_79
+    $ipproto_80
+    $ipproto_81
+    $ipproto_82
+    $ipproto_83
+    $ipproto_84
+    $ipproto_85
+    $ipproto_86
+    $ipproto_87
+    $ipproto_88
+    $ipproto_89
+    $ipproto_90
+    $ipproto_91
+    $ipproto_mtp
+    $ipproto_93
+    $ipproto_beetph
+    $ipproto_95
+    $ipproto_96
+    $ipproto_97
+    $ipproto_encap
+    $ipproto_99
+    $ipproto_100
+    $ipproto_101
+    $ipproto_102
+    $ipproto_pim
+    $ipproto_104
+    $ipproto_105
+    $ipproto_106
+    $ipproto_107
+    $ipproto_comp
+    $ipproto_109
+    $ipproto_110
+    $ipproto_111
+    $ipproto_112
+    $ipproto_113
+    $ipproto_114
+    $ipproto_115
+    $ipproto_116
+    $ipproto_117
+    $ipproto_118
+    $ipproto_119
+    $ipproto_120
+    $ipproto_121
+    $ipproto_122
+    $ipproto_123
+    $ipproto_124
+    $ipproto_125
+    $ipproto_126
+    $ipproto_127
+    $ipproto_128
+    $ipproto_129
+    $ipproto_130
+    $ipproto_131
+    $ipproto_sctp
+    $ipproto_133
+    $ipproto_134
+    $ipproto_mh
+    $ipproto_udplite
+    $ipproto_mpls
+    $ipproto_138
+    $ipproto_139
+    $ipproto_140
+    $ipproto_141
+    $ipproto_142
+    $ipproto_ethernet
+    $ipproto_144
+    $ipproto_145
+    $ipproto_146
+    $ipproto_147
+    $ipproto_148
+    $ipproto_149
+    $ipproto_150
+    $ipproto_151
+    $ipproto_152
+    $ipproto_153
+    $ipproto_154
+    $ipproto_155
+    $ipproto_156
+    $ipproto_157
+    $ipproto_158
+    $ipproto_159
+    $ipproto_160
+    $ipproto_161
+    $ipproto_162
+    $ipproto_163
+    $ipproto_164
+    $ipproto_165
+    $ipproto_166
+    $ipproto_167
+    $ipproto_168
+    $ipproto_169
+    $ipproto_170
+    $ipproto_171
+    $ipproto_172
+    $ipproto_173
+    $ipproto_174
+    $ipproto_175
+    $ipproto_176
+    $ipproto_177
+    $ipproto_178
+    $ipproto_179
+    $ipproto_180
+    $ipproto_181
+    $ipproto_182
+    $ipproto_183
+    $ipproto_184
+    $ipproto_185
+    $ipproto_186
+    $ipproto_187
+    $ipproto_188
+    $ipproto_189
+    $ipproto_190
+    $ipproto_191
+    $ipproto_192
+    $ipproto_193
+    $ipproto_194
+    $ipproto_195
+    $ipproto_196
+    $ipproto_197
+    $ipproto_198
+    $ipproto_199
+    $ipproto_200
+    $ipproto_201
+    $ipproto_202
+    $ipproto_203
+    $ipproto_204
+    $ipproto_205
+    $ipproto_206
+    $ipproto_207
+    $ipproto_208
+    $ipproto_209
+    $ipproto_210
+    $ipproto_211
+    $ipproto_212
+    $ipproto_213
+    $ipproto_214
+    $ipproto_215
+    $ipproto_216
+    $ipproto_217
+    $ipproto_218
+    $ipproto_219
+    $ipproto_220
+    $ipproto_221
+    $ipproto_222
+    $ipproto_223
+    $ipproto_224
+    $ipproto_225
+    $ipproto_226
+    $ipproto_227
+    $ipproto_228
+    $ipproto_229
+    $ipproto_230
+    $ipproto_231
+    $ipproto_232
+    $ipproto_233
+    $ipproto_234
+    $ipproto_235
+    $ipproto_236
+    $ipproto_237
+    $ipproto_238
+    $ipproto_239
+    $ipproto_240
+    $ipproto_241
+    $ipproto_242
+    $ipproto_243
+    $ipproto_244
+    $ipproto_245
+    $ipproto_246
+    $ipproto_247
+    $ipproto_248
+    $ipproto_249
+    $ipproto_250
+    $ipproto_251
+    $ipproto_252
+    $ipproto_253
+    $ipproto_254
+    $ipproto_raw
+    $ipproto_256
+    $ipproto_257
+    $ipproto_258
+    $ipproto_259
+    $ipproto_260
+    $ipproto_261
+    $ipproto_mptcp
+    $ipproto_max
   )
 )
 
@@ -1053,7 +1327,7 @@
 
 ;;; Address family
 (typename $address_family
-  (enum (@witx tag u8)
+  (enum (@witx tag u16)
     ;;; IP v4
     $inet4
     ;;; IP v6
@@ -1074,8 +1348,8 @@
 ;;; An IPv4 address with a port number
 (typename $addr_ip4_port
   (record
-    (field $addr $addr_ip4)
     (field $port $ip_port)
+    (field $addr $addr_ip4)
   )
 )
 
@@ -1104,8 +1378,8 @@
 ;;; An IPv6 address with a port number
 (typename $addr_ip6_port
   (record
-    (field $addr $addr_ip6)
     (field $port $ip_port)
+    (field $addr $addr_ip6)
   )
 )
 
@@ -1200,7 +1474,7 @@
 
 ;;; Describes the type of timeout what will be changed
 (typename $timeout_type
-  (flags (@witx repr u8)
+  (enum (@witx repr u8)
     ;;; Read operation timeout
     $read
     ;;; Write operation timeout
