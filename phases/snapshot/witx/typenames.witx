@@ -1328,10 +1328,33 @@
 ;;; Address family
 (typename $address_family
   (enum (@witx tag u8)
+    ;;; Unspecified
+    $unspec
     ;;; IP v4
     $inet4
     ;;; IP v6
     $inet6
+    ;;; Unix
+    $unix
+  )
+)
+
+;;; Represents an unspecified address
+(typename $addr_unspec
+  (record
+  )
+)
+
+;;; An unspecified address with a port
+(typename $addr_unspec_port
+  (record
+
+  )
+)
+
+;;; An unspecified address with a cidr
+(typename $addr_unspec_cidr
+  (record
   )
 )
 
@@ -1375,6 +1398,44 @@
   )
 )
 
+;;; Unix socket that is bound to no more than 15 bytes
+(typename $addr_unix
+  (record
+    (field $b0 u8)
+    (field $b1 u8)
+    (field $b2 u8)
+    (field $b3 u8)
+    (field $b4 u8)
+    (field $b5 u8)
+    (field $b6 u8)
+    (field $b7 u8)
+    (field $b8 u8)
+    (field $b9 u8)
+    (field $b10 u8)
+    (field $b11 u8)
+    (field $b12 u8)
+    (field $b13 u8)
+    (field $b14 u8)
+    (field $b15 u8)
+  )
+)
+
+;;; A unix socket with a port
+(typename $addr_unix_port
+  (record
+    (field $port $ip_port)
+    (field $addr $addr_unix)
+  )
+)
+
+;;; A unix socket with a cidr
+(typename $addr_unix_cidr
+  (record
+    (field $addr $addr_unix)
+    (field $prefix u8)
+  )
+)
+
 ;;; An IPv6 address with a port number
 (typename $addr_ip6_port
   (record
@@ -1395,8 +1456,10 @@
 (typename $addr_ip
   (union
     (@witx tag $address_family)
+    $addr_unspec
     $addr_ip4
     $addr_ip6
+    $addr_unix
   )
 )
 
@@ -1406,8 +1469,10 @@
 (typename $addr_port
   (union
     (@witx tag $address_family)
+    $addr_unspec_port
     $addr_ip4_port
     $addr_ip6_port
+    $addr_unix_port
   )
 )
 
@@ -1417,8 +1482,10 @@
 (typename $addr_cidr
   (union
     (@witx tag $address_family)
+    $addr_unspec_cidr
     $addr_ip4_cidr
     $addr_ip6_cidr
+    $addr_unix_cidr
   )
 )
 
