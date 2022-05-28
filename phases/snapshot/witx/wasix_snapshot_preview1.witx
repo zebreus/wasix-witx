@@ -1155,6 +1155,19 @@
     (result $error (expected $size (error $errno)))
   )
 
+  ;;; Sends the entire contents of a file down a socket
+  (@interface func (export "sock_send_file")
+    (param $fd $out_fd)
+    ;;; Open file that has the data to be transmitted
+    (param $fd $in_fd)
+    ;;; Offset into the file to start reading at
+    (param $offset $filesize)
+    ;;; Number of bytes to be sent
+    (param $count $filesize)
+    ;;; Number of bytes transmitted.
+    (result $error (expected $filesize (error $errno)))
+  )
+
   ;;; Resolves a hostname and a port to one or more IP addresses.
   ;;;
   ;;; Note: This is similar to `getaddrinfo` in POSIX
