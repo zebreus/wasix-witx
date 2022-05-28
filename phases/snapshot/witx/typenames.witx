@@ -1301,7 +1301,7 @@
     $last_error
     ;;; Keep alive
     $keep_alive
-    ;;; Linger
+    ;;; Linger time
     $linger
     ;;; Out-of-band inline
     $oob_inline
@@ -1321,6 +1321,10 @@
     $connect_timeout
     ;;; Accept timeout
     $accept_timeout
+    ;;; TTL of packets
+    $ttl
+    ;;; Multicast TTL for IPv4
+    $multicast_ttl_v4
     ;;; Type of socket
     $type
   )
@@ -1570,20 +1574,6 @@
     $rd
     ;;; Disables further send operations.
     $wr
-  )
-)
-
-;;; Describes the type of timeout what will be changed
-(typename $timeout_type
-  (enum (@witx tag u8)
-    ;;; Read operation timeout
-    $read
-    ;;; Write operation timeout
-    $write
-    ;;; Connections to other sockets
-    $connect
-    ;;; Accept connection timeout
-    $accept
   )
 )
 

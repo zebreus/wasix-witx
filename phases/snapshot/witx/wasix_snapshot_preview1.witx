@@ -946,7 +946,7 @@
 
   ;;; Sets a particular socket setting
   ;;; Note: This is similar to `setsockopt` in POSIX for SO_REUSEADDR
-  (@interface func (export "sock_set_opt")
+  (@interface func (export "sock_set_opt_flag")
     ;;; Socket descriptor
     (param $fd $fd)
     ;;; Socket option to be set
@@ -958,7 +958,7 @@
 
   ;;; Retrieve status of particular socket seting
   ;;; Note: This is similar to `getsockopt` in POSIX for SO_REUSEADDR
-  (@interface func (export "sock_get_opt")
+  (@interface func (export "sock_get_opt_flag")
     ;;; Socket descriptor
     (param $fd $fd)
     ;;; Socket option to be retrieved
@@ -966,72 +966,46 @@
     (result $error (expected $bool (error $errno)))
   )
 
-  ;;; Sets how long the socket will linger
-  (@interface func (export "sock_set_linger")
+  ;;; Sets one of the times the socket
+  (@interface func (export "sock_set_opt_time")
     ;;; Socket descriptor
     (param $fd $fd)
-    ;;; Value to set the linger to
-    (param $linger (@witx const_pointer $option_timestamp))
-    (result $error (expected (error $errno)))
-  )
-
-  ;;; Retrieve how long the socket will linger for
-  (@interface func (export "sock_get_linger")
-    ;;; Socket descriptor
-    (param $fd $fd)
-    (result $error (expected $option_timestamp (error $errno)))
-  )
-
-  ;;; Sets one of the timeouts on the socket
-  (@interface func (export "sock_set_timeout")
-    ;;; Socket descriptor
-    (param $fd $fd)
-    ;;; Type of timeout to be changed
-    (param $ty $timeout_type)
-    ;;; Value to set the timeout to
+    ;;; Socket option to be set
+    (param $sockopt $sock_option)
+    ;;; Value to set the time to
     (param $timeout (@witx const_pointer $option_timestamp))
     (result $error (expected (error $errno)))
   )
 
-  ;;; Retrieve one of the timeouts on the socket
-  (@interface func (export "sock_get_timeout")
+  ;;; Retrieve one of the times on the socket
+  (@interface func (export "sock_get_opt_time")
     ;;; Socket descriptor
     (param $fd $fd)
-    ;;; Type of timeout to be retrieved
-    (param $ty $timeout_type)
+    ;;; Socket option to be retrieved
+    (param $sockopt $sock_option)
     (result $error (expected $option_timestamp (error $errno)))
   )
 
-  ;;; Set TTL for this socket
-  (@interface func (export "sock_set_ttl")
+  ;;; Set size of particular option for this socket
+  ;;; Note: This is similar to `setsockopt` in POSIX for SO_RCVBUF
+  (@interface func (export "sock_set_opt_size")
     ;;; Socket descriptor
     (param $fd $fd)
-    ;;; Time to live
-    (param $ttl $size)
+    ;;; Socket option to be set
+    (param $sockopt $sock_option)
+    ;;; Buffer size
+    (param $size $filesize)
     (result $error (expected (error $errno)))
   )
 
-  ;;; Retrieve the TTL for this socket
-  (@interface func (export "sock_get_ttl")
+  ;;; Retrieve the size of particular option for this socket
+  ;;; Note: This is similar to `getsockopt` in POSIX for SO_RCVBUF
+  (@interface func (export "sock_get_opt_size")
     ;;; Socket descriptor
     (param $fd $fd)
-    (result $error (expected $size (error $errno)))
-  )
-
-  ;;; Set TTL for IPv4 multicast for this socket
-  (@interface func (export "sock_set_multicast_ttl_v4")
-    ;;; Socket descriptor
-    (param $fd $fd)
-    ;;; Time to live
-    (param $ttl $size)
-    (result $error (expected (error $errno)))
-  )
-
-  ;;; Retrieve the TTL for IPv4 multicast for this socket
-  (@interface func (export "sock_get_multicast_ttl_v4")
-    ;;; Socket descriptor
-    (param $fd $fd)
-    (result $error (expected $size (error $errno)))
+    ;;; Socket option to be retrieved
+    (param $sockopt $sock_option)
+    (result $error (expected $filesize (error $errno)))
   )
 
   ;;; Joins a particular multicast IPv4 group
@@ -1076,42 +1050,6 @@
     ;;; Interface that will left
     (param $interface u32)
     (result $error (expected (error $errno)))
-  )
-
-  ;;; Set size of receive buffer
-  ;;; Note: This is similar to `setsockopt` in POSIX for SO_RCVBUF
-  (@interface func (export "sock_set_recv_buf_size")
-    ;;; Socket descriptor
-    (param $fd $fd)
-    ;;; Buffer size
-    (param $size $filesize)
-    (result $error (expected (error $errno)))
-  )
-
-  ;;; Retrieve the size of the receive buffer
-  ;;; Note: This is similar to `getsockopt` in POSIX for SO_RCVBUF
-  (@interface func (export "sock_get_recv_buf_size")
-    ;;; Socket descriptor
-    (param $fd $fd)
-    (result $error (expected $filesize (error $errno)))
-  )
-
-  ;;; Set size of send buffer
-  ;;; Note: This is similar to `setsockopt` in POSIX for SO_SNDBUF
-  (@interface func (export "sock_set_send_buf_size")
-    ;;; Socket descriptor
-    (param $fd $fd)
-    ;;; Buffer size
-    (param $size $filesize)
-    (result $error (expected (error $errno)))
-  )
-
-  ;;; Retrieve the size of the send buffer
-  ;;; Note: This is similar to `getsockopt` in POSIX for SO_SNDBUF
-  (@interface func (export "sock_get_send_buf_size")
-    ;;; Socket descriptor
-    (param $fd $fd)
-    (result $error (expected $filesize (error $errno)))
   )
 
   ;;; Bind a socket
