@@ -1279,6 +1279,8 @@
 ;;; Socket option
 (typename $sock_option
   (enum (@witx tag u8)
+    ;;; Socket option that does nothing
+    $noop
     ;;; Reuse Port
     $reuse_port
     ;;; Reuse Address
