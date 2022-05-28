@@ -274,14 +274,14 @@
     $poll_fd_readwrite
     ;;; The right to invoke `sock_shutdown`.
     $sock_shutdown
+    ;;; Accept incoming connection
+    $sock_accept
     ;;; Connect to an address
     $sock_connect
     ;;; Listen for incoming connection on an address
     $sock_listen
     ;;; Bind an address to a socket
     $sock_bind
-    ;;; Accept incoming connection
-    $sock_accept
     ;;; Receive data on a socket
     $sock_recv
     ;;; Send data on a socket
@@ -425,6 +425,8 @@
     $socket_stream
     ;;; The file refers to a symbolic link inode.
     $symbolic_link
+    ;;; The file descriptor or file refers to a raw socket.
+    $socket_raw
   )
 )
 
@@ -965,6 +967,8 @@
     $recv_peek
     ;;; On byte-stream sockets, block until the full amount of data can be returned.
     $recv_waitall
+    ;;; Indicates if the packet should be truncated to the buffer size
+    $recv_data_truncated
   )
 )
 
@@ -983,6 +987,278 @@
     $socket_dgram
     ;;; The file descriptor or file refers to a byte-stream socket.
     $socket_stream
+    ;;; The file descriptor or file refers to a raw socket.
+    $socket_raw
+  )
+)
+
+;;; Socket protocol type
+(typename $sock_proto
+  (enum (@witx tag u16)
+    $ip
+    $icmp
+    $igmp
+    $proto_3
+    $ipip
+    $proto_5
+    $tcp
+    $proto_7
+    $egp
+    $proto_9
+    $proto_10
+    $proto_11
+    $pup
+    $proto_13
+    $proto_14
+    $proto_15
+    $proto_16
+    $udp
+    $proto_18
+    $proto_19
+    $proto_20
+    $proto_21
+    $idp
+    $proto_23
+    $proto_24
+    $proto_25
+    $proto_26
+    $proto_27
+    $proto_28
+    $proto_tp
+    $proto_30
+    $proto_31
+    $proto_32
+    $dccp
+    $proto_34
+    $proto_35
+    $proto_36
+    $proto_37
+    $proto_38
+    $proto_39
+    $proto_40
+    $ipv6
+    $proto_42
+    $routing
+    $fragment
+    $proto_45
+    $rsvp
+    $gre
+    $proto_48
+    $proto_49
+    $esp
+    $ah
+    $proto_52
+    $proto_53
+    $proto_54
+    $proto_55
+    $proto_56
+    $proto_57
+    $icmpv6
+    $none
+    $dstopts
+    $proto_61
+    $proto_62
+    $proto_63
+    $proto_64
+    $proto_65
+    $proto_66
+    $proto_67
+    $proto_68
+    $proto_69
+    $proto_70
+    $proto_71
+    $proto_72
+    $proto_73
+    $proto_74
+    $proto_75
+    $proto_76
+    $proto_77
+    $proto_78
+    $proto_79
+    $proto_80
+    $proto_81
+    $proto_82
+    $proto_83
+    $proto_84
+    $proto_85
+    $proto_86
+    $proto_87
+    $proto_88
+    $proto_89
+    $proto_90
+    $proto_91
+    $mtp
+    $proto_93
+    $beetph
+    $proto_95
+    $proto_96
+    $proto_97
+    $encap
+    $proto_99
+    $proto_100
+    $proto_101
+    $proto_102
+    $pim
+    $proto_104
+    $proto_105
+    $proto_106
+    $proto_107
+    $comp
+    $proto_109
+    $proto_110
+    $proto_111
+    $proto_112
+    $proto_113
+    $proto_114
+    $proto_115
+    $proto_116
+    $proto_117
+    $proto_118
+    $proto_119
+    $proto_120
+    $proto_121
+    $proto_122
+    $proto_123
+    $proto_124
+    $proto_125
+    $proto_126
+    $proto_127
+    $proto_128
+    $proto_129
+    $proto_130
+    $proto_131
+    $sctp
+    $proto_133
+    $proto_134
+    $mh
+    $udplite
+    $mpls
+    $proto_138
+    $proto_139
+    $proto_140
+    $proto_141
+    $proto_142
+    $ethernet
+    $proto_144
+    $proto_145
+    $proto_146
+    $proto_147
+    $proto_148
+    $proto_149
+    $proto_150
+    $proto_151
+    $proto_152
+    $proto_153
+    $proto_154
+    $proto_155
+    $proto_156
+    $proto_157
+    $proto_158
+    $proto_159
+    $proto_160
+    $proto_161
+    $proto_162
+    $proto_163
+    $proto_164
+    $proto_165
+    $proto_166
+    $proto_167
+    $proto_168
+    $proto_169
+    $proto_170
+    $proto_171
+    $proto_172
+    $proto_173
+    $proto_174
+    $proto_175
+    $proto_176
+    $proto_177
+    $proto_178
+    $proto_179
+    $proto_180
+    $proto_181
+    $proto_182
+    $proto_183
+    $proto_184
+    $proto_185
+    $proto_186
+    $proto_187
+    $proto_188
+    $proto_189
+    $proto_190
+    $proto_191
+    $proto_192
+    $proto_193
+    $proto_194
+    $proto_195
+    $proto_196
+    $proto_197
+    $proto_198
+    $proto_199
+    $proto_200
+    $proto_201
+    $proto_202
+    $proto_203
+    $proto_204
+    $proto_205
+    $proto_206
+    $proto_207
+    $proto_208
+    $proto_209
+    $proto_210
+    $proto_211
+    $proto_212
+    $proto_213
+    $proto_214
+    $proto_215
+    $proto_216
+    $proto_217
+    $proto_218
+    $proto_219
+    $proto_220
+    $proto_221
+    $proto_222
+    $proto_223
+    $proto_224
+    $proto_225
+    $proto_226
+    $proto_227
+    $proto_228
+    $proto_229
+    $proto_230
+    $proto_231
+    $proto_232
+    $proto_233
+    $proto_234
+    $proto_235
+    $proto_236
+    $proto_237
+    $proto_238
+    $proto_239
+    $proto_240
+    $proto_241
+    $proto_242
+    $proto_243
+    $proto_244
+    $proto_245
+    $proto_246
+    $proto_247
+    $proto_248
+    $proto_249
+    $proto_250
+    $proto_251
+    $proto_252
+    $proto_253
+    $proto_254
+    $proto_raw
+    $proto_256
+    $proto_257
+    $proto_258
+    $proto_259
+    $proto_260
+    $proto_261
+    $mptcp
+    $max
   )
 )
 
@@ -1003,12 +1279,16 @@
 ;;; Socket option
 (typename $sock_option
   (enum (@witx tag u8)
+    ;;; Socket option that does nothing
+    $noop
     ;;; Reuse Port
     $reuse_port
     ;;; Reuse Address
     $reuse_addr
     ;;; No delay
-    $nodelay
+    $no_delay
+    ;;; Dont route
+    $dont_route
     ;;; Only accept IPv6
     $only_v6
     ;;; Broadcast
@@ -1019,6 +1299,40 @@
     $multicast_loop_v6
     ;;; Promiscuous
     $promiscuous
+    ;;; Socket is listening
+    $listening
+    ;;; Last error
+    $last_error
+    ;;; Keep alive
+    $keep_alive
+    ;;; Linger time
+    $linger
+    ;;; Out-of-band inline
+    $oob_inline
+    ;;; Receive buffer size
+    $recv_buf_size
+    ;;; Send buffer size
+    $send_buf_size
+    ;;; Receive lowat
+    $recv_lowat
+    ;;; Send lowat
+    $send_lowat
+    ;;; Receive timeout
+    $recv_timeout
+    ;;; Send timeout
+    $send_timeout
+    ;;; Connect timeout
+    $connect_timeout
+    ;;; Accept timeout
+    $accept_timeout
+    ;;; TTL of packets
+    $ttl
+    ;;; Multicast TTL for IPv4
+    $multicast_ttl_v4
+    ;;; Type of socket
+    $type
+    ;;; Protocol of the socket
+    $proto
   )
 )
 
@@ -1054,10 +1368,37 @@
 ;;; Address family
 (typename $address_family
   (enum (@witx tag u8)
+    ;;; Unspecified
+    $unspec
     ;;; IP v4
     $inet4
     ;;; IP v6
     $inet6
+    ;;; Unix
+    $unix
+  )
+)
+
+;;; Represents an unspecified address
+(typename $addr_unspec
+  (record
+    (field $n0 u8)
+  )
+)
+
+;;; An unspecified address with a port
+(typename $addr_unspec_port
+  (record
+    (field $port $ip_port)
+    (field $addr $addr_unspec)
+  )
+)
+
+;;; An unspecified address with a cidr
+(typename $addr_unspec_cidr
+  (record
+    (field $addr $addr_unspec)
+    (field $prefix u8)
   )
 )
 
@@ -1074,8 +1415,8 @@
 ;;; An IPv4 address with a port number
 (typename $addr_ip4_port
   (record
-    (field $addr $addr_ip4)
     (field $port $ip_port)
+    (field $addr $addr_ip4)
   )
 )
 
@@ -1101,11 +1442,49 @@
   )
 )
 
+;;; Unix socket that is bound to no more than 15 bytes
+(typename $addr_unix
+  (record
+    (field $b0 u8)
+    (field $b1 u8)
+    (field $b2 u8)
+    (field $b3 u8)
+    (field $b4 u8)
+    (field $b5 u8)
+    (field $b6 u8)
+    (field $b7 u8)
+    (field $b8 u8)
+    (field $b9 u8)
+    (field $b10 u8)
+    (field $b11 u8)
+    (field $b12 u8)
+    (field $b13 u8)
+    (field $b14 u8)
+    (field $b15 u8)
+  )
+)
+
+;;; A unix socket with a port
+(typename $addr_unix_port
+  (record
+    (field $port $ip_port)
+    (field $addr $addr_unix)
+  )
+)
+
+;;; A unix socket with a cidr
+(typename $addr_unix_cidr
+  (record
+    (field $addr $addr_unix)
+    (field $prefix u8)
+  )
+)
+
 ;;; An IPv6 address with a port number
 (typename $addr_ip6_port
   (record
-    (field $addr $addr_ip6)
     (field $port $ip_port)
+    (field $addr $addr_ip6)
   )
 )
 
@@ -1121,8 +1500,10 @@
 (typename $addr_ip
   (union
     (@witx tag $address_family)
+    $addr_unspec
     $addr_ip4
     $addr_ip6
+    $addr_unix
   )
 )
 
@@ -1132,8 +1513,10 @@
 (typename $addr_port
   (union
     (@witx tag $address_family)
+    $addr_unspec_port
     $addr_ip4_port
     $addr_ip6_port
+    $addr_unix_port
   )
 )
 
@@ -1143,8 +1526,10 @@
 (typename $addr_cidr
   (union
     (@witx tag $address_family)
+    $addr_unspec_cidr
     $addr_ip4_cidr
     $addr_ip6_cidr
+    $addr_unix_cidr
   )
 )
 
@@ -1195,20 +1580,6 @@
     $rd
     ;;; Disables further send operations.
     $wr
-  )
-)
-
-;;; Describes the type of timeout what will be changed
-(typename $timeout_type
-  (flags (@witx repr u8)
-    ;;; Read operation timeout
-    $read
-    ;;; Write operation timeout
-    $write
-    ;;; Connections to other sockets
-    $connect
-    ;;; Accept connection timeout
-    $accept
   )
 )
 
