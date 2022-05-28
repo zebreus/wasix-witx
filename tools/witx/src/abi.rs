@@ -592,7 +592,7 @@ impl InterfaceFunc {
                                 if crate::is_64bit_arch() {
                                     params.push(WasmType::I64)
                                 } else {
-                                    params.push(WasmType::I64)
+                                    params.push(WasmType::I32)
                                 }
                             },
                         }
