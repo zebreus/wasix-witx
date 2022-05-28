@@ -1157,9 +1157,9 @@
 
   ;;; Sends the entire contents of a file down a socket
   (@interface func (export "sock_send_file")
-    (param $fd $out_fd)
+    (param $out_fd $fd)
     ;;; Open file that has the data to be transmitted
-    (param $fd $in_fd)
+    (param $in_fd $fd)
     ;;; Offset into the file to start reading at
     (param $offset $filesize)
     ;;; Number of bytes to be sent
