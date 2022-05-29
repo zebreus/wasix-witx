@@ -427,6 +427,8 @@
     $symbolic_link
     ;;; The file descriptor or file refers to a raw socket.
     $socket_raw
+    ;;; The file descriptor or file refers to a sequential packet socket.
+    $socket_seqpacket
   )
 )
 
