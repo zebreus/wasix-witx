@@ -8,7 +8,7 @@
 
 (use "typenames.witx")
 
-(module $wasix_snapshot_preview1
+(module $wasix_module_name
   ;;; Linear memory to be accessed by WASI functions that need it.
   (import "memory" (memory))
 
@@ -780,15 +780,6 @@
     ;;; Pointer to a buffer that will be filled with the current
     ;;; status of this HTTP request
     (param $status (@witx pointer $http_status))
-    ;;; Buffer that will hold the status text
-    (param $status_text (@witx pointer u8))
-    ;;; This field will also be filled with the number of bytes returned in the status text
-    (param $status_text_len (@witx pointer $pointersize))
-    ;;; Buffer that will hold the response headers
-    (param $headers (@witx pointer u8))
-    ;;; This field will also be filled with the number of bytes returned in the response headers
-    (param $headers_len (@witx pointer $pointersize))
-    (result $error (expected (error $errno)))
   )
 
   ;;; Securely connects to a particular remote network
@@ -807,27 +798,27 @@
     (result $error (expected (error $errno)))
   )
 
-  ;;; Acquires a set of IP addresses using DHCP
+  ;;; Acquires a set of addresses using DHCP
   (@interface func (export "port_dhcp_acquire")
     (result $error (expected (error $errno)))
   )
 
-  ;;; Adds another static IP address to the local port
-  (@interface func (export "port_ip_add")
-    ;;; IP address to be added
-    (param $ip (@witx const_pointer $addr_cidr))
+  ;;; Adds another static address to the local port
+  (@interface func (export "port_addr_add")
+    ;;; Address to be added
+    (param $addr (@witx const_pointer $addr_cidr))
     (result $error (expected (error $errno)))
   )
 
-  ;;; Removes an IP address from the local port
-  (@interface func (export "port_ip_remove")
-    ;;; IP address to be removed
-    (param $ip (@witx const_pointer $addr_ip))
+  ;;; Removes an address from the local port
+  (@interface func (export "port_addr_remove")
+    ;;; Address to be removed
+    (param $addr (@witx const_pointer $addr))
     (result $error (expected (error $errno)))
   )
 
-  ;;; Clears all the IP addresses on the local port
-  (@interface func (export "port_ip_clear")
+  ;;; Clears all the addresses on the local port
+  (@interface func (export "port_addr_clear")
     (result $error (expected (error $errno)))
   )
 
@@ -836,29 +827,29 @@
     (result $error (expected $hardware_address (error $errno)))
   )
 
-  ;;; Returns a list of all the IP addresses owned by the local port
+  ;;; Returns a list of all the addresses owned by the local port
   ;;; This function fills the output buffer as much as possible.
-  ;;; If the buffer is not big enough then the nips address will be
+  ;;; If the buffer is not big enough then the naddrs address will be
   ;;; filled with the buffer size needed and the EOVERFLOW will be returned
-  (@interface func (export "port_ip_list")
-    ;;; The buffer where IP addresses will be stored
-    (param $ips (@witx pointer $addr_cidr))
-    (param $nips (@witx pointer $size))
-    ;;; The number of IP addresses returned.
+  (@interface func (export "port_addr_list")
+    ;;; The buffer where addresses will be stored
+    (param $addrs (@witx pointer $addr_cidr))
+    (param $naddrs (@witx pointer $size))
+    ;;; The number of addresses returned.
     (result $error (expected (error $errno)))
   )
 
   ;;; Adds a default gateway to the port
   (@interface func (export "port_gateway_set")
-    ;;; IP address of the default gateway
-    (param $ip (@witx const_pointer $addr_ip))
+    ;;; Address of the default gateway
+    (param $addr (@witx const_pointer $addr))
     (result $error (expected (error $errno)))
   )
 
   ;;; Adds a new route to the local port
   (@interface func (export "port_route_add")
     (param $cidr (@witx const_pointer $addr_cidr))
-    (param $via_router (@witx const_pointer $addr_ip))
+    (param $via_router (@witx const_pointer $addr))
     (param $preferred_until (@witx const_pointer $option_timestamp))
     (param $expires_at (@witx const_pointer $option_timestamp))
     (result $error (expected (error $errno)))
@@ -866,7 +857,7 @@
 
   ;;; Removes an existing route from the local port
   (@interface func (export "port_route_remove")
-    (param $cidr (@witx const_pointer $addr_ip))
+    (param $cidr (@witx const_pointer $addr))
     (result $error (expected (error $errno)))
   )
 
@@ -1181,9 +1172,9 @@
     (param $host string)
     ;;; Port hint (zero if no hint is supplied)
     (param $port u16)
-    ;;; The buffer where IP addresses will be stored
-    (param $ips (@witx pointer $addr_ip))
-    (param $nips $size)
+    ;;; The buffer where addresses will be stored
+    (param $addrs (@witx pointer $addr))
+    (param $naddrs $size)
     ;;; The number of IP addresses returned during the DNS resolution.
     (result $error (expected $size (error $errno)))
   )

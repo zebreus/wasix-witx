@@ -1501,7 +1501,7 @@
 )
 
 ;;; Union of all possible addresses type
-(typename $addr_ip
+(typename $addr
   (union
     (@witx tag $address_family)
     $addr_unspec
@@ -1511,7 +1511,7 @@
   )
 )
 
-(typename $addr_ip_array (list $addr_ip))
+(typename $addr_array (list $addr))
 
 ;;; Union that makes a generic IP address and port
 (typename $addr_port
@@ -1542,7 +1542,7 @@
 (typename $route
   (record
     (field $cidr $addr_cidr)
-    (field $via_router $addr_ip)
+    (field $via_router $addr)
     (field $preferred_until $option_timestamp)
     (field $expires_at $option_timestamp)
   )
