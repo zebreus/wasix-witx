@@ -255,6 +255,7 @@
   ;;; Creates a file handle for event notifications
   ;;;
   (@interface func (export "fd_event")
+    (param $initial_val u64)
     (param $flags $eventfdflags)
     (result $error (expected $fd (error $errno)))
   )
