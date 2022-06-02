@@ -590,6 +590,14 @@
   )
 )
 
+;;; Flags for the 'fd_event' call
+(typename $eventfdflags
+  (flags (@witx repr u16)
+    ;;; Indicates if this event file description will run as a semaphore
+    $Semaphore
+  )
+)
+
 ;;; The contents of an `event` when type is `eventtype::fd_read` or
 ;;; `eventtype::fd_write`.
 (typename $event_fd_readwrite
