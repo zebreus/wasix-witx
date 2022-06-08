@@ -14,7 +14,7 @@ pub fn docs_path(phase_paths: &[PathBuf]) -> PathBuf {
 pub fn snapshot() -> Result<Vec<PathBuf>> {
     let root = repo_root()?;
     let snapshot = root.join("phases/snapshot/witx");
-    let paths = vec![snapshot.join("wasix_snapshot_preview1.witx")];
+    let paths = vec![snapshot.join("wasix_v1.witx")];
     ensure_exists(&paths)?;
     Ok(paths)
 }

@@ -4,7 +4,7 @@
 (witx
   (load "../../../../phases/old/snapshot_0/witx/wasi_unstable.witx"))
 (witx
-  (load "../../../../phases/snapshot/witx/wasix_snapshot_preview1.witx"))
+  (load "../../../../phases/snapshot/witx/wasix_v1.witx"))
 
 (witx
   (load

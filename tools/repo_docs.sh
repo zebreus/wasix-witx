@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -ex
 cd $(dirname $(realpath $0))/witx-cli
-cargo run -- docs $1 ../../phases/snapshot/witx/wasix_snapshot_preview1.witx --output ../../phases/snapshot/docs.md
+cargo run -- docs $1 ../../phases/snapshot/witx/wasix_v1.witx --output ../../phases/snapshot/docs.md
 cargo run -- docs $1 ../../phases/old/snapshot_0/witx/wasix_unstable.witx --output ../../phases/old/snapshot_0/docs.md
 cargo run -- docs $1 \
   ../../phases/ephemeral/witx/wasix_ephemeral_args.witx \
