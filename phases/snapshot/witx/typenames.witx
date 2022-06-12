@@ -349,6 +349,15 @@
   )
 )
 
+;;; Represents an optional file descriptior
+(typename $option_fd
+  (union
+    (@witx tag $option)
+    u8
+    $fd
+  )
+)
+
 ;;; Bool type
 (typename $bool
   (enum (@witx tag u8)
@@ -772,12 +781,14 @@
 ;;; Process handles.
 (typename $process_handles
   (record
+    ;;; Handle that represents the process
+    (field $bid $bid)
     ;;; File handle for STDIN
-    (field $stdin $fd)
+    (field $stdin $option_fd)
     ;;; File handle for STDOUT
-    (field $stdout $fd)
+    (field $stdout $option_fd)
     ;;; File handle for STDERR
-    (field $stderr $fd)
+    (field $stderr $option_fd)
   )
 )
 
