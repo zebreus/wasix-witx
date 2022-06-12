@@ -769,11 +769,9 @@
   )
 )
 
-;;; Bus process handles.
-(typename $bus_handles
+;;; Process handles.
+(typename $process_handles
   (record
-    ;;; Handle of the bus process
-    (field $handle $bid)
     ;;; File handle for STDIN
     (field $stdin $fd)
     ;;; File handle for STDOUT
@@ -786,20 +784,10 @@
 ;;; Bus process event.
 (typename $bus_event_exit
   (record
+    ;;; Handle of the bus process that has exited
+    (field $bid $bid)
     ;;; Exit code of the bus process that has exited
     (field $rval $exitcode)
-  )
-)
-
-;;; Type of a subscription to an event or its occurrence.
-(typename $bus_data_type
-  (enum (@witx tag u8)
-    ;;; The bus process has been invoked by a caller
-    $call
-    ;;; Callback with some out-of-band data to the caller
-    $callback
-    ;;; Call within the bus process has returned
-    $reply
   )
 )
 
@@ -821,23 +809,44 @@
   )
 )
 
-;;; Bus data for a callback, call or reply event.
-(typename $bus_event_data
+;;; Represents an invocation from a caller
+(typename $bus_event_call
   (record
-    ;;; Type of event data that is held here
-    (field $ty $bus_data_type)
+    ;;; Parent handle if this is a part of a call stack
+    (field $parent $option_cid)
+    ;;; Handle of the call
+    (field $cid $cid)
     ;;; Format of the data on the bus
     (field $format $bus_data_format)
-    ;;; Handle of the call that has made a callback
-    (field $cid $cid)
     ;;; The topic that describes the event that happened
+    ;;; (note: this buffer must NOT be freed - it will be reused on subsequent calls)
+    (field $topic (@witx pointer u8))
+    ;;; The size of the topic name
     (field $topic_len $pointersize)
     ;;; The buffer where event data is stored
+    ;;; (note: this buffer must be freed by the receiver)
+    (field $buf (@witx pointer u8))
+    ;;; The amount of data held in the buffer
     (field $buf_len $pointersize)
   )
 )
 
-;;; Bus process reply event.
+;;; Represents the completion of an invocation from a caller
+(typename $bus_event_result
+  (record
+    ;;; Format of the data on the bus
+    (field $format $bus_data_format)
+    ;;; Handle of the call
+    (field $cid $cid)
+    ;;; The buffer where event data is stored
+    ;;; (note: this buffer must be freed by the receiver)
+    (field $buf (@witx pointer u8))
+    ;;; The amount of data held in the buffer
+    (field $buf_len $pointersize)
+  )
+)
+
+;;; Bus event when an error occurs on a call.
 (typename $bus_event_fault
   (record
     ;;; Handle of the call where this event occurs for
@@ -847,15 +856,29 @@
   )
 )
 
+;;; Frees all the resources associated with a call.
+(typename $bus_event_close
+  (record
+    ;;; Handle of the call to release resources
+    (field $cid $cid)
+  )
+)
+
 ;;; Type of a subscription to an event or its occurrence.
 (typename $bus_event_type
   (enum (@witx tag u8)
+    ;;; Nothing has happened
+    $noop
     ;;; The bus process has exited
     $exit
-    ;;; The bus data recevied for a specific event
-    $data
+    ;;; Someone has invoked something
+    $call
+    ;;; An invocation has completed and this is the result
+    $result
     ;;; Fault has occured on one of the calls
     $fault
+    ;;; Frees all the resources on a call
+    $close
   )
 )
 
@@ -863,9 +886,12 @@
 (typename $bus_event
   (union
     (@witx tag $bus_event_type)
+    u8
     $bus_event_exit
-    $bus_event_data
+    $bus_event_call
+    $bus_event_result
     $bus_event_fault
+    $bus_event_close
   )
 )
 
