@@ -588,14 +588,14 @@
   ;;; Returns true if this actually woke up such a thread,
   ;;; or false if no thread was waiting on this futex.
   (@interface func (export "futex_wake")
-    ;;; Memory location that will be incremented by one
+    ;;; Memory location that holds a futex that others may be waiting on
     (param $futex (@witx pointer u32))
     (result $error (expected $bool (error $errno)))
   )
 
   ;;; Wake up all threads that are waiting on futex_wait on this futex.
   (@interface func (export "futex_wake_all")
-    ;;; Memory location that will be set to zero
+    ;;; Memory location that holds a futex that others may be waiting on
     (param $futex (@witx pointer u32))
     (result $error (expected $bool (error $errno)))
   )
