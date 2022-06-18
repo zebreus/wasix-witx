@@ -533,6 +533,10 @@
     ;;; will receive the user_data supplied
     ;;; Function signature fn(u64)
     (param $name string)
+    ;;; Name of the function memory allocation function that allocates the
+    ;;; stack frame
+    ;;; Function signature fn(u64) -> u64
+    (param $malloc string)
     ;;; User data that will be supplied to the function when its called
     (param $user_data u64)
     ;;; Indicates if the function will operate as a reactor or
