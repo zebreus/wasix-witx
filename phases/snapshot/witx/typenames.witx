@@ -338,7 +338,7 @@
 )
 
 ;;; A bus call handle
-(typename $cid (handle))
+(typename $cid u64)
 
 ;;; Represents an optional call handle
 (typename $option_cid
