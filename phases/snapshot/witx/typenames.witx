@@ -17,6 +17,16 @@
 ;;; Timestamp in nanoseconds.
 (typename $timestamp u64)
 
+;;; Represents the first 128 bits of a SHA256 hash
+(typename $hash
+  (record
+    ;;; First set of 64 bits
+    (field $b0 u64)
+    ;;; second set of 64 bits
+    (field $b1 u64)
+  )
+)
+
 ;;; Identifiers for clocks.
 (typename $clockid
   (enum (@witx tag u32)
@@ -832,7 +842,7 @@
     ;;; Format of the data on the bus
     (field $format $bus_data_format)
     ;;; Hash of the topic name that identifies this operation
-    (field $topic_hash u128)
+    (field $topic_hash $hash)
     ;;; File descriptor that holds the event data
     (field $fd $fd)
   )
