@@ -717,7 +717,6 @@
     (param $timeout $timestamp)
     ;;; An events buffer that will hold any received bus events
     (param $events (@witx pointer $bus_event))
-    (param $nevents $size)
     ;;; Name of the function that will be invoked to allocate memory
     ;;; Function signature fn(u64) -> u64
     (param $malloc string)
