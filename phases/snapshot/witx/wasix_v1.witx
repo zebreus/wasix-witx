@@ -679,8 +679,8 @@
     ;;; reply is received. It is then the  callers responsibility
     ;;; to invoke 'bus_drop' when they are finished with the call
     (param $keep_alive $bool)
-    ;;; Topic that describes the type of call to made
-    (param $topic string)
+    ;;; Topic hash that describes the type of call to made
+    (param $topic_hash (@witx const_pointer $hash))
     ;;; Format of the data pushed onto the bus
     (param $format $bus_data_format)
     ;;; The buffer where data to be transmitted is stored
@@ -696,8 +696,8 @@
     ;;; reply is received. It is then the  callers responsibility
     ;;; to invoke 'bus_drop' when they are finished with the call
     (param $keep_alive $bool)
-    ;;; Topic that describes the type of call to made
-    (param $topic string)
+    ;;; Topic hash that describes the type of call to made
+    (param $topic_hash (@witx const_pointer $hash))
     ;;; Format of the data pushed onto the bus
     (param $format $bus_data_format)
     ;;; The buffer where data to be transmitted is stored
