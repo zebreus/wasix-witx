@@ -529,10 +529,6 @@
   ;;; The function referenced by the fork call must be
   ;;; exported by the web assembly process.
   (@interface func (export "thread_spawn")
-    ;;; Name of the function that will be invoked as a new thread which
-    ;;; will receive the user_data supplied
-    ;;; Function signature fn(u64)
-    (param $name string)
     ;;; User data that will be supplied to the function when its called
     (param $user_data u64)
     ;;; Indicates if the function will operate as a reactor or
@@ -718,9 +714,6 @@
     ;;; An events buffer that will hold any received bus events
     (param $events (@witx pointer $bus_event))
     (param $nevents $size)
-    ;;; Name of the function that will be invoked to allocate memory
-    ;;; Function signature fn(u64) -> u64
-    (param $malloc string)
     ;;; Returns the number of events that have occured
     (result $error (expected $size (error $bus_error)))
   )
