@@ -831,16 +831,10 @@
     (field $cid $cid)
     ;;; Format of the data on the bus
     (field $format $bus_data_format)
-    ;;; The topic that describes the event that happened
-    ;;; (note: this buffer must NOT be freed - it will be reused on subsequent calls)
-    (field $topic (@witx pointer u8))
-    ;;; The size of the topic name
-    (field $topic_len $pointersize)
-    ;;; The buffer where event data is stored
-    ;;; (note: this buffer must be freed by the receiver)
-    (field $buf (@witx pointer u8))
-    ;;; The amount of data held in the buffer
-    (field $buf_len $pointersize)
+    ;;; Hash of the topic name that identifies this operation
+    (field $topic_hash u128)
+    ;;; File descriptor that holds the event data
+    (field $fd $fd)
   )
 )
 
@@ -851,11 +845,8 @@
     (field $format $bus_data_format)
     ;;; Handle of the call
     (field $cid $cid)
-    ;;; The buffer where event data is stored
-    ;;; (note: this buffer must be freed by the receiver)
-    (field $buf (@witx pointer u8))
-    ;;; The amount of data held in the buffer
-    (field $buf_len $pointersize)
+    ;;; File descriptor that holds the event data
+    (field $fd $fd)
   )
 )
 
