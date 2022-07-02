@@ -17,6 +17,12 @@
 ;;; Timestamp in nanoseconds.
 (typename $timestamp u64)
 
+;;; Key for a thread local variable.
+(typename $tl_key u32)
+
+;;; Value of a thread local variable.
+(typename $tl_val u64)
+
 ;;; Represents the first 128 bits of a SHA256 hash
 (typename $hash
   (record

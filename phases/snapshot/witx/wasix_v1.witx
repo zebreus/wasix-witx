@@ -526,8 +526,7 @@
 
   ;;; Creates a new thread by spawning that shares the same
   ;;; memory address space, file handles and main event loops.
-  ;;; The function referenced by the fork call must be
-  ;;; exported by the web assembly process.
+  ;;; The web assembly process must export function named '_start_thread'
   (@interface func (export "thread_spawn")
     ;;; User data that will be supplied to the function when its called
     (param $user_data u64)
@@ -551,6 +550,42 @@
   ;;; (threads indices are sequencial from zero)
   (@interface func (export "thread_id")
     (result $error (expected $tid (error $errno)))
+  )
+
+  ;;; Create a thread local variable
+  ;;; If The web assembly process exports function named '_thread_local_destroy'
+  ;;; then it will be invoked when the thread goes out of scope and dies.
+  (@interface func (export "thread_local_create")
+    ;;; User data that will be passed to the destructor
+    ;;; when the thread variable goes out of scope
+    (param $user_data u64)
+    (result $error (expected $tl_key (error $errno)))
+  )
+
+  ;;; Destroys a thread local variable
+  (@interface func (export "thread_local_destroy")
+    ;;; User data that will be passed to the destructor
+    ;;; when the thread variable goes out of scope
+    (param $user_data u64)
+    ;;; Thread key that was previously created
+    (param $key $tl_key)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Sets the value of a thread local variable
+  (@interface func (export "thread_local_set")
+    ;;; Thread key that this local variable will be associated with
+    (param $key $tl_key)
+    ;;; Value to be set for the thread local variable
+    (param $val $tl_val)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Gets the value of a thread local variable
+  (@interface func (export "thread_local_get")
+    ;;; Thread key that this local variable that was previous set
+    (param $key $tl_key)
+    (result $error (expected $tl_val (error $errno)))
   )
 
   ;;; Joins this thread with another thread, blocking this
