@@ -707,10 +707,6 @@
   (@interface func (export "bus_call")
     ;;; Handle of the bus process to invoke the call within
     (param $bid $bid)
-    ;;; Causes the call handle to remain open even when A
-    ;;; reply is received. It is then the  callers responsibility
-    ;;; to invoke 'bus_drop' when they are finished with the call
-    (param $keep_alive $bool)
     ;;; Topic hash that describes the type of call to made
     (param $topic_hash (@witx const_pointer $hash))
     ;;; Format of the data pushed onto the bus
@@ -724,10 +720,6 @@
   (@interface func (export "bus_subcall")
     ;;; Parent bus call that this is related to
     (param $parent $cid)
-    ;;; Causes the call handle to remain open even when A
-    ;;; reply is received. It is then the  callers responsibility
-    ;;; to invoke 'bus_drop' when they are finished with the call
-    (param $keep_alive $bool)
     ;;; Topic hash that describes the type of call to made
     (param $topic_hash (@witx const_pointer $hash))
     ;;; Format of the data pushed onto the bus
