@@ -52,6 +52,7 @@
     ;;; The resolution of the clock, or an error if one happened.
     (result $error (expected $timestamp (error $errno)))
   )
+
   ;;; Return the time value of a clock.
   ;;; Note: This is similar to `clock_gettime` in POSIX.
   (@interface func (export "clock_time_get")
@@ -61,6 +62,17 @@
     (param $precision $timestamp)
     ;;; The time value of the clock.
     (result $error (expected $timestamp (error $errno)))
+  )
+  
+  ;;; Sets the time value of a clock.
+  ;;; Note: This is similar to `clock_settime` in POSIX.
+  (@interface func (export "clock_time_set")
+    ;;; The clock for which to set the time.
+    (param $id $clockid)
+    ;;; The value of the time to be set.
+    (param $timestamp $timestamp)
+    ;;; The time value of the clock.
+    (result $error (expected (error $errno)))
   )
 
   ;;; Provide file advisory information on a file descriptor.
