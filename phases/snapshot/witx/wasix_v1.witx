@@ -645,6 +645,13 @@
     (result $error (expected $pid (error $errno)))
   )
 
+  ;;; Returns the parent handle of a particular process
+  (@interface func (export "getppid")
+    ;;; Handle of the process to get the parent handle for
+    (param $pid $pid)
+    (result $error (expected $pid (error $errno)))
+  )
+
   ;;; Terminates the current running thread, if this is the last thread then
   ;;; the process will also exit with the specified exit code. An exit code
   ;;; of 0 indicates successful termination of the thread. The meanings of
