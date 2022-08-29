@@ -542,6 +542,8 @@
   (@interface func (export "thread_spawn")
     ;;; User data that will be supplied to the function when its called
     (param $user_data u64)
+    ;;; The base address of the stack allocated for this thread
+    (param $stack_base u64)
     ;;; Indicates if the function will operate as a reactor or
     ;;; as a normal thread. Reactors will be repeatable called
     ;;; whenever IO work is available to be processed.
@@ -660,6 +662,41 @@
     ;;; The exit code returned by the process.
     (param $rval $exitcode)
     (@witx noreturn)
+  )
+
+  ;;; Creates a snapshot of the current stack which allows it to be restored
+  ;;; later using its stack hash.
+  ;;; This function signature must exactly match the `stack_restore` function
+  ;;; in order for the trampoline to work properly.
+  ;;; This function will manipulate the __stackpointer
+  (@interface func (export "stack_save")
+    ;;; Hash of the stack that the current thread will be restored to
+    (param $hash (@witx pointer $option_hash))
+  )
+
+  ;;; Restores the current stack to a previous stack described by its
+  ;;; stack hash.
+  ;;; This function signature must exactly match the `stack_save` function
+  ;;; in order for the trampoline to work properly.
+  ;;; This function will manipulate the __stackpointer
+  (@interface func (export "stack_restore")
+    ;;; Hash of the stack we will be jumping too - or none if we do not jump.
+    (param $hash (@witx pointer $option_hash))
+  )
+
+  ;;; Destroys a stack snapshot that was previously made using the `stack_save`
+  ;;; system call - stack hashes are reference countered thus if the same snapshot
+  ;;; is taken the memory remains consistent.
+  (@interface func (export "stack_forget")
+    ;;; Hash of the stack that the current thread will be forgetten
+    (param $hash $hash)
+  )
+
+  ;;; Forks the current process into a new subprocess. If the function
+  ;;; returns a zero then its the new subprocess. If it returns a positive
+  ;;; number then its the current process and the $pid represents the child.
+  (@interface func (export "fork")
+    (result $error (expected $pid (error $errno)))
   )
 
   ;;; Spawns a new process within the context of this machine

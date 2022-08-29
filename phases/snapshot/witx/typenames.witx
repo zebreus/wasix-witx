@@ -211,7 +211,7 @@
     $xdev
     ;;; Extension: Capabilities insufficient.
     $notcapable
-    ;;; The socket has already been shutdown.
+    ;;; Cannot send after socket shutdown.
     $shutdown
   )
 )
@@ -331,6 +331,15 @@
     (@witx tag $option)
     u8
     $timestamp
+  )
+)
+
+;;; Represents an optional hash
+(typename $option_hash
+  (union
+    (@witx tag $option)
+    u8
+    $hash
   )
 )
 
