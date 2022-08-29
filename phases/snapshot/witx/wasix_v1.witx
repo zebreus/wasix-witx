@@ -689,7 +689,7 @@
   ;;; is taken the memory remains consistent.
   (@interface func (export "stack_forget")
     ;;; Hash of the stack that the current thread will be forgetten
-    (param $hash $hash)
+    (param $hash (@witx const_pointer $hash))
   )
 
   ;;; Forks the current process into a new subprocess. If the function
