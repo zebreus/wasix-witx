@@ -11,6 +11,9 @@
 ;;; Represents a number of items
 (typename $size u32)
 
+;;; Represents a large number of items
+(typename $longsize u64)
+
 ;;; Non-negative file size or length of a region within a file.
 (typename $filesize u64)
 
@@ -22,6 +25,19 @@
 
 ;;; Value of a thread local variable.
 (typename $tl_val u64)
+
+;;; Value of a short hash
+(typename $short_hash u64)
+
+;;; Represents a snapshot of a point in time of the stack that can be restored later
+(typename $stack_snapshot
+  (record
+    ;;; Offset into the stack (effectively a normalized stack pointer)
+    (field $offset u32)
+    ;;; Hash of the used portion of the stack
+    (field $hash u64)
+  )
+)
 
 ;;; Represents the first 128 bits of a SHA256 hash
 (typename $hash

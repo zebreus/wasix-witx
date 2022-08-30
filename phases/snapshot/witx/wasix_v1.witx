@@ -670,8 +670,16 @@
   ;;; in order for the trampoline to work properly.
   ;;; This function will manipulate the __stackpointer
   (@interface func (export "stack_save")
-    ;;; Hash of the stack that the current thread will be restored to
-    (param $hash (@witx pointer $option_hash))
+    ;;; Reference to the stack snapshot that will be filled
+    (param $snapshot (@witx pointer $stack_snapshot))
+    ;;; Flag that indicates if the stack should be persisted
+    (param $persist $bool)
+    ;;; Value to be returned when the stack is restored
+    ;;; (if zero this will change to one)
+    (param $val $longsize)
+    ;;; Result of the stack save operation
+    ;;; (zero upon registration and none-zero after restoration)
+    (result $ret $longsize)
   )
 
   ;;; Restores the current stack to a previous stack described by its
@@ -680,16 +688,17 @@
   ;;; in order for the trampoline to work properly.
   ;;; This function will manipulate the __stackpointer
   (@interface func (export "stack_restore")
-    ;;; Hash of the stack we will be jumping too - or none if we do not jump.
-    (param $hash (@witx pointer $option_hash))
+    ;;; Reference to the stack snapshot that will be restored
+    (param $snapshot (@witx const_pointer $stack_snapshot))
+    ;;; This function has no return value as it never returns
   )
 
-  ;;; Destroys a stack snapshot that was previously made using the `stack_save`
+  ;;; Destroys a persisted stack snapshot that was previously made using the `stack_save`
   ;;; system call - stack hashes are reference countered thus if the same snapshot
   ;;; is taken the memory remains consistent.
   (@interface func (export "stack_forget")
-    ;;; Hash of the stack that the current thread will be forgetten
-    (param $hash (@witx const_pointer $hash))
+    ;;; Reference to the stack snapshot that will be forgotten
+    (param $snapshot (@witx const_pointer $stack_snapshot))
   )
 
   ;;; Forks the current process into a new subprocess. If the function
