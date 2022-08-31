@@ -32,14 +32,12 @@
 ;;; Represents a snapshot of a point in time of the stack that can be restored later
 (typename $stack_snapshot
   (record
-    ;;; Offset into the execution host stack
-    (field $host_offset u32)
-    ;;; Hash of the execution host stack
-    (field $host_hash u64)
     ;;; Offset into the execution memory stack
     (field $memory_offset u32)
-    ;;; Hash of the execution memory stack
-    (field $memory_hash u64)
+    ;;; Offset into the execution host stack
+    (field $host_offset u32)
+    ;;; Hash of both the memory and host stacks
+    (field $hash u64)
   )
 )
 
