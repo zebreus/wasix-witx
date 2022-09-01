@@ -36,6 +36,8 @@
     (field $memory_offset u32)
     ;;; Offset into the execution host stack
     (field $host_offset u32)
+    ;;; Value to be returned when the stack is restored
+    (field $val u64)
   )
 )
 

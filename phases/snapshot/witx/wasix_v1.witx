@@ -673,8 +673,7 @@
     ;;; Value to be returned when the stack is restored
     ;;; (if zero this will change to one)
     (param $val $longsize)
-    ;;; Result of the stack save operation
-    ;;; (zero upon registration and none-zero after restoration)
+    ;;; Returns zero upon registration and the value when restored
     (result $ret $longsize)
   )
 
@@ -686,8 +685,9 @@
   (@interface func (export "stack_restore")
     ;;; Reference to the stack snapshot that will be restored
     (param $snapshot (@witx const_pointer $stack_snapshot))
-    ;;; This function has no return value as it never returns
-    (@witx noreturn)
+    ;;; This function never returns however the signature must be the same
+    ;;; for it to behave normally
+    (result $ret $longsize)
   )
 
   ;;; Forks the current process into a new subprocess. If the function
