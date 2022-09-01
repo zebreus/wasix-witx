@@ -30,7 +30,7 @@
 (typename $short_hash u64)
 
 ;;; Represents a 128bit number
-(typename $u128
+(typename $hugesize
   (record
     ;;; First set of 64 bits
     (field $b0 u64)
@@ -42,35 +42,14 @@
 ;;; Represents a part of the stack (128 bytes)
 (typename $stack_part
   (record
-    (field $a1 $u128)
-    (field $a2 $u128)
-    (field $a3 $u128)
-    (field $a4 $u128)
-    (field $a5 $u128)
-    (field $a6 $u128)
-    (field $a7 $u128)
-    (field $a8 $u128)
-  )
-)
-
-;;; Represents a snapshot of a point in time of the stack that can be restored later
-(typename $stack_snapshot
-  (record
-    ;;; Offset into the execution memory stack
-    (field $memory_offset u32)
-    ;;; Offset into the execution host stack
-    (field $host_offset u32)
-    ;;; Value to be returned when the stack is restored
-    (field $val u64)
-    ;;; Top part of the stack that is saved for later restoration
-    (field $stack1 $stack_part)
-    (field $stack2 $stack_part)
-    (field $stack3 $stack_part)
-    (field $stack4 $stack_part)
-    (field $stack5 $stack_part)
-    (field $stack6 $stack_part)
-    (field $stack7 $stack_part)
-    (field $stack8 $stack_part)
+    (field $a1 $hugesize)
+    (field $a2 $hugesize)
+    (field $a3 $hugesize)
+    (field $a4 $hugesize)
+    (field $a5 $hugesize)
+    (field $a6 $hugesize)
+    (field $a7 $hugesize)
+    (field $a8 $hugesize)
   )
 )
 
@@ -81,6 +60,27 @@
     (field $b0 u64)
     ;;; second set of 64 bits
     (field $b1 u64)
+  )
+)
+
+;;; Represents a snapshot of a point in time of the stack that can be restored later
+(typename $stack_snapshot
+  (record
+    ;;; Offset into the execution memory stack
+    (field $memory_offset u32)
+    ;;; Offset into the execution host stack
+    (field $host_offset u32)
+    ;;; Top part of the stack that is saved for later restoration
+    (field $stack1 $stack_part)
+    (field $stack2 $stack_part)
+    (field $stack3 $stack_part)
+    (field $stack4 $stack_part)
+    (field $stack5 $stack_part)
+    (field $stack6 $stack_part)
+    (field $stack7 $stack_part)
+    (field $stack8 $stack_part)
+    ;;; Hash thats used as an integrity checked
+    (field $hash $hash)
   )
 )
 

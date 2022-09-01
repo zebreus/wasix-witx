@@ -665,7 +665,9 @@
   )
 
   ;;; Creates a checkpoint of the current stack which allows it to be restored
-  ;;; later using its stack hash.
+  ;;; later using its stack hash. The value supplied will be returned upon
+  ;;; restoration (and hence must be none zero) - zero will be returned when
+  ;;; the stack is first recorded.
   ;;; This function will read the __stack_pointer global
   (@interface func (export "stack_checkpoint")
     ;;; Reference to the stack snapshot that will be filled
@@ -677,17 +679,14 @@
     (result $ret $longsize)
   )
 
-  ;;; Restores the current stack to a previous stack described by its
-  ;;; stack hash.
-  ;;; This function signature must exactly match the `stack_checkpoint` function
-  ;;; in order for the trampoline to work properly.
+  ;;; Restores the current stack to a previous stack described by a supplied
+  ;;; stack snapshot.
   ;;; This function will manipulate the __stack_pointer global
   (@interface func (export "stack_restore")
     ;;; Reference to the stack snapshot that will be restored
     (param $snapshot (@witx const_pointer $stack_snapshot))
-    ;;; This function never returns however the signature must be the same
-    ;;; for it to behave normally
-    (result $ret $longsize)
+    ;;; This function never returns
+    (@witx noreturn)
   )
 
   ;;; Forks the current process into a new subprocess. If the function
