@@ -29,6 +29,21 @@
 ;;; Value of a short hash
 (typename $short_hash u64)
 
+;;; Represents a part of the stack (128 bytes)
+(typename $stack_part
+  (record
+    (field $a1 u128)
+    (field $a2 u128)
+    (field $a3 u128)
+    (field $a4 u128)
+    (field $a5 u128)
+    (field $a6 u128)
+    (field $a7 u128)
+    (field $a8 u128)
+  )
+)
+(typename $short_hash u64)
+
 ;;; Represents a snapshot of a point in time of the stack that can be restored later
 (typename $stack_snapshot
   (record
@@ -38,6 +53,15 @@
     (field $host_offset u32)
     ;;; Value to be returned when the stack is restored
     (field $val u64)
+    ;;; Top part of the stack that is saved for later restoration
+    (field $stack1 $stack_part)
+    (field $stack2 $stack_part)
+    (field $stack3 $stack_part)
+    (field $stack4 $stack_part)
+    (field $stack5 $stack_part)
+    (field $stack6 $stack_part)
+    (field $stack7 $stack_part)
+    (field $stack8 $stack_part)
   )
 )
 
