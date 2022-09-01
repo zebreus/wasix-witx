@@ -36,8 +36,6 @@
     (field $memory_offset u32)
     ;;; Offset into the execution host stack
     (field $host_offset u32)
-    ;;; Hash of both the memory and host stacks
-    (field $hash u64)
   )
 )
 

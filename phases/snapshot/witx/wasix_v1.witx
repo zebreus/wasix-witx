@@ -664,16 +664,12 @@
     (@witx noreturn)
   )
 
-  ;;; Creates a snapshot of the current stack which allows it to be restored
+  ;;; Creates a checkpoint of the current stack which allows it to be restored
   ;;; later using its stack hash.
-  ;;; This function signature must exactly match the `stack_restore` function
-  ;;; in order for the trampoline to work properly.
-  ;;; This function will manipulate the __stackpointer
-  (@interface func (export "stack_save")
+  ;;; This function will read the __stack_pointer global
+  (@interface func (export "stack_checkpoint")
     ;;; Reference to the stack snapshot that will be filled
     (param $snapshot (@witx pointer $stack_snapshot))
-    ;;; Flag that indicates if the stack should be persisted
-    (param $persist $bool)
     ;;; Value to be returned when the stack is restored
     ;;; (if zero this will change to one)
     (param $val $longsize)
@@ -684,21 +680,14 @@
 
   ;;; Restores the current stack to a previous stack described by its
   ;;; stack hash.
-  ;;; This function signature must exactly match the `stack_save` function
+  ;;; This function signature must exactly match the `stack_checkpoint` function
   ;;; in order for the trampoline to work properly.
-  ;;; This function will manipulate the __stackpointer
+  ;;; This function will manipulate the __stack_pointer global
   (@interface func (export "stack_restore")
     ;;; Reference to the stack snapshot that will be restored
     (param $snapshot (@witx const_pointer $stack_snapshot))
     ;;; This function has no return value as it never returns
-  )
-
-  ;;; Destroys a persisted stack snapshot that was previously made using the `stack_save`
-  ;;; system call - stack hashes are reference countered thus if the same snapshot
-  ;;; is taken the memory remains consistent.
-  (@interface func (export "stack_forget")
-    ;;; Reference to the stack snapshot that will be forgotten
-    (param $snapshot (@witx const_pointer $stack_snapshot))
+    (@witx noreturn)
   )
 
   ;;; Forks the current process into a new subprocess. If the function
