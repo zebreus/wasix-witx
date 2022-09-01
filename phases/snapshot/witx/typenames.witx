@@ -29,20 +29,29 @@
 ;;; Value of a short hash
 (typename $short_hash u64)
 
+;;; Represents a 128bit number
+(typename $u128
+  (record
+    ;;; First set of 64 bits
+    (field $b0 u64)
+    ;;; second set of 64 bits
+    (field $b1 u64)
+  )
+)
+
 ;;; Represents a part of the stack (128 bytes)
 (typename $stack_part
   (record
-    (field $a1 u128)
-    (field $a2 u128)
-    (field $a3 u128)
-    (field $a4 u128)
-    (field $a5 u128)
-    (field $a6 u128)
-    (field $a7 u128)
-    (field $a8 u128)
+    (field $a1 $u128)
+    (field $a2 $u128)
+    (field $a3 $u128)
+    (field $a4 $u128)
+    (field $a5 $u128)
+    (field $a6 $u128)
+    (field $a7 $u128)
+    (field $a8 $u128)
   )
 )
-(typename $short_hash u64)
 
 ;;; Represents a snapshot of a point in time of the stack that can be restored later
 (typename $stack_snapshot
