@@ -674,9 +674,9 @@
     (param $snapshot (@witx pointer $stack_snapshot))
     ;;; Value to be returned when the stack is restored
     ;;; (if zero this will change to one)
-    (param $val u64)
+    (param $val $longsize)
     ;;; Returns zero upon registration and the value when restored
-    (result $ret u64)
+    (result $error (expected $longsize (error $errno)))
   )
 
   ;;; Restores the current stack to a previous stack described by a supplied
