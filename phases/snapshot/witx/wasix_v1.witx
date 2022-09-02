@@ -672,9 +672,6 @@
   (@interface func (export "stack_checkpoint")
     ;;; Reference to the stack snapshot that will be filled
     (param $snapshot (@witx pointer $stack_snapshot))
-    ;;; Value to be returned when the stack is restored
-    ;;; (if zero this will change to one)
-    (param $val $longsize)
     ;;; Returns zero upon registration and the value when restored
     (result $error (expected $longsize (error $errno)))
   )
@@ -685,6 +682,9 @@
   (@interface func (export "stack_restore")
     ;;; Reference to the stack snapshot that will be restored
     (param $snapshot (@witx const_pointer $stack_snapshot))
+    ;;; Value to be returned when the stack is restored
+    ;;; (if zero this will change to one)
+    (param $val $longsize)
     ;;; This function never returns
     (@witx noreturn)
   )
