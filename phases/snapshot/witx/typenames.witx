@@ -11,9 +11,6 @@
 ;;; Represents a number of items
 (typename $size u32)
 
-;;; Represents a large number of items
-(typename $longsize u64)
-
 ;;; Non-negative file size or length of a region within a file.
 (typename $filesize u64)
 
