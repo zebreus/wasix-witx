@@ -857,6 +857,7 @@
     ;;; Pointer to a buffer that will be filled with the current
     ;;; status of this HTTP request
     (param $status (@witx pointer $http_status))
+    (result $error (expected (error $errno)))
   )
 
   ;;; Securely connects to a particular remote network
