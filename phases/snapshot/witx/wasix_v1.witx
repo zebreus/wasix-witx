@@ -311,7 +311,7 @@
   ;;; Opens a pipe with two file handles
   ;;;
   ;;; Pipes are bidirectional
-  (@interface func (export "pipe")
+  (@interface func (export "fd_pipe")
     (result $error (expected (tuple $fd $fd) (error $errno)))
   )
 
