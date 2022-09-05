@@ -731,7 +731,7 @@
   )
 
   ;;; Sends a signal to a process
-  (@interface func (export "thread_signal")
+  (@interface func (export "process_signal")
     ;;; ID of the process to send a singal
     (param $pid $pid)
     ;;; Signal to send to the thread
