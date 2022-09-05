@@ -471,23 +471,6 @@
     (result $error (expected $size (error $errno)))
   )
 
-  ;;; Terminate the process normally. An exit code of 0 indicates successful
-  ;;; termination of the program. The meanings of other values is dependent on
-  ;;; the environment.
-  (@interface func (export "proc_exit")
-    ;;; The exit code returned by the process.
-    (param $rval $exitcode)
-    (@witx noreturn)
-  )
-
-  ;;; Send a signal to the process of the calling thread.
-  ;;; Note: This is similar to `raise` in POSIX.
-  (@interface func (export "proc_raise")
-    ;;; The signal condition to trigger.
-    (param $sig $signal)
-    (result $error (expected (error $errno)))
-  )
-
   ;;; Temporarily yield execution of the calling thread.
   ;;; Note: This is similar to `sched_yield` in POSIX.
   (@interface func (export "sched_yield")
@@ -651,18 +634,6 @@
     (result $error (expected $bool (error $errno)))
   )
 
-  ;;; Returns the handle of the current process
-  (@interface func (export "getpid")
-    (result $error (expected $pid (error $errno)))
-  )
-
-  ;;; Returns the parent handle of a particular process
-  (@interface func (export "getppid")
-    ;;; Handle of the process to get the parent handle for
-    (param $pid $pid)
-    (result $error (expected $pid (error $errno)))
-  )
-
   ;;; Terminates the current running thread, if this is the last thread then
   ;;; the process will also exit with the specified exit code. An exit code
   ;;; of 0 indicates successful termination of the thread. The meanings of
@@ -698,10 +669,27 @@
     (@witx noreturn)
   )
 
+  ;;; Terminate the process normally. An exit code of 0 indicates successful
+  ;;; termination of the program. The meanings of other values is dependent on
+  ;;; the environment.
+  (@interface func (export "proc_exit")
+    ;;; The exit code returned by the process.
+    (param $rval $exitcode)
+    (@witx noreturn)
+  )
+
+  ;;; Send a signal to the process of the calling thread.
+  ;;; Note: This is similar to `raise` in POSIX.
+  (@interface func (export "proc_raise")
+    ;;; The signal condition to trigger.
+    (param $sig $signal)
+    (result $error (expected (error $errno)))
+  )
+
   ;;; Forks the current process into a new subprocess. If the function
   ;;; returns a zero then its the new subprocess. If it returns a positive
   ;;; number then its the current process and the $pid represents the child.
-  (@interface func (export "fork")
+  (@interface func (export "proc_fork")
     (result $error (expected $pid (error $errno)))
   )
 
@@ -711,7 +699,7 @@
   ;;; and uninitialized) data segments
   ;;;
   ;;; If the named process does not exist then the process will fail and terminate
-  (@interface func (export "process_exec")
+  (@interface func (export "proc_exec")
     ;;; Name of the process to be spawned
     (param $name string)
     ;;; List of the arguments to pass the process
@@ -722,7 +710,7 @@
   )
 
   ;;; Spawns a new process within the context of this machine
-  (@interface func (export "process_spawn")
+  (@interface func (export "proc_spawn")
     ;;; Name of the process to be spawned
     (param $name string)
     ;;; Indicates if the process will chroot or not
@@ -746,8 +734,28 @@
     (result $error (expected $process_handles (error $bus_error)))
   )
 
+  ;;; Returns the handle of the current process
+  (@interface func (export "proc_id")
+    (result $error (expected $pid (error $errno)))
+  )
+
+  ;;; Returns the parent handle of a particular process
+  (@interface func (export "proc_parent")
+    ;;; Handle of the process to get the parent handle for
+    (param $pid $pid)
+    (result $error (expected $pid (error $errno)))
+  )
+
+  ;;; Wait for process to exit
+  (@interface func (export "proc_join")
+    ;;; ID of the process to wait on
+    (param $pid $pid)
+    ;;; Returns the exit code of the process
+    (result $error (expected $exitcode (error $errno)))
+  )
+
   ;;; Sends a signal to a process
-  (@interface func (export "process_signal")
+  (@interface func (export "proc_signal")
     ;;; ID of the process to send a singal
     (param $pid $pid)
     ;;; Signal to send to the thread
