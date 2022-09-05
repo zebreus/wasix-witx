@@ -647,6 +647,15 @@
     (result $error (expected $pid (error $errno)))
   )
 
+  ;;; Sends a signal to a running process with a particular exit code
+  (@interface func (export "signal")
+    ;;; PID of the process to be killed
+    (param $pid $pid)
+    ;;; Signal to send to the process
+    (param $signal $signal)
+    (result $error (expected (error $errno)))
+  )
+
   ;;; Returns the parent handle of a particular process
   (@interface func (export "getppid")
     ;;; Handle of the process to get the parent handle for
