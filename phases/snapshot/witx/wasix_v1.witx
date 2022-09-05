@@ -613,6 +613,15 @@
     (result $error (expected $size (error $errno)))
   )
 
+  ;;; Sends a signal to a thread
+  (@interface func (export "thread_signal")
+    ;;; Handle of the thread to send a singal
+    (param $tid $tid)
+    ;;; Signal to send to the thread
+    (param $signal $signal)
+    (result $error (expected (error $errno)))
+  )
+
   ;;; Wait for a futex_wake operation to wake us.
   ;;; Returns with EINVAL if the futex doesn't hold the expected value.
   ;;; Returns false on timeout, and true in all other cases.
@@ -645,15 +654,6 @@
   ;;; Returns the handle of the current process
   (@interface func (export "getpid")
     (result $error (expected $pid (error $errno)))
-  )
-
-  ;;; Sends a signal to a running process with a particular exit code
-  (@interface func (export "signal")
-    ;;; PID of the process to be killed
-    (param $pid $pid)
-    ;;; Signal to send to the process
-    (param $signal $signal)
-    (result $error (expected (error $errno)))
   )
 
   ;;; Returns the parent handle of a particular process
@@ -728,6 +728,15 @@
     (param $working_dir string)
     ;;; Returns a bus process id that can be used to invoke calls
     (result $error (expected $process_handles (error $bus_error)))
+  )
+
+  ;;; Sends a signal to a process
+  (@interface func (export "thread_signal")
+    ;;; ID of the process to send a singal
+    (param $pid $pid)
+    ;;; Signal to send to the thread
+    (param $signal $signal)
+    (result $error (expected (error $errno)))
   )
 
   ;;; Spawns a new bus process for a particular web WebAssembly
