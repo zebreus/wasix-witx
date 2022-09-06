@@ -525,7 +525,6 @@
     ;;; (must match the callback signature that takes the signal value)
     ;;; (if this is not specified the default will be "_signal")
     (param $callback string)
-    (result $error (expected (error $errno)))
   )
 
   ;;; Registers a callback function for new threads
@@ -534,7 +533,6 @@
     ;;; (must match the callback signature that takes the u64 user_data)
     ;;; (if this is not specified the default will be "_start_thread")
     (param $callback string)
-    (result $error (expected (error $errno)))
   )
 
   ;;; Registers a callback function for reactors
@@ -543,7 +541,6 @@
     ;;; (must match the callback signature that takes the u64 user_data)
     ;;; (if this is not specified the default will be "_reactor")
     (param $callback string)
-    (result $error (expected (error $errno)))
   )
 
   ;;; Registers a callback function for destruction of thread locals
@@ -552,7 +549,6 @@
     ;;; (must match the callback signature that takes the u64 user_data)
     ;;; (if this is not specified the default will be "_thread_local_destroy")
     (param $callback string)
-    (result $error (expected (error $errno)))
   )
 
   ;;; Creates a new thread by spawning that shares the same
