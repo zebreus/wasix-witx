@@ -559,6 +559,8 @@
     (param $user_data u64)
     ;;; The base address of the stack allocated for this thread
     (param $stack_base u64)
+    ;;; The start address of the stack (where the memory is allocated)
+    (param $stack_start u64)
     ;;; Indicates if the function will operate as a reactor or
     ;;; as a normal thread. Reactors will be repeatable called
     ;;; whenever IO work is available to be processed.
