@@ -70,15 +70,13 @@
     (field $memory_offset u32)
     ;;; Offset into the execution host stack
     (field $host_offset u32)
+    ;;; User defined field that can be used by functions
+    (field $user u64)
     ;;; Top part of the stack that is saved for later restoration
     (field $stack1 $stack_part)
     (field $stack2 $stack_part)
     (field $stack3 $stack_part)
     (field $stack4 $stack_part)
-    (field $stack5 $stack_part)
-    (field $stack6 $stack_part)
-    (field $stack7 $stack_part)
-    (field $stack8 $stack_part)
     ;;; Hash thats used as an integrity checked
     (field $hash $hash)
   )
