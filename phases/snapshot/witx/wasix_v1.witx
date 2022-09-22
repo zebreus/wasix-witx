@@ -106,12 +106,6 @@
     (result $error (expected (error $errno)))
   )
 
-  ;;; Returns true if the file descriptor is a TTY
-  (@interface func (export "fd_isatty")
-    (param $fd $fd)
-    (result $error (expected $bool (error $errno)))
-  )
-
   ;;; Synchronize the data of a file to disk.
   ;;; Note: This is similar to `fdatasync` in POSIX.
   (@interface func (export "fd_datasync")
