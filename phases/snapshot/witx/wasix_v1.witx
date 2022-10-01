@@ -720,6 +720,19 @@
     (result $error (expected (error $errno)))
   )
 
+  ;;; Send a signal to the process of the calling thread on a regular basis
+  ;;; Note: This is similar to `setitimer` in POSIX.
+  (@interface func (export "proc_raise_interval")
+    ;;; The signal condition to trigger.
+    (param $sig $signal)
+    ;;; Time to wait before raising the signal
+    ;;; (zero here indicates the signal interval is cancelled)
+    (param $interval $timestamp)
+    ;;; Flag that indicates if the signal will trigger indefinately
+    (param $repeat $bool)
+    (result $error (expected (error $errno)))
+  )
+
   ;;; Forks the current process into a new subprocess. If the function
   ;;; returns a zero then its the new subprocess. If it returns a positive
   ;;; number then its the current process and the $pid represents the child.
