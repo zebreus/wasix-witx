@@ -66,6 +66,8 @@
 ;;; Represents a snapshot of a point in time of the stack that can be restored later
 (typename $stack_snapshot
   (record
+    ;;; User defined field that can be used by functions
+    (field $user u64)
     ;;; Hash used to identify which stack snapshot to restore
     (field $hash $hash)
   )
