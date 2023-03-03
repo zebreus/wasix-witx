@@ -39,20 +39,6 @@
   )
 )
 
-;;; Represents a part of the stack (128 bytes)
-(typename $stack_part
-  (record
-    (field $a1 $hugesize)
-    (field $a2 $hugesize)
-    (field $a3 $hugesize)
-    (field $a4 $hugesize)
-    (field $a5 $hugesize)
-    (field $a6 $hugesize)
-    (field $a7 $hugesize)
-    (field $a8 $hugesize)
-  )
-)
-
 ;;; Represents the first 128 bits of a SHA256 hash
 (typename $hash
   (record
@@ -253,6 +239,8 @@
     $notcapable
     ;;; Cannot send after socket shutdown.
     $shutdown
+    ;;; Unknown error has occurred.
+    $unknown
   )
 )
 
