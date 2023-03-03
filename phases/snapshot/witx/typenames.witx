@@ -239,6 +239,8 @@
     $notcapable
     ;;; Cannot send after socket shutdown.
     $shutdown
+    ;;; Memory access violation.
+    $memviolation
     ;;; Unknown error has occurred.
     $unknown
   )
