@@ -801,8 +801,8 @@
   (@interface func (export "proc_join")
     ;;; ID of the process to wait on
     (param $pid (@witx pointer $pid))
-    ;;; Returns the exit code of the process
-    (result $error (expected $exitcode (error $errno)))
+    ;;; Returns the status of the process
+    (result $error (expected u32 (error $errno)))
   )
 
   ;;; Sends a signal to a process
