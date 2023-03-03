@@ -1009,6 +1009,9 @@
     ;;; Termination signal.
     ;;; Action: Terminates the process.
     $term
+    ;;; Stkflt
+    ;;; Action: Ignored.
+    $stkflt
     ;;; Child process terminated, stopped, or continued.
     ;;; Action: Ignored.
     $chld
