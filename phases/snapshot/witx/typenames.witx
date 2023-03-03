@@ -1741,13 +1741,23 @@
   )
 )
 
+;;; Represents an errno and a signal
+(typename $errno_signal
+  (record
+    ;;; The exit code that was returned
+    (field $exit_code $errno)
+    ;;; The signal that was returned
+    (field $signal $signal)
+  )
+)
+
 ;;; join status.
 (typename $join_status
   (union
     (@witx tag $join_status_type)
     u8
     $errno
-    $signal
+    $errno_signal
     $signal
   )
 )
