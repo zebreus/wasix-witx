@@ -590,41 +590,6 @@
   )
 )
 
-;;; join flags.
-(typename $join_flags
-  (flags (@witx repr u32)
-    ;;; Non-blocking join on the process
-    $non_blocking
-    ;;; Return if a process is stopped
-    $wake_stopped
-  )
-)
-
-;;; What has happened with the proccess when we joined on it
-(typename $join_status_type
-  (enum (@witx tag u8)
-    ;;; Nothing has happened
-    $nothing
-    ;;; The process has exited by a normal exit code
-    $exit_normal
-    ;;; The process was terminated by a signal
-    $exit_signal
-    ;;; The process was stopped by a signal and can be resumed with SIGCONT
-    $stopped
-  )
-)
-
-;;; join status.
-(typename $join_status
-  (union
-    (@witx tag $join_status_type)
-    u8
-    $errno
-    $signal
-    $signal
-  )
-)
-
 ;;; Flags determining the method of how paths are resolved.
 (typename $lookupflags
   (flags (@witx repr u32)
@@ -1749,5 +1714,40 @@
 (typename $prestat
   (union (@witx tag $preopentype)
     $prestat_dir
+  )
+)
+
+;;; join flags.
+(typename $join_flags
+  (flags (@witx repr u32)
+    ;;; Non-blocking join on the process
+    $non_blocking
+    ;;; Return if a process is stopped
+    $wake_stopped
+  )
+)
+
+;;; What has happened with the proccess when we joined on it
+(typename $join_status_type
+  (enum (@witx tag u8)
+    ;;; Nothing has happened
+    $nothing
+    ;;; The process has exited by a normal exit code
+    $exit_normal
+    ;;; The process was terminated by a signal
+    $exit_signal
+    ;;; The process was stopped by a signal and can be resumed with SIGCONT
+    $stopped
+  )
+)
+
+;;; join status.
+(typename $join_status
+  (union
+    (@witx tag $join_status_type)
+    u8
+    $errno
+    $signal
+    $signal
   )
 )
