@@ -409,6 +409,15 @@
   )
 )
 
+;;; Represents an optional process ID
+(typename $option_pid
+  (union
+    (@witx tag $option)
+    u8
+    $pid
+  )
+)
+
 ;;; Represents an optional file descriptior
 (typename $option_fd
   (union
@@ -585,12 +594,37 @@
 )
 
 ;;; join flags.
-(typename $joinflags
+(typename $join_flags
   (flags (@witx repr u32)
     ;;; Non-blocking join on the process
     $non_blocking
-    ;;; Wake on stop
+    ;;; Return if a process is stopped
     $wake_stopped
+  )
+)
+
+;;; What has happened with the proccess when we joined on it
+(typename $join_status_type
+  (enum (@witx tag u8)
+    ;;; Nothing has happened
+    $nothing
+    ;;; The process has exited by a normal exit code
+    $exit_normal
+    ;;; The process was terminated by a signal
+    $exit_signal
+    ;;; The process was stopped by a signal and can be resumed with SIGCONT
+    $stopped
+  )
+)
+
+;;; join status.
+(typename $join_status
+  (union (@witx repr u32)
+    (@witx tag $join_status_type)
+    u8
+    $errno
+    $signal
+    $signal
   )
 )
 

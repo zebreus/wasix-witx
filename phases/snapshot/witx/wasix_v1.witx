@@ -800,11 +800,11 @@
   ;;; Wait for process to exit
   (@interface func (export "proc_join")
     ;;; ID of the process to wait on
-    (param $pid (@witx pointer $pid))
+    (param $pid (@witx pointer $option_pid))
     ;;; Flags that determine how the join behaves
-    (param $flags $joinflags)
+    (param $flags $join_flags)
     ;;; Returns the status of the process
-    (result $error (expected $join_status (error $errno)))
+    (result $error (expected $join_status_type (error $errno)))
   )
 
   ;;; Sends a signal to a process
