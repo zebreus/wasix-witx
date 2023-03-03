@@ -801,6 +801,8 @@
   (@interface func (export "proc_join")
     ;;; ID of the process to wait on
     (param $pid (@witx pointer $pid))
+    ;;; Flags that determine how the join behaves
+    (param $flags $joinflags)
     ;;; Returns the status of the process
     (result $error (expected $join_status (error $errno)))
   )

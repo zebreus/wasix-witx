@@ -584,6 +584,14 @@
   )
 )
 
+;;; join flags.
+(typename $joinflags
+  (flags (@witx repr u16)
+    ;;; Non-blocking join on the process
+    $nohang
+  )
+)
+
 ;;; Flags determining the method of how paths are resolved.
 (typename $lookupflags
   (flags (@witx repr u32)
