@@ -619,7 +619,7 @@
 
 ;;; join status.
 (typename $join_status
-  (union (@witx repr u32)
+  (union
     (@witx tag $join_status_type)
     u8
     $errno
