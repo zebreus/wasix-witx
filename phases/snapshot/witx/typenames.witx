@@ -29,6 +29,9 @@
 ;;; Value of a short hash
 (typename $short_hash u64)
 
+;;; Status code returned by proc_join
+(typename $join_status u32)
+
 ;;; Represents a 128bit number
 (typename $hugesize
   (record

@@ -802,7 +802,7 @@
     ;;; ID of the process to wait on
     (param $pid (@witx pointer $pid))
     ;;; Returns the status of the process
-    (result $error (expected u32 (error $errno)))
+    (result $error (expected $join_status (error $errno)))
   )
 
   ;;; Sends a signal to a process
