@@ -586,9 +586,11 @@
 
 ;;; join flags.
 (typename $joinflags
-  (flags (@witx repr u16)
+  (flags (@witx repr u32)
     ;;; Non-blocking join on the process
-    $nohang
+    $non_blocking
+    ;;; Wake on stop
+    $wake_stopped
   )
 )
 
