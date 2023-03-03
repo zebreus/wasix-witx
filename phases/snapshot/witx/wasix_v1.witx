@@ -804,7 +804,7 @@
     ;;; Flags that determine how the join behaves
     (param $flags $join_flags)
     ;;; Returns the status of the process
-    (result $error (expected $join_status_type (error $errno)))
+    (result $error (expected $join_status (error $errno)))
   )
 
   ;;; Sends a signal to a process
