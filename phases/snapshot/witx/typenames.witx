@@ -379,6 +379,9 @@
 ;;; A process descriptor handle.
 (typename $pid (handle))
 
+;;; A thread handle or an error (positive vs negative)
+(typename $tid_errno u32)
+
 ;;; A thread handle
 (typename $tid (handle))
 
