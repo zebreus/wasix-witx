@@ -560,7 +560,7 @@
     (param $args (@witx pointer $thread_start))
     ;;; Returns the thread index of the newly created thread
     ;;; (indices always start from zero)
-    (result $tid_errno u32)
+    (result $error (expected $tid (error $errno)))
   )
 
   ;;; Sends the current thread to sleep for a period of time
