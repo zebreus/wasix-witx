@@ -1802,7 +1802,7 @@
     (field $h_errno_val s32)
     (field $timer_id s32)
     (field $locale $pointersize)
-    (field $killlock 32)
+    (field $killlock s32)
     (field $dlerror_buf $pointersize)
     (field $stdio_locks $pointersize)
   )
