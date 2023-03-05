@@ -379,9 +379,6 @@
 ;;; A process descriptor handle.
 (typename $pid (handle))
 
-;;; A thread handle or an error (positive vs negative)
-(typename $tid_errno u32)
-
 ;;; A thread handle
 (typename $tid (handle))
 
@@ -1784,10 +1781,10 @@
     (field $thread_next $pointersize)
     (field $sysinfo $pointersize)
     (field $canary $pointersize)
-    (field $tid u32)
-    (field $errno_val u32)
-    (field $detach_state u32)
-    (field $cancel u32)
+    (field $tid s32)
+    (field $errno_val s32)
+    (field $detach_state s32)
+    (field $cancel s32)
     (field $canceldisable u8)
     (field $cancelasync u8)
     (field $flags $thread_flags)
@@ -1802,10 +1799,10 @@
     (field $robust_list_head $pointersize)
     (field $robust_list_off $pointersize)
     (field $robust_list_pending $pointersize)
-    (field $h_errno_val u32)
-    (field $timer_id u32)
+    (field $h_errno_val s32)
+    (field $timer_id s32)
     (field $locale $pointersize)
-    (field $killlock u32)
+    (field $killlock 32)
     (field $dlerror_buf $pointersize)
     (field $stdio_locks $pointersize)
   )
