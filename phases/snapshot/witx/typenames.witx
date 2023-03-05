@@ -1816,6 +1816,6 @@
     ;;; Arguments to pass the callback function
     (field $start_args $pointersize)
     ;;; Pointer to the thread properties
-    (field $thread (@witx pointer thread_state))
+    (field $thread $pointersize)
   )
 )
