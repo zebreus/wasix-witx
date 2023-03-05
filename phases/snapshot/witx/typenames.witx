@@ -1763,7 +1763,7 @@
 )
 
 ;;; thread state flags.
-(typename $join_flags
+(typename $thread_flags
   (flags (@witx repr u16)
     ;;; tsd_used
     $tsd_used
@@ -1787,7 +1787,7 @@
     (field $cancel u32)
     (field $canceldisable u8)
     (field $cancelasync u8)
-    (field $flags $join_flags)
+    (field $flags $thread_flags)
     (field $map_base $pointersize)
     (field $map_size $pointersize)
     (field $stack $pointersize)
