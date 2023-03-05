@@ -553,18 +553,11 @@
 
   ;;; Creates a new thread by spawning that shares the same
   ;;; memory address space, file handles and main event loops.
-  ;;; The web assembly process must export function named '_start_thread'
+  ;;; The web assembly process must export function named 'wasi_thread_start'
   (@interface func (export "thread_spawn")
-    ;;; User data that will be supplied to the function when its called
-    (param $user_data u64)
-    ;;; The base address of the stack allocated for this thread
-    (param $stack_base u64)
-    ;;; The start address of the stack (where the memory is allocated)
-    (param $stack_start u64)
-    ;;; Indicates if the function will operate as a reactor or
-    ;;; as a normal thread. Reactors will be repeatable called
-    ;;; whenever IO work is available to be processed.
-    (param $reactor $bool)
+    ;;; Pointer to the structure the describes the thread
+    ;;; that is being spawened
+    (param $args (@witx pointer $thread_start))
     ;;; Returns the thread index of the newly created thread
     ;;; (indices always start from zero)
     (result $error (expected $tid (error $errno)))

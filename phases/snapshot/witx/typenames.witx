@@ -1761,3 +1761,61 @@
     $signal
   )
 )
+
+;;; thread state flags.
+(typename $join_flags
+  (flags (@witx repr u16)
+    ;;; tsd_used
+    $tsd_used
+    ;;; dlerror_flag
+    $dlerror_flag
+  )
+)
+
+;;; represents the state of a thread
+(typename $thread_state
+  (record
+    (field $thread_self $pointersize)
+    (field $dtv $pointersize)
+    (field $thread_prev $pointersize)
+    (field $thread_next $pointersize)
+    (field $sysinfo $pointersize)
+    (field $canary $pointersize)
+    (field $tid i32)
+    (field $errno_val i32)
+    (field $detach_state i32)
+    (field $cancel i32)
+    (field $canceldisable u8)
+    (field $cancelasync u8)
+    (field $flags $join_flags)
+    (field $map_base $pointersize)
+    (field $map_size $pointersize)
+    (field $stack $pointersize)
+    (field $stack_size $pointersize)
+    (field $guard_size $pointersize)
+    (field $result $pointersize)
+    (field $cancelbuf $pointersize)
+    (field $tsd $pointersize)
+    (field $robust_list_head $pointersize)
+    (field $robust_list_off $pointersize)
+    (field $robust_list_pending $pointersize)
+    (field $h_errno_val i32)
+    (field $timer_id i32)
+    (field $locale $pointersize)
+    (field $killlock i32)
+    (field $dlerror_buf $pointersize)
+    (field $stdio_locks $pointersize)
+  )
+)
+
+;;; thread start type
+(typename $thread_start
+  (record
+    ;;; Function that will be invoked when the thread starts
+    (field $start_funct $pointersize)
+    ;;; Arguments to pass the callback function
+    (field $start_args $pointersize)
+    ;;; Pointer to the thread properties
+    (field $thread (@witx pointer thread_state))
+  )
+)
