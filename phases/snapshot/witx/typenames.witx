@@ -1819,5 +1819,20 @@
     (field $start_funct $pointersize)
     ;;; Arguments to pass the callback function
     (field $start_args $pointersize)
+    ;;; Reserved for future WASI usage
+    (field $reserved0 $pointersize)
+    (field $reserved1 $pointersize)
+    (field $reserved2 $pointersize)
+    (field $reserved3 $pointersize)
+    (field $reserved4 $pointersize)
+    (field $reserved5 $pointersize)
+    (field $reserved6 $pointersize)
+    (field $reserved7 $pointersize)
+    (field $reserved8 $pointersize)
+    (field $reserved9 $pointersize)
+    ;;; The size of the stack
+    (field $stack_size $pointersize)
+    ;;; The size of the guards at the end of the stack
+    (field $guard_size $pointersize)
   )
 )
