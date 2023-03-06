@@ -1811,11 +1811,13 @@
 ;;; thread start type
 (typename $thread_start
   (record
+    ;;; Address where the stack starts
+    (field $stack $pointersize)
+    ;;; Address where the TLS starts
+    (field $tls_base $pointersize)
     ;;; Function that will be invoked when the thread starts
     (field $start_funct $pointersize)
     ;;; Arguments to pass the callback function
     (field $start_args $pointersize)
-    ;;; Pointer to the thread properties
-    (field $thread $pointersize)
   )
 )
