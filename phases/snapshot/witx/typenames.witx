@@ -1092,6 +1092,12 @@
 ;;; Socket type
 (typename $sock_type
   (enum (@witx tag u8)
+    ;;; Unused enum variant to prevent $socket_dgram value of 0, which
+    ;;; conflicts with a macro defined in cpython which is used in a case arm
+    ;;; of a switch statement alongside C macros generated from this enum.
+    ;;;  ref: https://github.com/python/cpython/blob/2f369cafeeb4a4886b00396abd8a5f33e555e1c3/Modules/getaddrinfo.c#L68
+    ;;;  ref: https://github.com/python/cpython/blob/3f369cafeeb4a4886b00396abd8a5f33e555e1c3/Modules/getaddrinfo.c#L355-L368
+    $socket_unused
     ;;; The file descriptor or file refers to a datagram socket.
     $socket_dgram
     ;;; The file descriptor or file refers to a byte-stream socket.
