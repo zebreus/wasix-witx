@@ -1098,10 +1098,10 @@
     ;;;  ref: https://github.com/python/cpython/blob/2f369cafeeb4a4886b00396abd8a5f33e555e1c3/Modules/getaddrinfo.c#L68
     ;;;  ref: https://github.com/python/cpython/blob/3f369cafeeb4a4886b00396abd8a5f33e555e1c3/Modules/getaddrinfo.c#L355-L368
     $socket_unused
-    ;;; The file descriptor or file refers to a datagram socket.
-    $socket_dgram
     ;;; The file descriptor or file refers to a byte-stream socket.
     $socket_stream
+    ;;; The file descriptor or file refers to a datagram socket.
+    $socket_dgram
     ;;; The file descriptor or file refers to a raw socket.
     $socket_raw
     ;;; The file descriptor or file refers to a sequential packet socket.
