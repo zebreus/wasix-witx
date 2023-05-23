@@ -214,11 +214,19 @@ impl DocValidationScope<'_> {
                     name: name.clone(),
                     tref,
                     docs,
+                    hidden: decl.hidden,
                 });
-                self.doc
-                    .entries
-                    .insert(name.clone(), Entry::Typename(Rc::downgrade(&rc_datatype)));
-                definitions.push(Definition::Typename(rc_datatype));
+                self.doc.entries.insert(
+                    name.clone(),
+                    Entry::Typename {
+                        nt: Rc::downgrade(&rc_datatype),
+                        hidden: decl.hidden,
+                    },
+                );
+                definitions.push(Definition::Typename {
+                    nt: rc_datatype,
+                    hidden: decl.hidden,
+                });
             }
 
             DeclSyntax::Module(syntax) => {
@@ -274,7 +282,7 @@ impl DocValidationScope<'_> {
             TypedefSyntax::Ident(syntax) => {
                 let i = self.get(syntax)?;
                 match self.doc.entries.get(&i) {
-                    Some(Entry::Typename(weak_ref)) => Ok(TypeRef::Name(
+                    Some(Entry::Typename { nt: weak_ref, .. }) => Ok(TypeRef::Name(
                         weak_ref.upgrade().expect("weak backref to defined type"),
                     )),
                     Some(e) => Err(ValidationError::WrongKindName {

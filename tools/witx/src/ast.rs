@@ -53,13 +53,15 @@ impl Document {
     }
     pub fn typename(&self, name: &Id) -> Option<Rc<NamedType>> {
         self.entries.get(name).and_then(|e| match e {
-            Entry::Typename(nt) => Some(nt.upgrade().expect("always possible to upgrade entry")),
+            Entry::Typename { nt, .. } => {
+                Some(nt.upgrade().expect("always possible to upgrade entry"))
+            }
             _ => None,
         })
     }
     pub fn typenames<'a>(&'a self) -> impl Iterator<Item = Rc<NamedType>> + 'a {
         self.definitions.iter().filter_map(|d| match d {
-            Definition::Typename(nt) => Some(nt.clone()),
+            Definition::Typename { nt, .. } => Some(nt.clone()),
             _ => None,
         })
     }
@@ -127,14 +129,14 @@ impl std::hash::Hash for Document {
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Definition {
-    Typename(Rc<NamedType>),
+    Typename { nt: Rc<NamedType>, hidden: bool },
     Module(Rc<Module>),
     Constant(Constant),
 }
 
 #[derive(Debug, Clone)]
 pub enum Entry {
-    Typename(Weak<NamedType>),
+    Typename { nt: Weak<NamedType>, hidden: bool },
     Module(Weak<Module>),
 }
 
@@ -150,7 +152,7 @@ impl Entry {
 impl PartialEq for Entry {
     fn eq(&self, rhs: &Entry) -> bool {
         match (self, rhs) {
-            (Entry::Typename(t), Entry::Typename(t_rhs)) => {
+            (Entry::Typename { nt: t, .. }, Entry::Typename { nt: t_rhs, .. }) => {
                 t.upgrade()
                     .expect("possible to upgrade entry when part of document")
                     == t_rhs
@@ -196,6 +198,7 @@ pub struct NamedType {
     pub name: Id,
     pub tref: TypeRef,
     pub docs: String,
+    pub hidden: bool,
 }
 
 impl NamedType {
@@ -271,7 +274,6 @@ pub enum BuiltinType {
     U16,
     /// A 32-bit unsigned integer.
     U32 {
-        
         /// Indicates that this 32-bit value should actually be considered a
         /// pointer-like value in language bindings. At the interface types
         /// layer this is always a 32-bit unsigned value, but binding

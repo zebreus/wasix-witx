@@ -467,18 +467,15 @@ impl InterfaceFunc {
         let mut results = Vec::new();
         for param in self.params.iter() {
             match &**param.tref.type_() {
-                Type::Variant(v) if v.is_enum()
-                    => params.push(WasmType::I32),
+                Type::Variant(v) if v.is_enum() => params.push(WasmType::I32),
 
-                Type::Pointer(_)
-                | Type::ConstPointer(_)
-                | Type::Variant(_) => {
+                Type::Pointer(_) | Type::ConstPointer(_) | Type::Variant(_) => {
                     if crate::is_64bit_arch() {
                         params.push(WasmType::I64)
                     } else {
                         params.push(WasmType::I32)
                     }
-                },
+                }
 
                 Type::Builtin(BuiltinType::S8)
                 | Type::Builtin(BuiltinType::U8 { .. })
@@ -495,7 +492,7 @@ impl InterfaceFunc {
                     } else {
                         params.push(WasmType::I32)
                     }
-                },
+                }
 
                 Type::Record(r) => match r.bitflags_repr() {
                     Some(repr) => params.push(WasmType::from(repr)),
@@ -505,7 +502,7 @@ impl InterfaceFunc {
                         } else {
                             params.push(WasmType::I32)
                         }
-                    },
+                    }
                 },
 
                 Type::Builtin(BuiltinType::S64) | Type::Builtin(BuiltinType::U64 { .. }) => {
@@ -529,14 +526,13 @@ impl InterfaceFunc {
 
         for param in self.results.iter() {
             match &**param.tref.type_() {
-                Type::Pointer(_)
-                | Type::ConstPointer(_) => {
+                Type::Pointer(_) | Type::ConstPointer(_) => {
                     if crate::is_64bit_arch() {
                         results.push(WasmType::I64)
                     } else {
                         results.push(WasmType::I32)
                     }
-                },
+                }
 
                 Type::Builtin(BuiltinType::S8)
                 | Type::Builtin(BuiltinType::U8 { .. })
@@ -594,7 +590,7 @@ impl InterfaceFunc {
                                 } else {
                                     params.push(WasmType::I32)
                                 }
-                            },
+                            }
                         }
                     }
                 }
@@ -774,7 +770,7 @@ impl<B: Bindgen> Generator<'_, B> {
                 } else {
                     self.emit(&I32FromUsize)
                 }
-            },
+            }
             Type::Builtin(BuiltinType::Char) => self.emit(&I32FromChar),
             Type::Pointer(_) => {
                 if crate::is_64bit_arch() {
@@ -782,14 +778,14 @@ impl<B: Bindgen> Generator<'_, B> {
                 } else {
                     self.emit(&I32FromPointer)
                 }
-            },
+            }
             Type::ConstPointer(_) => {
                 if crate::is_64bit_arch() {
                     self.emit(&I64FromConstPointer)
                 } else {
                     self.emit(&I32FromConstPointer)
                 }
-            },
+            }
             Type::Handle(_) => self.emit(&I32FromHandle {
                 ty: match ty {
                     TypeRef::Name(ty) => ty,
@@ -940,7 +936,7 @@ impl<B: Bindgen> Generator<'_, B> {
                 } else {
                     self.emit(&UsizeFromI32)
                 }
-            },
+            }
             Type::Builtin(BuiltinType::Char) => self.emit(&CharFromI32),
             Type::Builtin(BuiltinType::F32) => self.emit(&If32FromF32),
             Type::Builtin(BuiltinType::F64) => self.emit(&If64FromF64),
@@ -950,14 +946,14 @@ impl<B: Bindgen> Generator<'_, B> {
                 } else {
                     self.emit(&PointerFromI32 { ty })
                 }
-            },
+            }
             Type::ConstPointer(ty) => {
                 if crate::is_64bit_arch() {
                     self.emit(&ConstPointerFromI64 { ty })
                 } else {
                     self.emit(&ConstPointerFromI32 { ty })
                 }
-            },
+            }
             Type::Handle(_) => self.emit(&HandleFromI32 {
                 ty: match ty {
                     TypeRef::Name(ty) => ty,

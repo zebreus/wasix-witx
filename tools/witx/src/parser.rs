@@ -46,6 +46,7 @@ mod kw {
     wast::custom_keyword!(tag);
     wast::custom_keyword!(tuple);
     wast::custom_keyword!(typename);
+    wast::custom_keyword!(hidden);
     wast::custom_keyword!(u16);
     wast::custom_keyword!(u32);
     wast::custom_keyword!(u64);
@@ -75,12 +76,12 @@ impl Parse<'_> for BuiltinType {
         } else if l.peek::<kw::u32>() {
             parser.parse::<kw::u32>()?;
             Ok(BuiltinType::U32 {
-                lang_ptr_size: false
+                lang_ptr_size: false,
             })
         } else if l.peek::<kw::u64>() {
             parser.parse::<kw::u64>()?;
             Ok(BuiltinType::U64 {
-                lang_ptr_size: false
+                lang_ptr_size: false,
             })
         } else if l.peek::<kw::s8>() {
             parser.parse::<kw::s8>()?;
@@ -273,14 +274,21 @@ impl<'a> Parse<'a> for DeclSyntax<'a> {
 pub struct TypenameSyntax<'a> {
     pub ident: wast::Id<'a>,
     pub def: TypedefSyntax<'a>,
+    pub hidden: bool,
 }
 
 impl<'a> Parse<'a> for TypenameSyntax<'a> {
     fn parse(parser: Parser<'a>) -> Result<Self> {
         parser.parse::<kw::typename>()?;
+        let hidden: Option<kw::hidden> = parser.parse().ok();
         let ident = parser.parse()?;
         let def = parser.parse()?;
-        Ok(TypenameSyntax { ident, def })
+
+        Ok(TypenameSyntax {
+            ident,
+            def,
+            hidden: hidden.is_some(),
+        })
     }
 }
 
@@ -313,6 +321,9 @@ impl<'a> Parse<'a> for TypedefSyntax<'a> {
         } else if l.peek::<kw::string>() {
             parser.parse::<kw::string>()?;
             Ok(TypedefSyntax::String)
+        } else if l.peek::<kw::hidden>() {
+            parser.parse::<kw::hidden>()?;
+            Ok(TypedefSyntax::Bool)
         } else if l.peek::<kw::bool_>() {
             parser.parse::<kw::bool_>()?;
             Ok(TypedefSyntax::Bool)

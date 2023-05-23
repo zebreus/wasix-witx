@@ -108,10 +108,15 @@ impl BuiltinType {
 
 impl NamedType {
     pub fn to_sexpr(&self) -> SExpr {
+        let typename_str = if self.hidden {
+            "typename"
+        } else {
+            "typename hidden"
+        };
         let body = self.tref.to_sexpr();
         SExpr::docs(
             &self.docs,
-            SExpr::Vec(vec![SExpr::word("typename"), self.name.to_sexpr(), body]),
+            SExpr::Vec(vec![SExpr::word(typename_str), self.name.to_sexpr(), body]),
         )
     }
 }

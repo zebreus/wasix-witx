@@ -20,6 +20,9 @@ struct Args {
     #[structopt(short = "v", long = "verbose")]
     verbose: bool,
 
+    #[structopt(long = "is64bit")]
+    is_64bit: bool,
+
     #[structopt(subcommand)]
     cmd: Command,
 }
@@ -79,6 +82,7 @@ pub fn main() {
     let args = Args::from_args();
     pretty_env_logger::init();
     let verbose = args.verbose;
+    let is_64bit = args.is_64bit;
 
     match args.cmd {
         Command::Docs {
@@ -86,7 +90,7 @@ pub fn main() {
             check,
             output,
         } => {
-            let doc = load_witx(&input, "input", verbose);
+            let doc = load_witx(&input, "input", verbose, is_64bit);
             if check {
                 let output = output.expect("output argument required in docs --check mode");
                 if diff_against_filesystem(&doc.to_md(), &output).is_err() {
@@ -117,8 +121,8 @@ pub fn main() {
             use std::{collections::HashMap, iter::FromIterator};
             use witx::polyfill::Polyfill;
 
-            let doc = load_witx(&input, "input", verbose);
-            let older_doc = load_witx(&older_interface, "older_interface", verbose);
+            let doc = load_witx(&input, "input", verbose, is_64bit);
+            let older_doc = load_witx(&older_interface, "older_interface", verbose, is_64bit);
             let module_mapping = HashMap::from_iter(module_mapping.into_iter());
             let polyfill = match Polyfill::new(&doc, &older_doc, &module_mapping) {
                 Ok(polyfill) => polyfill,
@@ -138,8 +142,8 @@ pub fn main() {
     }
 }
 
-fn load_witx(input: &[PathBuf], field_name: &str, verbose: bool) -> Document {
-    match load(input) {
+fn load_witx(input: &[PathBuf], field_name: &str, verbose: bool, is64bit: bool) -> Document {
+    match load(input, is64bit) {
         Ok(doc) => {
             if verbose {
                 println!("{}: {:?}", field_name, doc);

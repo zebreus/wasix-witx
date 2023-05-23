@@ -11,12 +11,20 @@ pub fn parse_witx(i: &[impl AsRef<Path>], is64bit: bool) -> Result<Document, Wit
     _parse_witx_with(&paths, &Filesystem, is64bit)
 }
 
-pub fn parse_witx_with(i: &[impl AsRef<Path>], witxio: impl WitxIo, is64bit: bool) -> Result<Document, WitxError> {
+pub fn parse_witx_with(
+    i: &[impl AsRef<Path>],
+    witxio: impl WitxIo,
+    is64bit: bool,
+) -> Result<Document, WitxError> {
     let paths = i.iter().map(|p| p.as_ref()).collect::<Vec<&Path>>();
     _parse_witx_with(&paths, &witxio, is64bit)
 }
 
-fn _parse_witx_with(paths: &[&Path], io: &dyn WitxIo, is64bit: bool) -> Result<Document, WitxError> {
+fn _parse_witx_with(
+    paths: &[&Path],
+    io: &dyn WitxIo,
+    is64bit: bool,
+) -> Result<Document, WitxError> {
     crate::IS_64BIT_ARCH.store(is64bit, std::sync::atomic::Ordering::Release);
 
     let mut validator = DocValidation::new();
@@ -85,7 +93,13 @@ mod test {
 
     #[test]
     fn empty() {
-        parse_witx_with(&[Path::new("/a")], &MockFs::new(&[("/a", ";; empty")])).expect("parse");
+        parse_witx_with(
+            &[Path::new("/a")],
+            &MockFs::new(&[("/a", ";; empty")]),
+            false,
+            false,
+        )
+        .expect("parse");
     }
 
     #[test]
@@ -93,6 +107,8 @@ mod test {
         parse_witx_with(
             &[Path::new("/a")],
             &MockFs::new(&[("/a", "(use \"b\")"), ("/b", ";; empty")]),
+            false,
+            false,
         )
         .unwrap();
     }
@@ -106,6 +122,8 @@ mod test {
                 ("/b", "(use \"c\")\n(typename $b_float f64)"),
                 ("/c", "(typename $c_int u32)"),
             ]),
+            false,
+            false,
         )
         .expect("parse");
 
@@ -131,6 +149,8 @@ mod test {
                 ("/c", "(use \"d\")"),
                 ("/d", "(typename $d_char u8)"),
             ]),
+            false,
+            false,
         )
         .expect("parse");
 
@@ -157,6 +177,8 @@ mod test {
                 // included by subdir/child.witx's use.
                 ("/sibling.witx", "(typename $c_int u64)"),
             ]),
+            false,
+            false,
         )
         .expect("parse");
 
