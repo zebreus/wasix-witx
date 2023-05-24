@@ -1,40 +1,31 @@
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4323447.svg)](https://doi.org/10.5281/zenodo.4323447)
-    
+# WASI(X) Extensions Spec
+
+[WASIX](https://wasix.org) is maintained by wasix.org.
+
+WASI(X) intent is to extend the WASI proposal and complete the ABI sufficiently now to build useful and productive
+applications today - it is not intended as a fork but rather to be a superset on top of WASI. Therefore it
+maintains full forwards and backwards compatibility with this major version of WASI and stabilizes it for the
+long term.
+
+# WASI(X) Contributions
+
+All contributions are welcome on extending WASI(X) with other extension(s). Just submit your pull request
+here and we will review via normal GitHub processes.
+
+# Long-term Support
+
+WASIX will receive long term support by this community with a guarantee of backwards compatibility on the ABI.
+Runtime(s) that support this ABI are assured of its stability just as standard libraries and libraries can
+also count on that same stability to join the dots and make the connections.
+
+Major bug fixes and/or zero day vulnerabilities will be addressed promptly here with careful consideration for
+resolving issues without compromising the long-term support goal.
+
 # WebAssembly System Interface
 
 ![WASI](WASI.png)
 
-The WebAssembly System Interface is not a monolithic standard system interface,
-but is instead a modular collection of standardized APIs. None of the APIs are
-required to be implemented to have a compliant runtime. Instead, host
-environments can choose which APIs make sense for their use cases.
-
----
-## Important Note: WASI is in transition
-
-WASI is transitioning away from the `witx` format and its early experimental ABI. We are transitioning to Interface Types using the `wit` format and the canonical ABI.
-
-All new API proposals should use the new format and the new repo structure that is shown in the [proposal template](https://github.com/WebAssembly/wasi-proposal-template).
-
-Some APIs can not yet be supported in the `wit` format. The advancement of these proposals will be unblocked with work that is ongoing:
-
-- Proposals that require async/streams are expected to be unblocked in early Q2 2022
-- Proposals that depend on libc are expected to be unblocked by work in `wasi-libc` and elsewhere. Until then, implementers of these APIs should continue to use the snapshots in this repo, which use the `witx` format. We will provide updates on the progress of this work in the bi-weekly meetings.
-
----
-
-## Find the APIs
-
-Development of each API happens in its own repo, which you can access
-from the [proposals list](Proposals.md).
-
-This repo is for general discussion, as well as documenting how we work
-and high-level goals.
-
-## Propose a new API
-
-If you would like to create a new proposal, get started with our
-[Contributing guide](Contributing.md).
+[WASI](https://github.com/WebAssembly/WASI) is maintained by the ByteAlliance and standardized by its working group.
 
 ## WASI High Level Goals
 
