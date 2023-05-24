@@ -10,7 +10,7 @@ stabilizes it for the long term.
 
 # Current Extensions
 
-Below are the current extensions support by WASIX, they are all fully tested and
+Below are the current extensions supported by WASIX, they are all fully tested and
 incorporated into supporting runtime(s):
 
 - full support for efficient multithreading including joins, signals
@@ -45,8 +45,6 @@ Major bug fixes and/or zero day vulnerabilities will be addressed promptly here 
 resolving issues without compromising the long-term support goal.
 
 # WebAssembly System Interface
-
-![WASI](WASI.png)
 
 [WASI](https://github.com/WebAssembly/WASI) is maintained by the ByteAlliance and standardized by its working group.
 
