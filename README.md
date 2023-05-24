@@ -2,10 +2,33 @@
 
 [WASIX](https://wasix.org) is maintained by wasix.org.
 
-WASI(X) intent is to extend the WASI proposal and complete the ABI sufficiently now to build useful and productive
-applications today - it is not intended as a fork but rather to be a superset on top of WASI. Therefore it
-maintains full forwards and backwards compatibility with this major version of WASI and stabilizes it for the
-long term.
+WASI(X) intent is to extend the WASI proposal and complete the ABI sufficiently
+now to build useful and productive applications today - it is not intended as a
+fork but rather to be a superset on top of WASI. Therefore it maintains full
+forwards and backwards compatibility with this major version of WASI and
+stabilizes it for the long term.
+
+# Current Extensions
+
+Below are the current extensions support by WASIX, they are all fully tested and
+incorporated into supporting runtime(s):
+
+- full support for efficient multithreading including joins, signals
+  and `getpid`
+- `pthreads` support (now extended from the WASI threads spec)
+- full support for sockets (`socket`, `bind`, `connect`, `resolve`)
+    - IPv4, IPv6
+    - UDP, TCP
+    - Multicast, Anycast
+    - RAW sockets
+- current directory support (`chdir`) integrated with the runtime
+- `setjmp` / `longjmp` support (used extensively in `libc` ) via `asyncify`
+- process forking (`fork` and `vfork` )
+- subprocess spawning and waiting (`exec` , `wait` )
+- TTY support
+- asynchronous polling of sockets and files
+- pipe and event support (`pipe`, `event` )
+- DNS resolution support (`resolve` )
 
 # WASI(X) Contributions
 
