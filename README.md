@@ -44,6 +44,10 @@ also count on that same stability to join the dots and make the connections.
 Major bug fixes and/or zero day vulnerabilities will be addressed promptly here with careful consideration for
 resolving issues without compromising the long-term support goal.
 
+# Dependency Graph
+
+![Dependencieis](dependencies.drawio.png)
+
 # WebAssembly System Interface
 
 [WASI](https://github.com/WebAssembly/WASI) is maintained by the ByteAlliance and standardized by its working group.
