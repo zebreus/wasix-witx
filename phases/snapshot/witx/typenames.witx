@@ -8,6 +8,9 @@
 ;;; Represents the length of a piece of data referenced by a pointer
 (typename $pointersize usize)
 
+;;; Represents an ID of a waker to be woken
+(typename $waker u64)
+
 ;;; Error codes returned by functions.
 ;;; Not all of these error codes are returned by the functions provided by this
 ;;; API; some are used in higher-level library layers, and others are provided

@@ -701,4 +701,188 @@
     ;;; The number of IP addresses returned during the DNS resolution.
     (result $error (expected $size (error $errno)))
   )
+
+  ;;; Registers a callback function for waking up wakers
+  (@interface func (export "callback_waker_wake")
+    ;;; Exported function that will be called back when a waker has been triggered
+    ;;; (if this is not specified the default will be "_waker_wake")
+    (param $callback string)
+  )
+
+  ;;; Registers a callback function for destructing a waker
+  (@interface func (export "callback_waker_drop")
+    ;;; Exported function that will be called back when a waker has been dropped
+    ;;; (if this is not specified the default will be "_waker_drop")
+    (param $callback string)
+  )
+
+  ;;; Read from a file descriptor.
+  ;;;
+  ;;; If this read function would block it returns Errno::Pending instead
+  ;;; and invokes the waker in the future.
+  (@interface func (export "fd_read_poll")
+    (param $fd $fd)
+    ;;; List of scatter/gather vectors to which to store data.
+    (param $iovs $iovec_array)
+    ;;; Waker that will be invoked when this function is ready to be polled again
+    (param $waker $waker)
+    ;;; The number of bytes read.
+    (result $error (expected $size (error $errno)))
+  )
+
+  ;;; Write to a file descriptor.
+  ;;;
+  ;;; If this write function would block it returns Errno::Pending instead
+  ;;; and invokes the waker in the future.
+  (@interface func (export "fd_write_poll")
+    (param $fd $fd)
+    ;;; List of scatter/gather vectors from which to retrieve data.
+    (param $iovs $ciovec_array)
+    ;;; Waker that will be invoked when this function is ready to be polled again
+    (param $waker $waker)
+    (result $error (expected $size (error $errno)))
+  )
+
+  ;;; Wait for a futex_wake operation to wake us.
+  ;;;
+  ;;; If this wait function would block it returns Errno::Pending instead
+  ;;; and invokes the waker in the future.
+  ;;;
+  ;;; Returns with EINVAL if the futex doesn't hold the expected value.
+  ;;; Returns false on timeout, and true in all other cases.
+  (@interface func (export "futex_wait_poll")
+    ;;; Memory location that holds the value that will be checked
+    (param $futex (@witx pointer u32))
+    ;;; Expected value that should be currently held at the memory location
+    (param $expected u32)
+    ;;; Timeout should the futex not be triggered in the allocated time
+    (param $timeout (@witx const_pointer $option_timestamp))
+    ;;; Waker that will be invoked when this function is ready to be polled again
+    (param $waker $waker)
+    (result $error (expected $bool (error $errno)))
+  )
+
+  ;;; Wait for process to exit
+  ;;;
+  ;;; If this function would block it returns Errno::Pending instead
+  ;;; and invokes the waker in the future.
+  ;;;
+  ;;; Passing none to PID will mean that the call will wait
+  ;;; for any subprocess to exit. PID will be populated with
+  ;;; the process that exited.
+  (@interface func (export "proc_join_poll")
+    ;;; ID of the process to wait on
+    (param $pid (@witx pointer $option_pid))
+    ;;; Flags that determine how the join behaves
+    (param $flags $join_flags)
+    ;;; Waker that will be invoked when this function is ready to be polled again
+    (param $waker $waker)
+    ;;; Returns the status of the process
+    (result $error (expected $join_status (error $errno)))
+  )
+
+  ;;; Accept a new incoming connection.
+  ;;;
+  ;;; If this function would block it returns Errno::Pending instead
+  ;;; and invokes the waker in the future.
+  (@interface func (export "sock_accept_poll")
+    ;;; The listening socket.
+    (param $fd $fd)
+    ;;; The desired values of the file descriptor flags.
+    (param $flags $fdflags)
+    ;;; Waker that will be invoked when this function is ready to be polled again
+    (param $waker $waker)
+    ;;; New socket connection
+    (result $error (expected (tuple $fd $addr_port) (error $errno)))
+  )
+
+  ;;; Receive a message and its peer address from a socket.
+  ;;;
+  ;;; If this function would block it returns Errno::Pending instead
+  ;;; and invokes the waker in the future.
+  (@interface func (export "sock_recv_from_poll")
+    (param $fd $fd)
+    ;;; List of scatter/gather vectors to which to store data.
+    (param $ri_data $iovec_array)
+    ;;; Message flags.
+    (param $ri_flags $riflags)
+    ;;; Waker that will be invoked when this function is ready to be polled again
+    (param $waker $waker)
+    ;;; Number of bytes stored in ri_data and message flags.
+    (result $error (expected (tuple $size $roflags $addr_port) (error $errno)))
+  )
+
+  ;;; Receive a message from a socket.
+  ;;;
+  ;;; If this function would block it returns Errno::Pending instead
+  ;;; and invokes the waker in the future.
+  (@interface func (export "sock_recv_poll")
+    (param $fd $fd)
+    ;;; List of scatter/gather vectors to which to store data.
+    (param $ri_data $iovec_array)
+    ;;; Message flags.
+    (param $ri_flags $riflags)
+    ;;; Waker that will be invoked when this function is ready to be polled again
+    (param $waker $waker)
+    ;;; Number of bytes stored in ri_data and message flags.
+    (result $error (expected (tuple $size $roflags) (error $errno)))
+  )
+
+  ;;; Send a message on a socket.
+  ;;;
+  ;;; If this function would block it returns Errno::Pending instead
+  ;;; and invokes the waker in the future.
+  (@interface func (export "sock_send_poll")
+    (param $fd $fd)
+    ;;; List of scatter/gather vectors to which to retrieve data
+    (param $si_data $ciovec_array)
+    ;;; Message flags.
+    (param $si_flags $siflags)
+    ;;; Waker that will be invoked when this function is ready to be polled again
+    (param $waker $waker)
+    ;;; Number of bytes transmitted.
+    (result $error (expected $size (error $errno)))
+  )
+
+  ;;; Send a message on a socket to a specific address.
+  ;;;
+  ;;; If this function would block it returns Errno::Pending instead
+  ;;; and invokes the waker in the future.
+  (@interface func (export "sock_send_to_poll")
+    (param $fd $fd)
+    ;;; List of scatter/gather vectors to which to retrieve data
+    (param $si_data $ciovec_array)
+    ;;; Message flags.
+    (param $si_flags $siflags)
+    ;;; Address of the socket to send message to
+    (param $addr (@witx const_pointer $addr_port))
+    ;;; Waker that will be invoked when this function is ready to be polled again
+    (param $waker $waker)
+    ;;; Number of bytes transmitted.
+    (result $error (expected $size (error $errno)))
+  )
+
+  ;;; Joins this thread with another thread, blocking this
+  ;;;
+  ;;; If this function would block it returns Errno::Pending instead
+  ;;; and invokes the waker in the future.
+  (@interface func (export "thread_join_poll")
+    ;;; Handle of the thread to wait on
+    (param $tid $tid)
+    ;;; Waker that will be invoked when this function is ready to be polled again
+    (param $waker $waker)
+    (result $error (expected (error $errno)))
+  )
+
+  ;;; Sends the current thread to sleep for a period of time
+  ;;;
+  ;;; If this function would block it returns Errno::Pending instead
+  ;;; and invokes the waker in the future.
+  (@interface func (export "thread_sleep_poll")
+    ;;; Amount of time that the thread should sleep
+    (param $duration $timestamp)
+    ;;; Waker that will be invoked when this function is ready to be polled again
+    (param $waker $waker)
+    (result $error (expected (error $errno)))
+  )
 )
