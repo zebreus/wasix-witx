@@ -177,6 +177,8 @@
     $memviolation
     ;;; Unknown error has occurred.
     $unknown
+    ;;; Pending asynchronous wake.
+    $pending
   )
 )
 
