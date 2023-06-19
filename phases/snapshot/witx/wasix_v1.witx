@@ -796,6 +796,19 @@
     (result $error (expected (tuple $fd $addr_port) (error $errno)))
   )
 
+  ;;; Polls if any connections are waiting to be accepted
+  ;;;
+  ;;; If this function would block it returns Errno::Pending instead
+  ;;; and invokes the waker in the future.
+  (@interface func (export "sock_accept_ready_poll")
+    ;;; The listening socket.
+    (param $fd $fd)
+    ;;; Waker that will be invoked when this function is ready to be polled again
+    (param $waker $waker)
+    ;;; Number of connections that are waiting
+    (result $error (expected $size (error $errno)))
+  )
+
   ;;; Receive a message and its peer address from a socket.
   ;;;
   ;;; If this function would block it returns Errno::Pending instead
@@ -812,7 +825,7 @@
     (result $error (expected (tuple $size $roflags $addr_port) (error $errno)))
   )
 
-  ;;; Receive a message from a socket.
+  ;;; Polls to receive a message from a socket.
   ;;;
   ;;; If this function would block it returns Errno::Pending instead
   ;;; and invokes the waker in the future.
@@ -828,19 +841,27 @@
     (result $error (expected (tuple $size $roflags) (error $errno)))
   )
 
-  ;;; Send a message on a socket.
+  ;;; Polls if a message is waiting to be received
   ;;;
   ;;; If this function would block it returns Errno::Pending instead
   ;;; and invokes the waker in the future.
-  (@interface func (export "sock_send_poll")
+  (@interface func (export "sock_recv_ready_poll")
     (param $fd $fd)
-    ;;; List of scatter/gather vectors to which to retrieve data
-    (param $si_data $ciovec_array)
-    ;;; Message flags.
-    (param $si_flags $siflags)
     ;;; Waker that will be invoked when this function is ready to be polled again
     (param $waker $waker)
-    ;;; Number of bytes transmitted.
+    ;;; Number of bytes stored waiting to be received
+    (result $error (expected $size (error $errno)))
+  )
+
+  ;;; Polls if the socket is ready to send messages
+  ;;;
+  ;;; If this function would block it returns Errno::Pending instead
+  ;;; and invokes the waker in the future.
+  (@interface func (export "sock_send_ready_poll")
+    (param $fd $fd)
+    ;;; Waker that will be invoked when this function is ready to be polled again
+    (param $waker $waker)
+    ;;; Number of bytes that can be sent.
     (result $error (expected $size (error $errno)))
   )
 
