@@ -853,6 +853,22 @@
     (result $error (expected $size (error $errno)))
   )
 
+  ;;; Send a message on a socket.
+  ;;;
+  ;;; If this function would block it returns Errno::Pending instead
+  ;;; and invokes the waker in the future.
+  (@interface func (export "sock_send_poll")
+    (param $fd $fd)
+    ;;; List of scatter/gather vectors to which to retrieve data
+    (param $si_data $ciovec_array)
+    ;;; Message flags.
+    (param $si_flags $siflags)
+    ;;; Waker that will be invoked when this function is ready to be polled again
+    (param $waker $waker)
+    ;;; Number of bytes transmitted.
+    (result $error (expected $size (error $errno)))
+  )
+
   ;;; Polls if the socket is ready to send messages
   ;;;
   ;;; If this function would block it returns Errno::Pending instead
