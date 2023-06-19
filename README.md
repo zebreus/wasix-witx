@@ -26,9 +26,10 @@ incorporated into supporting runtime(s):
 - process forking (`fork` and `vfork` )
 - subprocess spawning and waiting (`exec` , `wait` )
 - TTY support
-- asynchronous polling of sockets and files
+- Asynchronous polling of sockets and files via `poll_oneoff`
 - pipe and event support (`pipe`, `event` )
 - DNS resolution support (`resolve` )
+- Asynchronous IO (using wakers) on all IO operations
 
 # WASI(X) Contributions
 
