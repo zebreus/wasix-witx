@@ -885,4 +885,36 @@
     (param $waker $waker)
     (result $error (expected (error $errno)))
   )
+
+  ;;; Read from a file descriptor, without using and updating the file descriptor's offset.
+  ;;;
+  ;;; If this function would block it returns Errno::Pending instead
+  ;;; and invokes the waker in the future.
+  (@interface func (export "fd_pread_poll")
+    (param $fd $fd)
+    ;;; List of scatter/gather vectors in which to store data.
+    (param $iovs $iovec_array)
+    ;;; The offset within the file at which to read.
+    (param $offset $filesize)
+    ;;; Waker that will be invoked when this function is ready to be polled again
+    (param $waker $waker)
+    ;;; The number of bytes read.
+    (result $error (expected $size (error $errno)))
+  )
+
+  ;;; Write to a file descriptor, without using and updating the file descriptor's offset.
+  ;;;
+  ;;; If this function would block it returns Errno::Pending instead
+  ;;; and invokes the waker in the future.
+  (@interface func (export "fd_pwrite_poll")
+    (param $fd $fd)
+    ;;; List of scatter/gather vectors from which to retrieve data.
+    (param $iovs $ciovec_array)
+    ;;; The offset within the file at which to write.
+    (param $offset $filesize)
+    ;;; Waker that will be invoked when this function is ready to be polled again
+    (param $waker $waker)
+    ;;; The number of bytes written.
+    (result $error (expected $size (error $errno)))
+  )
 )
