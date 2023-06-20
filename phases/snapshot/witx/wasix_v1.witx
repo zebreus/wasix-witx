@@ -702,17 +702,18 @@
     (result $error (expected $size (error $errno)))
   )
 
-  ;;; Registers a callback function for waking up wakers
-  (@interface func (export "callback_waker_wake")
+  ;;; Registers a callback function for waking and dropping wakers passed
+  ;;; into polling syscalls
+  (@interface func (export "callback_wake")
     ;;; Exported function that will be called back when a waker has been triggered
-    ;;; (if this is not specified the default will be "_waker_wake")
-    (param $callback string)
-  )
-
-  ;;; Registers a callback function for destructing a waker
-  (@interface func (export "callback_waker_drop")
-    ;;; Exported function that will be called back when a waker has been dropped
-    ;;; (if this is not specified the default will be "_waker_drop")
+    ;;; (if this is not specified the default will be "_wake")
+    ;;;
+    ;;; For the wake function it accepts 8xi64 numbers as parameters where each number
+    ;;; represents what to do with the waker.
+    ;;; > 0 means wake it up
+    ;;; < 0 means drop it and release memory
+    ;;; 0 means noop
+    ;;;
     (param $callback string)
   )
 
