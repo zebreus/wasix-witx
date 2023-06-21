@@ -1511,7 +1511,7 @@
 )
 
 ;;; epoll data
-(typename $epoll_event
+(typename $epoll_data
   (record
     ;;; Pointer to some user defined data
     (field $ptr $pointersize)
