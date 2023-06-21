@@ -1483,3 +1483,53 @@
     (field $guard_size $pointersize)
   )
 )
+
+;;; epoll type.
+(typename $epoll_type
+  (flags (@witx repr u32)
+    $epollin
+    $epollout
+    $epollrdhup
+    $epollpri
+    $epollerr
+    $epollhup
+    $epollet
+    $epolloneshot    
+  )
+)
+
+;;; epoll ctl
+(typename $epoll_ctl
+  (enum (@witx tag u32)
+    ;;; Add an entry to the interest list of the epoll file descriptor, epfd.
+    $add
+    ;;; Change the settings associated with fd in the interest list to the new settings specified in event.
+    $mod
+    ;;; Remove (deregister) the target file descriptor fd from the interest list.
+    $del
+  )
+)
+
+;;; epoll data
+(typename $epoll_event
+  (record
+    ;;; Pointer to some user defined data
+    (field $ptr $pointersize)
+    ;;; The file descriptor of the event
+    (field $fd $fd)
+    ;;; User data for the event
+    (field $data1 u32)
+    ;;; User data for the event
+    (field $data2 u64)
+  )
+)
+
+;;; epoll event and its data
+(typename $epoll_event
+  (record
+    ;;; The events that are triggered for this
+    (field $events $epoll_type)
+    ;;; The data of the event
+    (field $data $epoll_data)
+  )
+)
