@@ -1353,11 +1353,10 @@
   )
 )
 
-;;; A unix socket with a cidr
+;;; Unix sockets do not support CIDR
 (typename $addr_unix_cidr
   (record
-    (field $addr $addr_unix)
-    (field $prefix u8)
+    (field $unused u8)
   )
 )
 

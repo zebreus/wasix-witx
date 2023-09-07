@@ -149,15 +149,29 @@ impl Layout for RecordDatatype {
 
 impl Layout for Variant {
     fn mem_size_align(&self) -> SizeAlign {
-        let mut max = SizeAlign { size: 0, align: 0 };
+        // Step 1: Calculate max align of all cases. This is the align of the union.
+        let mut case_max_align = 0;
+        for case in self.cases.iter() {
+            if let Some(payload) = &case.tref {
+                case_max_align = case_max_align.max(payload.mem_size_align().align);
+            }
+        }
+        // Step 2: Align of the struct is max(tag align, union align)
+        let mut max = SizeAlign { size: 0, align: self.tag_repr.mem_size_align().align };
+        max.align = max.align.max(case_max_align);
+        // Step 3: Calculate size of each case + tag
         for case in self.cases.iter() {
             let mut size = self.tag_repr.mem_size_align();
+            size.align = max.align;
             if let Some(payload) = &case.tref {
-                size.append_field(&payload.mem_size_align());
+                // Step 3.1: payload size must be aligned to union alignment
+                let mut payload_size = payload.mem_size_align();
+                payload_size.size = align_to(payload_size.size, case_max_align);
+                size.append_field(&payload_size);
             }
-            size.size = align_to(size.size, size.align);
+            // Step 3.2: overall size must also be aligned to struct alignment
+            size.size = align_to(size.size, max.align);
             max.size = max.size.max(size.size);
-            max.align = max.align.max(size.align);
         }
         max
     }
