@@ -149,19 +149,23 @@ impl Layout for RecordDatatype {
 
 impl Layout for Variant {
     fn mem_size_align(&self) -> SizeAlign {
-        let mut max = SizeAlign { size: 0, align: self.tag_repr.mem_size_align().align };
+        let mut case_max_align = 0;
         for case in self.cases.iter() {
             if let Some(payload) = &case.tref {
-                max.align = max.align.max(payload.mem_size_align().align);
+                case_max_align = case_max_align.max(payload.mem_size_align().align);
             }
         }
+        let mut max = SizeAlign { size: 0, align: self.tag_repr.mem_size_align().align };
+        max.align = max.align.max(case_max_align);
         for case in self.cases.iter() {
             let mut size = self.tag_repr.mem_size_align();
             size.align = max.align;
             if let Some(payload) = &case.tref {
-                size.append_field(&payload.mem_size_align());
+                let mut payload_size = payload.mem_size_align();
+                payload_size.size = align_to(payload_size.size, case_max_align);
+                size.append_field(&payload_size);
             }
-            size.size = align_to(size.size, size.align);
+            size.size = align_to(size.size, max.align);
             max.size = max.size.max(size.size);
         }
         max
