@@ -1429,31 +1429,6 @@
   )
 )
 
-;;; HTTP request handles used to send and receive data to the server
-(typename $http_handles
-  (record
-    ;;; File handle used to write the request data
-    (field $request $fd)
-    ;;; File handle used to receive the response data
-    (field $response $fd)
-    ;;; File handle used to read the response headers
-    ;;; (entries are separated by line feeds)
-    (field $headers $fd)
-  )
-)
-
-;;; HTTP response status
-(typename $http_status
-  (record
-    (field $ok $bool)
-    (field $redirected $bool)
-    ;;; Size of the response
-    (field $size $filesize)
-    ;;; HTTP status code for this response
-    (field $status u16)
-  )
-)
-
 ;;; join flags.
 (typename $join_flags
   (flags (@witx repr u32)

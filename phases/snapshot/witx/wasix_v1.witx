@@ -304,41 +304,6 @@
     (result $error (expected (error $errno)))
   )
 
-  ;;; Connects to a websocket at a particular network URL
-  (@interface func (export "ws_connect")
-    ;;; URL of the web socket destination to connect to
-    (param $url string)
-    ;;; Returns a socket handle which is used to send and receive data
-    (result $error (expected $fd (error $errno)))
-  )
-
-  ;;; Makes a HTTP request to a remote web resource and
-  ;;; returns a socket handles that are used to send and receive data
-  (@interface func (export "http_request")
-    ;;; URL of the HTTP resource to connect to
-    (param $url string)
-    ;;; HTTP method to be invoked
-    (param $method string)
-    ;;; HTTP headers to attach to the request
-    ;;; (headers seperated by lines)
-    (param $headers string)
-    ;;; Should the request body be compressed
-    (param $gzip $bool)
-    ;;; The body of the response can be streamed from the returned
-    ;;; file handle
-    (result $error (expected $http_handles (error $errno)))
-  )
-
-  ;;; Retrieves the status of a HTTP request
-  (@interface func (export "http_status")
-    ;;; Handle of the HTTP request
-    (param $fd $fd)
-    ;;; Pointer to a buffer that will be filled with the current
-    ;;; status of this HTTP request
-    (param $status (@witx pointer $http_status))
-    (result $error (expected (error $errno)))
-  )
-
   ;;; Securely connects to a particular remote network
   (@interface func (export "port_bridge")
     ;;; Fully qualified identifier for the network
