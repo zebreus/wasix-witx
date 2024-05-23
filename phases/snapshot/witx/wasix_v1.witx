@@ -661,7 +661,7 @@
     ;;; Port hint (zero if no hint is supplied)
     (param $port u16)
     ;;; The buffer where addresses will be stored
-    (param $addrs (@witx pointer $addr))
+    (param $addrs (@witx pointer $addr_ip))
     (param $naddrs $size)
     ;;; The number of IP addresses returned during the DNS resolution.
     (result $error (expected $size (error $errno)))

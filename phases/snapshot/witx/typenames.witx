@@ -1174,6 +1174,19 @@
   )
 )
 
+;;; Address family
+(typename $address_family_ip
+  (enum (@witx tag u8)
+    ;;; Unspecified - this is unused, but this enum must be
+    ;;; backwards-compatible with $address_family
+    $unspec
+    ;;; IP v4
+    $inet4
+    ;;; IP v6
+    $inet6
+  )
+)
+
 ;;; Represents an unspecified address
 (typename $addr_unspec
   (record
@@ -1241,6 +1254,20 @@
     ;;; Same as flow_info1 and flow_info0
     (field $scope_id1 u16)
     (field $scope_id0 u16)
+  )
+)
+
+;;; IPv6 address without flow info and scope ID
+(typename $addr_ip6_bare
+  (record
+    (field $n0 u16)
+    (field $n1 u16)
+    (field $n2 u16)
+    (field $n3 u16)
+    (field $h0 u16)
+    (field $h1 u16)
+    (field $h2 u16)
+    (field $h3 u16)
   )
 )
 
@@ -1389,6 +1416,16 @@
     $addr_ip4
     $addr_ip6
     $addr_unix
+  )
+)
+
+;;; Union of IP addresses
+(typename $addr_ip
+  (union
+    (@witx tag $address_family_ip)
+    $addr_unspec
+    $addr_ip4
+    $addr_ip6_bare
   )
 )
 
