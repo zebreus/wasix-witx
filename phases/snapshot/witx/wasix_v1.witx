@@ -323,6 +323,12 @@
     (result $error (expected (error $errno)))
   )
 
+  ;;; Explicitly requests for the runtime to create a
+  ;;; snapshot of the guest module's state.
+  (@interface func (export "proc_snapshot")
+    (result $error (expected (error $errno)))
+  )
+
   ;;; Securely connects to a particular remote network
   (@interface func (export "port_bridge")
     ;;; Fully qualified identifier for the network
