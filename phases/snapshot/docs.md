@@ -1,47 +1,17 @@
 # Types
-## <a href="#size" name="size"></a> `size`: `u32`
+## <a href="#pointersize" name="pointersize"></a> `pointersize`: `usize`
+Represents the length of a piece of data referenced by a pointer
 
 Size: 4
 
 Alignment: 4
 
-## <a href="#filesize" name="filesize"></a> `filesize`: `u64`
-Non-negative file size or length of a region within a file.
+## <a href="#waker" name="waker"></a> `waker`: `u32`
+Represents an ID of a waker to be woken
 
 Size: 8
 
 Alignment: 8
-
-## <a href="#timestamp" name="timestamp"></a> `timestamp`: `u64`
-Timestamp in nanoseconds.
-
-Size: 8
-
-Alignment: 8
-
-## <a href="#clockid" name="clockid"></a> `clockid`: `Variant`
-Identifiers for clocks.
-
-Size: 4
-
-Alignment: 4
-
-### Variant cases
-- <a href="#clockid.realtime" name="clockid.realtime"></a> `realtime`
-The clock measuring real time. Time value zero corresponds with
-1970-01-01T00:00:00Z.
-
-- <a href="#clockid.monotonic" name="clockid.monotonic"></a> `monotonic`
-The store-wide monotonic clock, which is defined as a clock measuring
-real time, whose value cannot be adjusted and which cannot have negative
-clock jumps. The epoch of this clock is undefined. The absolute time
-value of this clock therefore has no meaning.
-
-- <a href="#clockid.process_cputime_id" name="clockid.process_cputime_id"></a> `process_cputime_id`
-The CPU-time clock associated with the current process.
-
-- <a href="#clockid.thread_cputime_id" name="clockid.thread_cputime_id"></a> `thread_cputime_id`
-The CPU-time clock associated with the current thread.
 
 ## <a href="#errno" name="errno"></a> `errno`: `Variant`
 Error codes returned by functions.
@@ -285,6 +255,18 @@ Cross-device link.
 - <a href="#errno.notcapable" name="errno.notcapable"></a> `notcapable`
 Extension: Capabilities insufficient.
 
+- <a href="#errno.shutdown" name="errno.shutdown"></a> `shutdown`
+Cannot send after socket shutdown.
+
+- <a href="#errno.memviolation" name="errno.memviolation"></a> `memviolation`
+Memory access violation.
+
+- <a href="#errno.unknown" name="errno.unknown"></a> `unknown`
+Unknown error has occurred.
+
+- <a href="#errno.pending" name="errno.pending"></a> `pending`
+Pending asynchronous wake.
+
 ## <a href="#rights" name="rights"></a> `rights`: `Record`
 File descriptor rights, determining which actions may be performed.
 
@@ -294,269 +276,211 @@ Alignment: 8
 
 ### Record members
 - <a href="#rights.fd_datasync" name="rights.fd_datasync"></a> `fd_datasync`: `bool`
-The right to invoke [`fd_datasync`](#fd_datasync).
-If [`path_open`](#path_open) is set, includes the right to invoke
-[`path_open`](#path_open) with [`fdflags::dsync`](#fdflags.dsync).
+The right to invoke `fd_datasync`.
+If `path_open` is set, includes the right to invoke
+`path_open` with `fdflags::dsync`.
 
 Bit: 0
 
 - <a href="#rights.fd_read" name="rights.fd_read"></a> `fd_read`: `bool`
-The right to invoke [`fd_read`](#fd_read) and [`sock_recv`](#sock_recv).
-If [`rights::fd_seek`](#rights.fd_seek) is set, includes the right to invoke [`fd_pread`](#fd_pread).
+The right to invoke `fd_read` and `sock_recv`.
+If [`rights::fd_seek`](#rights.fd_seek) is set, includes the right to invoke `fd_pread`.
 
 Bit: 1
 
 - <a href="#rights.fd_seek" name="rights.fd_seek"></a> `fd_seek`: `bool`
-The right to invoke [`fd_seek`](#fd_seek). This flag implies [`rights::fd_tell`](#rights.fd_tell).
+The right to invoke `fd_seek`. This flag implies [`rights::fd_tell`](#rights.fd_tell).
 
 Bit: 2
 
 - <a href="#rights.fd_fdstat_set_flags" name="rights.fd_fdstat_set_flags"></a> `fd_fdstat_set_flags`: `bool`
-The right to invoke [`fd_fdstat_set_flags`](#fd_fdstat_set_flags).
+The right to invoke `fd_fdstat_set_flags`.
 
 Bit: 3
 
 - <a href="#rights.fd_sync" name="rights.fd_sync"></a> `fd_sync`: `bool`
-The right to invoke [`fd_sync`](#fd_sync).
-If [`path_open`](#path_open) is set, includes the right to invoke
-[`path_open`](#path_open) with [`fdflags::rsync`](#fdflags.rsync) and [`fdflags::dsync`](#fdflags.dsync).
+The right to invoke `fd_sync`.
+If `path_open` is set, includes the right to invoke
+`path_open` with `fdflags::rsync` and `fdflags::dsync`.
 
 Bit: 4
 
 - <a href="#rights.fd_tell" name="rights.fd_tell"></a> `fd_tell`: `bool`
-The right to invoke [`fd_seek`](#fd_seek) in such a way that the file offset
-remains unaltered (i.e., [`whence::cur`](#whence.cur) with offset zero), or to
-invoke [`fd_tell`](#fd_tell).
+The right to invoke `fd_seek` in such a way that the file offset
+remains unaltered (i.e., `whence::cur` with offset zero), or to
+invoke `fd_tell`.
 
 Bit: 5
 
 - <a href="#rights.fd_write" name="rights.fd_write"></a> `fd_write`: `bool`
-The right to invoke [`fd_write`](#fd_write) and [`sock_send`](#sock_send).
-If [`rights::fd_seek`](#rights.fd_seek) is set, includes the right to invoke [`fd_pwrite`](#fd_pwrite).
+The right to invoke `fd_write` and `sock_send`.
+If [`rights::fd_seek`](#rights.fd_seek) is set, includes the right to invoke `fd_pwrite`.
 
 Bit: 6
 
 - <a href="#rights.fd_advise" name="rights.fd_advise"></a> `fd_advise`: `bool`
-The right to invoke [`fd_advise`](#fd_advise).
+The right to invoke `fd_advise`.
 
 Bit: 7
 
 - <a href="#rights.fd_allocate" name="rights.fd_allocate"></a> `fd_allocate`: `bool`
-The right to invoke [`fd_allocate`](#fd_allocate).
+The right to invoke `fd_allocate`.
 
 Bit: 8
 
 - <a href="#rights.path_create_directory" name="rights.path_create_directory"></a> `path_create_directory`: `bool`
-The right to invoke [`path_create_directory`](#path_create_directory).
+The right to invoke `path_create_directory`.
 
 Bit: 9
 
 - <a href="#rights.path_create_file" name="rights.path_create_file"></a> `path_create_file`: `bool`
-If [`path_open`](#path_open) is set, the right to invoke [`path_open`](#path_open) with [`oflags::creat`](#oflags.creat).
+If `path_open` is set, the right to invoke `path_open` with `oflags::creat`.
 
 Bit: 10
 
 - <a href="#rights.path_link_source" name="rights.path_link_source"></a> `path_link_source`: `bool`
-The right to invoke [`path_link`](#path_link) with the file descriptor as the
+The right to invoke `path_link` with the file descriptor as the
 source directory.
 
 Bit: 11
 
 - <a href="#rights.path_link_target" name="rights.path_link_target"></a> `path_link_target`: `bool`
-The right to invoke [`path_link`](#path_link) with the file descriptor as the
+The right to invoke `path_link` with the file descriptor as the
 target directory.
 
 Bit: 12
 
 - <a href="#rights.path_open" name="rights.path_open"></a> `path_open`: `bool`
-The right to invoke [`path_open`](#path_open).
+The right to invoke `path_open`.
 
 Bit: 13
 
 - <a href="#rights.fd_readdir" name="rights.fd_readdir"></a> `fd_readdir`: `bool`
-The right to invoke [`fd_readdir`](#fd_readdir).
+The right to invoke `fd_readdir`.
 
 Bit: 14
 
 - <a href="#rights.path_readlink" name="rights.path_readlink"></a> `path_readlink`: `bool`
-The right to invoke [`path_readlink`](#path_readlink).
+The right to invoke `path_readlink`.
 
 Bit: 15
 
 - <a href="#rights.path_rename_source" name="rights.path_rename_source"></a> `path_rename_source`: `bool`
-The right to invoke [`path_rename`](#path_rename) with the file descriptor as the source directory.
+The right to invoke `path_rename` with the file descriptor as the source directory.
 
 Bit: 16
 
 - <a href="#rights.path_rename_target" name="rights.path_rename_target"></a> `path_rename_target`: `bool`
-The right to invoke [`path_rename`](#path_rename) with the file descriptor as the target directory.
+The right to invoke `path_rename` with the file descriptor as the target directory.
 
 Bit: 17
 
 - <a href="#rights.path_filestat_get" name="rights.path_filestat_get"></a> `path_filestat_get`: `bool`
-The right to invoke [`path_filestat_get`](#path_filestat_get).
+The right to invoke `path_filestat_get`.
 
 Bit: 18
 
 - <a href="#rights.path_filestat_set_size" name="rights.path_filestat_set_size"></a> `path_filestat_set_size`: `bool`
 The right to change a file's size (there is no `path_filestat_set_size`).
-If [`path_open`](#path_open) is set, includes the right to invoke [`path_open`](#path_open) with [`oflags::trunc`](#oflags.trunc).
+If `path_open` is set, includes the right to invoke `path_open` with `oflags::trunc`.
 
 Bit: 19
 
 - <a href="#rights.path_filestat_set_times" name="rights.path_filestat_set_times"></a> `path_filestat_set_times`: `bool`
-The right to invoke [`path_filestat_set_times`](#path_filestat_set_times).
+The right to invoke `path_filestat_set_times`.
 
 Bit: 20
 
 - <a href="#rights.fd_filestat_get" name="rights.fd_filestat_get"></a> `fd_filestat_get`: `bool`
-The right to invoke [`fd_filestat_get`](#fd_filestat_get).
+The right to invoke `fd_filestat_get`.
 
 Bit: 21
 
 - <a href="#rights.fd_filestat_set_size" name="rights.fd_filestat_set_size"></a> `fd_filestat_set_size`: `bool`
-The right to invoke [`fd_filestat_set_size`](#fd_filestat_set_size).
+The right to invoke `fd_filestat_set_size`.
 
 Bit: 22
 
 - <a href="#rights.fd_filestat_set_times" name="rights.fd_filestat_set_times"></a> `fd_filestat_set_times`: `bool`
-The right to invoke [`fd_filestat_set_times`](#fd_filestat_set_times).
+The right to invoke `fd_filestat_set_times`.
 
 Bit: 23
 
 - <a href="#rights.path_symlink" name="rights.path_symlink"></a> `path_symlink`: `bool`
-The right to invoke [`path_symlink`](#path_symlink).
+The right to invoke `path_symlink`.
 
 Bit: 24
 
 - <a href="#rights.path_remove_directory" name="rights.path_remove_directory"></a> `path_remove_directory`: `bool`
-The right to invoke [`path_remove_directory`](#path_remove_directory).
+The right to invoke `path_remove_directory`.
 
 Bit: 25
 
 - <a href="#rights.path_unlink_file" name="rights.path_unlink_file"></a> `path_unlink_file`: `bool`
-The right to invoke [`path_unlink_file`](#path_unlink_file).
+The right to invoke `path_unlink_file`.
 
 Bit: 26
 
 - <a href="#rights.poll_fd_readwrite" name="rights.poll_fd_readwrite"></a> `poll_fd_readwrite`: `bool`
-If [`rights::fd_read`](#rights.fd_read) is set, includes the right to invoke [`poll_oneoff`](#poll_oneoff) to subscribe to [`eventtype::fd_read`](#eventtype.fd_read).
-If [`rights::fd_write`](#rights.fd_write) is set, includes the right to invoke [`poll_oneoff`](#poll_oneoff) to subscribe to [`eventtype::fd_write`](#eventtype.fd_write).
+If [`rights::fd_read`](#rights.fd_read) is set, includes the right to invoke `poll_oneoff` to subscribe to `eventtype::fd_read`.
+If [`rights::fd_write`](#rights.fd_write) is set, includes the right to invoke `poll_oneoff` to subscribe to `eventtype::fd_write`.
 
 Bit: 27
 
 - <a href="#rights.sock_shutdown" name="rights.sock_shutdown"></a> `sock_shutdown`: `bool`
-The right to invoke [`sock_shutdown`](#sock_shutdown).
+The right to invoke `sock_shutdown`.
 
 Bit: 28
 
 - <a href="#rights.sock_accept" name="rights.sock_accept"></a> `sock_accept`: `bool`
-The right to invoke [`sock_accept`](#sock_accept).
+Accept incoming connection
 
 Bit: 29
 
-## <a href="#fd" name="fd"></a> `fd`: `Handle`
-A file descriptor handle.
+- <a href="#rights.sock_connect" name="rights.sock_connect"></a> `sock_connect`: `bool`
+Connect to an address
 
-Size: 4
+Bit: 30
 
-Alignment: 4
+- <a href="#rights.sock_listen" name="rights.sock_listen"></a> `sock_listen`: `bool`
+Listen for incoming connection on an address
 
-### Supertypes
-## <a href="#iovec" name="iovec"></a> `iovec`: `Record`
-A region of memory for scatter/gather reads.
+Bit: 31
 
-Size: 8
+- <a href="#rights.sock_bind" name="rights.sock_bind"></a> `sock_bind`: `bool`
+Bind an address to a socket
 
-Alignment: 4
+Bit: 32
 
-### Record members
-- <a href="#iovec.buf" name="iovec.buf"></a> `buf`: `Pointer<u8>`
-The address of the buffer to be filled.
+- <a href="#rights.sock_recv" name="rights.sock_recv"></a> `sock_recv`: `bool`
+Receive data on a socket
 
-Offset: 0
+Bit: 33
 
-- <a href="#iovec.buf_len" name="iovec.buf_len"></a> `buf_len`: [`size`](#size)
-The length of the buffer to be filled.
+- <a href="#rights.sock_send" name="rights.sock_send"></a> `sock_send`: `bool`
+Send data on a socket
 
-Offset: 4
+Bit: 34
 
-## <a href="#ciovec" name="ciovec"></a> `ciovec`: `Record`
-A region of memory for scatter/gather writes.
+- <a href="#rights.sock_addr_local" name="rights.sock_addr_local"></a> `sock_addr_local`: `bool`
+Retrieve locally bound address on a socket
 
-Size: 8
+Bit: 35
 
-Alignment: 4
+- <a href="#rights.sock_addr_remote" name="rights.sock_addr_remote"></a> `sock_addr_remote`: `bool`
+Retrieve remote address on a socket
 
-### Record members
-- <a href="#ciovec.buf" name="ciovec.buf"></a> `buf`: `ConstPointer<u8>`
-The address of the buffer to be written.
+Bit: 36
 
-Offset: 0
+- <a href="#rights.sock_recv_from" name="rights.sock_recv_from"></a> `sock_recv_from`: `bool`
+Receive datagram on a socket
 
-- <a href="#ciovec.buf_len" name="ciovec.buf_len"></a> `buf_len`: [`size`](#size)
-The length of the buffer to be written.
+Bit: 37
 
-Offset: 4
+- <a href="#rights.sock_send_to" name="rights.sock_send_to"></a> `sock_send_to`: `bool`
+Send datagram on a socket
 
-## <a href="#iovec_array" name="iovec_array"></a> `iovec_array`: `List<iovec>`
-
-Size: 8
-
-Alignment: 4
-
-## <a href="#ciovec_array" name="ciovec_array"></a> `ciovec_array`: `List<ciovec>`
-
-Size: 8
-
-Alignment: 4
-
-## <a href="#filedelta" name="filedelta"></a> `filedelta`: `s64`
-Relative offset within a file.
-
-Size: 8
-
-Alignment: 8
-
-## <a href="#whence" name="whence"></a> `whence`: `Variant`
-The position relative to which to set the offset of the file descriptor.
-
-Size: 1
-
-Alignment: 1
-
-### Variant cases
-- <a href="#whence.set" name="whence.set"></a> `set`
-Seek relative to start-of-file.
-
-- <a href="#whence.cur" name="whence.cur"></a> `cur`
-Seek relative to current position.
-
-- <a href="#whence.end" name="whence.end"></a> `end`
-Seek relative to end-of-file.
-
-## <a href="#dircookie" name="dircookie"></a> `dircookie`: `u64`
-A reference to the offset of a directory entry.
-
-The value 0 signifies the start of the directory.
-
-Size: 8
-
-Alignment: 8
-
-## <a href="#dirnamlen" name="dirnamlen"></a> `dirnamlen`: `u32`
-The type for the [`dirent::d_namlen`](#dirent.d_namlen) field of [`dirent`](#dirent) struct.
-
-Size: 4
-
-Alignment: 4
-
-## <a href="#inode" name="inode"></a> `inode`: `u64`
-File serial number that is unique within its file system.
-
-Size: 8
-
-Alignment: 8
+Bit: 38
 
 ## <a href="#filetype" name="filetype"></a> `filetype`: `Variant`
 The type of a file descriptor or file.
@@ -590,450 +514,34 @@ The file descriptor or file refers to a byte-stream socket.
 - <a href="#filetype.symbolic_link" name="filetype.symbolic_link"></a> `symbolic_link`
 The file refers to a symbolic link inode.
 
-## <a href="#dirent" name="dirent"></a> `dirent`: `Record`
-A directory entry.
+- <a href="#filetype.socket_raw" name="filetype.socket_raw"></a> `socket_raw`
+The file descriptor or file refers to a raw socket.
 
-Size: 24
+- <a href="#filetype.socket_seqpacket" name="filetype.socket_seqpacket"></a> `socket_seqpacket`
+The file descriptor or file refers to a sequential packet socket.
 
-Alignment: 8
-
-### Record members
-- <a href="#dirent.d_next" name="dirent.d_next"></a> `d_next`: [`dircookie`](#dircookie)
-The offset of the next directory entry stored in this directory.
-
-Offset: 0
-
-- <a href="#dirent.d_ino" name="dirent.d_ino"></a> `d_ino`: [`inode`](#inode)
-The serial number of the file referred to by this directory entry.
-
-Offset: 8
-
-- <a href="#dirent.d_namlen" name="dirent.d_namlen"></a> `d_namlen`: [`dirnamlen`](#dirnamlen)
-The length of the name of the directory entry.
-
-Offset: 16
-
-- <a href="#dirent.d_type" name="dirent.d_type"></a> `d_type`: [`filetype`](#filetype)
-The type of the file referred to by this directory entry.
-
-Offset: 20
-
-## <a href="#advice" name="advice"></a> `advice`: `Variant`
-File or memory access pattern advisory information.
-
-Size: 1
-
-Alignment: 1
-
-### Variant cases
-- <a href="#advice.normal" name="advice.normal"></a> `normal`
-The application has no advice to give on its behavior with respect to the specified data.
-
-- <a href="#advice.sequential" name="advice.sequential"></a> `sequential`
-The application expects to access the specified data sequentially from lower offsets to higher offsets.
-
-- <a href="#advice.random" name="advice.random"></a> `random`
-The application expects to access the specified data in a random order.
-
-- <a href="#advice.willneed" name="advice.willneed"></a> `willneed`
-The application expects to access the specified data in the near future.
-
-- <a href="#advice.dontneed" name="advice.dontneed"></a> `dontneed`
-The application expects that it will not access the specified data in the near future.
-
-- <a href="#advice.noreuse" name="advice.noreuse"></a> `noreuse`
-The application expects to access the specified data once and then not reuse it thereafter.
-
-## <a href="#fdflags" name="fdflags"></a> `fdflags`: `Record`
-File descriptor flags.
+## <a href="#riflags" name="riflags"></a> `riflags`: `Record`
+Flags provided to `sock_recv`.
 
 Size: 2
 
 Alignment: 2
 
 ### Record members
-- <a href="#fdflags.append" name="fdflags.append"></a> `append`: `bool`
-Append mode: Data written to the file is always appended to the file's end.
+- <a href="#riflags.recv_peek" name="riflags.recv_peek"></a> `recv_peek`: `bool`
+Returns the message without removing it from the socket's receive queue.
 
 Bit: 0
 
-- <a href="#fdflags.dsync" name="fdflags.dsync"></a> `dsync`: `bool`
-Write according to synchronized I/O data integrity completion. Only the data stored in the file is synchronized.
+- <a href="#riflags.recv_waitall" name="riflags.recv_waitall"></a> `recv_waitall`: `bool`
+On byte-stream sockets, block until the full amount of data can be returned.
 
 Bit: 1
 
-- <a href="#fdflags.nonblock" name="fdflags.nonblock"></a> `nonblock`: `bool`
-Non-blocking mode.
+- <a href="#riflags.recv_data_truncated" name="riflags.recv_data_truncated"></a> `recv_data_truncated`: `bool`
+Indicates if the packet should be truncated to the buffer size
 
 Bit: 2
-
-- <a href="#fdflags.rsync" name="fdflags.rsync"></a> `rsync`: `bool`
-Synchronized read I/O operations.
-
-Bit: 3
-
-- <a href="#fdflags.sync" name="fdflags.sync"></a> `sync`: `bool`
-Write according to synchronized I/O file integrity completion. In
-addition to synchronizing the data stored in the file, the implementation
-may also synchronously update the file's metadata.
-
-Bit: 4
-
-## <a href="#fdstat" name="fdstat"></a> `fdstat`: `Record`
-File descriptor attributes.
-
-Size: 24
-
-Alignment: 8
-
-### Record members
-- <a href="#fdstat.fs_filetype" name="fdstat.fs_filetype"></a> `fs_filetype`: [`filetype`](#filetype)
-File type.
-
-Offset: 0
-
-- <a href="#fdstat.fs_flags" name="fdstat.fs_flags"></a> `fs_flags`: [`fdflags`](#fdflags)
-File descriptor flags.
-
-Offset: 2
-
-- <a href="#fdstat.fs_rights_base" name="fdstat.fs_rights_base"></a> `fs_rights_base`: [`rights`](#rights)
-Rights that apply to this file descriptor.
-
-Offset: 8
-
-- <a href="#fdstat.fs_rights_inheriting" name="fdstat.fs_rights_inheriting"></a> `fs_rights_inheriting`: [`rights`](#rights)
-Maximum set of rights that may be installed on new file descriptors that
-are created through this file descriptor, e.g., through [`path_open`](#path_open).
-
-Offset: 16
-
-## <a href="#device" name="device"></a> `device`: `u64`
-Identifier for a device containing a file system. Can be used in combination
-with [`inode`](#inode) to uniquely identify a file or directory in the filesystem.
-
-Size: 8
-
-Alignment: 8
-
-## <a href="#fstflags" name="fstflags"></a> `fstflags`: `Record`
-Which file time attributes to adjust.
-
-Size: 2
-
-Alignment: 2
-
-### Record members
-- <a href="#fstflags.atim" name="fstflags.atim"></a> `atim`: `bool`
-Adjust the last data access timestamp to the value stored in [`filestat::atim`](#filestat.atim).
-
-Bit: 0
-
-- <a href="#fstflags.atim_now" name="fstflags.atim_now"></a> `atim_now`: `bool`
-Adjust the last data access timestamp to the time of clock [`clockid::realtime`](#clockid.realtime).
-
-Bit: 1
-
-- <a href="#fstflags.mtim" name="fstflags.mtim"></a> `mtim`: `bool`
-Adjust the last data modification timestamp to the value stored in [`filestat::mtim`](#filestat.mtim).
-
-Bit: 2
-
-- <a href="#fstflags.mtim_now" name="fstflags.mtim_now"></a> `mtim_now`: `bool`
-Adjust the last data modification timestamp to the time of clock [`clockid::realtime`](#clockid.realtime).
-
-Bit: 3
-
-## <a href="#lookupflags" name="lookupflags"></a> `lookupflags`: `Record`
-Flags determining the method of how paths are resolved.
-
-Size: 4
-
-Alignment: 4
-
-### Record members
-- <a href="#lookupflags.symlink_follow" name="lookupflags.symlink_follow"></a> `symlink_follow`: `bool`
-As long as the resolved path corresponds to a symbolic link, it is expanded.
-
-Bit: 0
-
-## <a href="#oflags" name="oflags"></a> `oflags`: `Record`
-Open flags used by [`path_open`](#path_open).
-
-Size: 2
-
-Alignment: 2
-
-### Record members
-- <a href="#oflags.creat" name="oflags.creat"></a> `creat`: `bool`
-Create file if it does not exist.
-
-Bit: 0
-
-- <a href="#oflags.directory" name="oflags.directory"></a> `directory`: `bool`
-Fail if not a directory.
-
-Bit: 1
-
-- <a href="#oflags.excl" name="oflags.excl"></a> `excl`: `bool`
-Fail if file already exists.
-
-Bit: 2
-
-- <a href="#oflags.trunc" name="oflags.trunc"></a> `trunc`: `bool`
-Truncate file to size 0.
-
-Bit: 3
-
-## <a href="#linkcount" name="linkcount"></a> `linkcount`: `u64`
-Number of hard links to an inode.
-
-Size: 8
-
-Alignment: 8
-
-## <a href="#filestat" name="filestat"></a> `filestat`: `Record`
-File attributes.
-
-Size: 64
-
-Alignment: 8
-
-### Record members
-- <a href="#filestat.dev" name="filestat.dev"></a> `dev`: [`device`](#device)
-Device ID of device containing the file.
-
-Offset: 0
-
-- <a href="#filestat.ino" name="filestat.ino"></a> `ino`: [`inode`](#inode)
-File serial number.
-
-Offset: 8
-
-- <a href="#filestat.filetype" name="filestat.filetype"></a> `filetype`: [`filetype`](#filetype)
-File type.
-
-Offset: 16
-
-- <a href="#filestat.nlink" name="filestat.nlink"></a> `nlink`: [`linkcount`](#linkcount)
-Number of hard links to the file.
-
-Offset: 24
-
-- <a href="#filestat.size" name="filestat.size"></a> `size`: [`filesize`](#filesize)
-For regular files, the file size in bytes. For symbolic links, the length in bytes of the pathname contained in the symbolic link.
-
-Offset: 32
-
-- <a href="#filestat.atim" name="filestat.atim"></a> `atim`: [`timestamp`](#timestamp)
-Last data access timestamp.
-
-Offset: 40
-
-- <a href="#filestat.mtim" name="filestat.mtim"></a> `mtim`: [`timestamp`](#timestamp)
-Last data modification timestamp.
-
-Offset: 48
-
-- <a href="#filestat.ctim" name="filestat.ctim"></a> `ctim`: [`timestamp`](#timestamp)
-Last file status change timestamp.
-
-Offset: 56
-
-## <a href="#userdata" name="userdata"></a> `userdata`: `u64`
-User-provided value that may be attached to objects that is retained when
-extracted from the implementation.
-
-Size: 8
-
-Alignment: 8
-
-## <a href="#eventtype" name="eventtype"></a> `eventtype`: `Variant`
-Type of a subscription to an event or its occurrence.
-
-Size: 1
-
-Alignment: 1
-
-### Variant cases
-- <a href="#eventtype.clock" name="eventtype.clock"></a> `clock`
-The time value of clock [`subscription_clock::id`](#subscription_clock.id) has
-reached timestamp [`subscription_clock::timeout`](#subscription_clock.timeout).
-
-- <a href="#eventtype.fd_read" name="eventtype.fd_read"></a> `fd_read`
-File descriptor [`subscription_fd_readwrite::file_descriptor`](#subscription_fd_readwrite.file_descriptor) has data
-available for reading. This event always triggers for regular files.
-
-- <a href="#eventtype.fd_write" name="eventtype.fd_write"></a> `fd_write`
-File descriptor [`subscription_fd_readwrite::file_descriptor`](#subscription_fd_readwrite.file_descriptor) has capacity
-available for writing. This event always triggers for regular files.
-
-## <a href="#eventrwflags" name="eventrwflags"></a> `eventrwflags`: `Record`
-The state of the file descriptor subscribed to with
-[`eventtype::fd_read`](#eventtype.fd_read) or [`eventtype::fd_write`](#eventtype.fd_write).
-
-Size: 2
-
-Alignment: 2
-
-### Record members
-- <a href="#eventrwflags.fd_readwrite_hangup" name="eventrwflags.fd_readwrite_hangup"></a> `fd_readwrite_hangup`: `bool`
-The peer of this socket has closed or disconnected.
-
-Bit: 0
-
-## <a href="#event_fd_readwrite" name="event_fd_readwrite"></a> `event_fd_readwrite`: `Record`
-The contents of an [`event`](#event) when type is [`eventtype::fd_read`](#eventtype.fd_read) or
-[`eventtype::fd_write`](#eventtype.fd_write).
-
-Size: 16
-
-Alignment: 8
-
-### Record members
-- <a href="#event_fd_readwrite.nbytes" name="event_fd_readwrite.nbytes"></a> `nbytes`: [`filesize`](#filesize)
-The number of bytes available for reading or writing.
-
-Offset: 0
-
-- <a href="#event_fd_readwrite.flags" name="event_fd_readwrite.flags"></a> `flags`: [`eventrwflags`](#eventrwflags)
-The state of the file descriptor.
-
-Offset: 8
-
-## <a href="#event" name="event"></a> `event`: `Record`
-An event that occurred.
-
-Size: 32
-
-Alignment: 8
-
-### Record members
-- <a href="#event.userdata" name="event.userdata"></a> `userdata`: [`userdata`](#userdata)
-User-provided value that got attached to [`subscription::userdata`](#subscription.userdata).
-
-Offset: 0
-
-- <a href="#event.error" name="event.error"></a> `error`: [`errno`](#errno)
-If non-zero, an error that occurred while processing the subscription request.
-
-Offset: 8
-
-- <a href="#event.type" name="event.type"></a> `type`: [`eventtype`](#eventtype)
-The type of event that occured
-
-Offset: 10
-
-- <a href="#event.fd_readwrite" name="event.fd_readwrite"></a> `fd_readwrite`: [`event_fd_readwrite`](#event_fd_readwrite)
-The contents of the event, if it is an [`eventtype::fd_read`](#eventtype.fd_read) or
-[`eventtype::fd_write`](#eventtype.fd_write). [`eventtype::clock`](#eventtype.clock) events ignore this field.
-
-Offset: 16
-
-## <a href="#subclockflags" name="subclockflags"></a> `subclockflags`: `Record`
-Flags determining how to interpret the timestamp provided in
-[`subscription_clock::timeout`](#subscription_clock.timeout).
-
-Size: 2
-
-Alignment: 2
-
-### Record members
-- <a href="#subclockflags.subscription_clock_abstime" name="subclockflags.subscription_clock_abstime"></a> `subscription_clock_abstime`: `bool`
-If set, treat the timestamp provided in
-[`subscription_clock::timeout`](#subscription_clock.timeout) as an absolute timestamp of clock
-[`subscription_clock::id`](#subscription_clock.id). If clear, treat the timestamp
-provided in [`subscription_clock::timeout`](#subscription_clock.timeout) relative to the
-current time value of clock [`subscription_clock::id`](#subscription_clock.id).
-
-Bit: 0
-
-## <a href="#subscription_clock" name="subscription_clock"></a> `subscription_clock`: `Record`
-The contents of a [`subscription`](#subscription) when type is [`eventtype::clock`](#eventtype.clock).
-
-Size: 32
-
-Alignment: 8
-
-### Record members
-- <a href="#subscription_clock.id" name="subscription_clock.id"></a> `id`: [`clockid`](#clockid)
-The clock against which to compare the timestamp.
-
-Offset: 0
-
-- <a href="#subscription_clock.timeout" name="subscription_clock.timeout"></a> `timeout`: [`timestamp`](#timestamp)
-The absolute or relative timestamp.
-
-Offset: 8
-
-- <a href="#subscription_clock.precision" name="subscription_clock.precision"></a> `precision`: [`timestamp`](#timestamp)
-The amount of time that the implementation may wait additionally
-to coalesce with other events.
-
-Offset: 16
-
-- <a href="#subscription_clock.flags" name="subscription_clock.flags"></a> `flags`: [`subclockflags`](#subclockflags)
-Flags specifying whether the timeout is absolute or relative
-
-Offset: 24
-
-## <a href="#subscription_fd_readwrite" name="subscription_fd_readwrite"></a> `subscription_fd_readwrite`: `Record`
-The contents of a [`subscription`](#subscription) when type is type is
-[`eventtype::fd_read`](#eventtype.fd_read) or [`eventtype::fd_write`](#eventtype.fd_write).
-
-Size: 4
-
-Alignment: 4
-
-### Record members
-- <a href="#subscription_fd_readwrite.file_descriptor" name="subscription_fd_readwrite.file_descriptor"></a> `file_descriptor`: [`fd`](#fd)
-The file descriptor on which to wait for it to become ready for reading or writing.
-
-Offset: 0
-
-## <a href="#subscription_u" name="subscription_u"></a> `subscription_u`: `Variant`
-The contents of a [`subscription`](#subscription).
-
-Size: 40
-
-Alignment: 8
-
-### Variant Layout
-- size: 40
-- align: 8
-- tag_size: 1
-### Variant cases
-- <a href="#subscription_u.clock" name="subscription_u.clock"></a> `clock`: [`subscription_clock`](#subscription_clock)
-
-- <a href="#subscription_u.fd_read" name="subscription_u.fd_read"></a> `fd_read`: [`subscription_fd_readwrite`](#subscription_fd_readwrite)
-
-- <a href="#subscription_u.fd_write" name="subscription_u.fd_write"></a> `fd_write`: [`subscription_fd_readwrite`](#subscription_fd_readwrite)
-
-## <a href="#subscription" name="subscription"></a> `subscription`: `Record`
-Subscription to an event.
-
-Size: 48
-
-Alignment: 8
-
-### Record members
-- <a href="#subscription.userdata" name="subscription.userdata"></a> `userdata`: [`userdata`](#userdata)
-User-provided value that is attached to the subscription in the
-implementation and returned through [`event::userdata`](#event.userdata).
-
-Offset: 0
-
-- <a href="#subscription.u" name="subscription.u"></a> `u`: [`subscription_u`](#subscription_u)
-The type of the event to which to subscribe, and its contents
-
-Offset: 8
-
-## <a href="#exitcode" name="exitcode"></a> `exitcode`: `u32`
-Exit code generated by a process when exiting.
-
-Size: 4
-
-Alignment: 4
 
 ## <a href="#signal" name="signal"></a> `signal`: `Variant`
 Signal condition.
@@ -1107,6 +615,10 @@ Action: Terminates the process.
 Termination signal.
 Action: Terminates the process.
 
+- <a href="#signal.stkflt" name="signal.stkflt"></a> `stkflt`
+Stkflt
+Action: Ignored.
+
 - <a href="#signal.chld" name="signal.chld"></a> `chld`
 Child process terminated, stopped, or continued.
 Action: Ignored.
@@ -1167,76 +679,456 @@ Action: Terminates the process.
 Bad system call.
 Action: Terminates the process.
 
-## <a href="#riflags" name="riflags"></a> `riflags`: `Record`
-Flags provided to [`sock_recv`](#sock_recv).
+## <a href="#iovec" name="iovec"></a> `iovec`: `Record`
+A region of memory for scatter/gather reads.
 
-Size: 2
+Size: 8
 
-Alignment: 2
-
-### Record members
-- <a href="#riflags.recv_peek" name="riflags.recv_peek"></a> `recv_peek`: `bool`
-Returns the message without removing it from the socket's receive queue.
-
-Bit: 0
-
-- <a href="#riflags.recv_waitall" name="riflags.recv_waitall"></a> `recv_waitall`: `bool`
-On byte-stream sockets, block until the full amount of data can be returned.
-
-Bit: 1
-
-## <a href="#roflags" name="roflags"></a> `roflags`: `Record`
-Flags returned by [`sock_recv`](#sock_recv).
-
-Size: 2
-
-Alignment: 2
+Alignment: 4
 
 ### Record members
-- <a href="#roflags.recv_data_truncated" name="roflags.recv_data_truncated"></a> `recv_data_truncated`: `bool`
-Returned by [`sock_recv`](#sock_recv): Message data has been truncated.
+- <a href="#iovec.buf" name="iovec.buf"></a> `buf`: `Pointer<u8>`
 
-Bit: 0
+Offset: 0
 
-## <a href="#siflags" name="siflags"></a> `siflags`: `u16`
-Flags provided to [`sock_send`](#sock_send). As there are currently no flags
-defined, it must be set to zero.
+- <a href="#iovec.buf_len" name="iovec.buf_len"></a> `buf_len`: [`pointersize`](#pointersize)
 
-Size: 2
+Offset: 4
 
-Alignment: 2
+## <a href="#ciovec" name="ciovec"></a> `ciovec`: `Record`
+A region of memory for scatter/gather writes.
 
-## <a href="#sdflags" name="sdflags"></a> `sdflags`: `Record`
-Which channels on a socket to shut down.
+Size: 8
 
-Size: 1
-
-Alignment: 1
+Alignment: 4
 
 ### Record members
-- <a href="#sdflags.rd" name="sdflags.rd"></a> `rd`: `bool`
-Disables further receive operations.
+- <a href="#ciovec.buf" name="ciovec.buf"></a> `buf`: `ConstPointer<u8>`
 
-Bit: 0
+Offset: 0
 
-- <a href="#sdflags.wr" name="sdflags.wr"></a> `wr`: `bool`
-Disables further send operations.
+- <a href="#ciovec.buf_len" name="ciovec.buf_len"></a> `buf_len`: [`pointersize`](#pointersize)
 
-Bit: 1
+Offset: 4
 
-## <a href="#preopentype" name="preopentype"></a> `preopentype`: `Variant`
-Identifiers for preopened capabilities.
+## <a href="#size" name="size"></a> `size`: `u32`
+
+Size: 4
+
+Alignment: 4
+
+## <a href="#filesize" name="filesize"></a> `filesize`: `u32`
+
+Size: 8
+
+Alignment: 8
+
+## <a href="#timestamp" name="timestamp"></a> `timestamp`: `u32`
+
+Size: 8
+
+Alignment: 8
+
+## <a href="#clockid" name="clockid"></a> `clockid`: `Variant`
+
+Size: 4
+
+Alignment: 4
+
+### Variant cases
+- <a href="#clockid.hidden" name="clockid.hidden"></a> `hidden`
+
+## <a href="#fd" name="fd"></a> `fd`: `Handle`
+
+Size: 4
+
+Alignment: 4
+
+### Supertypes
+## <a href="#iovec_array" name="iovec_array"></a> `iovec_array`: `List<iovec>`
+
+Size: 8
+
+Alignment: 4
+
+## <a href="#ciovec_array" name="ciovec_array"></a> `ciovec_array`: `List<ciovec>`
+
+Size: 8
+
+Alignment: 4
+
+## <a href="#filedelta" name="filedelta"></a> `filedelta`: `s64`
+
+Size: 8
+
+Alignment: 8
+
+## <a href="#whence" name="whence"></a> `whence`: `Variant`
 
 Size: 1
 
 Alignment: 1
 
 ### Variant cases
-- <a href="#preopentype.dir" name="preopentype.dir"></a> `dir`
-A pre-opened directory.
+- <a href="#whence.hidden" name="whence.hidden"></a> `hidden`
+
+## <a href="#dircookie" name="dircookie"></a> `dircookie`: `u32`
+
+Size: 8
+
+Alignment: 8
+
+## <a href="#dirnamlen" name="dirnamlen"></a> `dirnamlen`: `u32`
+
+Size: 4
+
+Alignment: 4
+
+## <a href="#inode" name="inode"></a> `inode`: `u32`
+
+Size: 8
+
+Alignment: 8
+
+## <a href="#dirent" name="dirent"></a> `dirent`: `Record`
+
+Size: 24
+
+Alignment: 8
+
+### Record members
+- <a href="#dirent.d_next" name="dirent.d_next"></a> `d_next`: [`dircookie`](#dircookie)
+
+Offset: 0
+
+- <a href="#dirent.d_ino" name="dirent.d_ino"></a> `d_ino`: [`inode`](#inode)
+
+Offset: 8
+
+- <a href="#dirent.d_namlen" name="dirent.d_namlen"></a> `d_namlen`: [`dirnamlen`](#dirnamlen)
+
+Offset: 16
+
+- <a href="#dirent.d_type" name="dirent.d_type"></a> `d_type`: [`filetype`](#filetype)
+
+Offset: 20
+
+## <a href="#advice" name="advice"></a> `advice`: `Variant`
+
+Size: 1
+
+Alignment: 1
+
+### Variant cases
+- <a href="#advice.hidden" name="advice.hidden"></a> `hidden`
+
+## <a href="#fdflags" name="fdflags"></a> `fdflags`: `Record`
+
+Size: 2
+
+Alignment: 2
+
+### Record members
+- <a href="#fdflags.hidden" name="fdflags.hidden"></a> `hidden`: `bool`
+
+Bit: 0
+
+## <a href="#fdstat" name="fdstat"></a> `fdstat`: `Record`
+
+Size: 24
+
+Alignment: 8
+
+### Record members
+- <a href="#fdstat.fs_filetype" name="fdstat.fs_filetype"></a> `fs_filetype`: [`filetype`](#filetype)
+
+Offset: 0
+
+- <a href="#fdstat.fs_flags" name="fdstat.fs_flags"></a> `fs_flags`: [`fdflags`](#fdflags)
+
+Offset: 2
+
+- <a href="#fdstat.fs_rights_base" name="fdstat.fs_rights_base"></a> `fs_rights_base`: [`rights`](#rights)
+
+Offset: 8
+
+- <a href="#fdstat.fs_rights_inheriting" name="fdstat.fs_rights_inheriting"></a> `fs_rights_inheriting`: [`rights`](#rights)
+
+Offset: 16
+
+## <a href="#device" name="device"></a> `device`: `u32`
+
+Size: 8
+
+Alignment: 8
+
+## <a href="#fstflags" name="fstflags"></a> `fstflags`: `Record`
+
+Size: 2
+
+Alignment: 2
+
+### Record members
+- <a href="#fstflags.hidden" name="fstflags.hidden"></a> `hidden`: `bool`
+
+Bit: 0
+
+## <a href="#lookupflags" name="lookupflags"></a> `lookupflags`: `Record`
+
+Size: 4
+
+Alignment: 4
+
+### Record members
+- <a href="#lookupflags.hidden" name="lookupflags.hidden"></a> `hidden`: `bool`
+
+Bit: 0
+
+## <a href="#oflags" name="oflags"></a> `oflags`: `Record`
+
+Size: 2
+
+Alignment: 2
+
+### Record members
+- <a href="#oflags.hidden" name="oflags.hidden"></a> `hidden`: `bool`
+
+Bit: 0
+
+## <a href="#linkcount" name="linkcount"></a> `linkcount`: `u32`
+
+Size: 8
+
+Alignment: 8
+
+## <a href="#filestat" name="filestat"></a> `filestat`: `Record`
+
+Size: 64
+
+Alignment: 8
+
+### Record members
+- <a href="#filestat.dev" name="filestat.dev"></a> `dev`: [`device`](#device)
+
+Offset: 0
+
+- <a href="#filestat.ino" name="filestat.ino"></a> `ino`: [`inode`](#inode)
+
+Offset: 8
+
+- <a href="#filestat.filetype" name="filestat.filetype"></a> `filetype`: [`filetype`](#filetype)
+
+Offset: 16
+
+- <a href="#filestat.nlink" name="filestat.nlink"></a> `nlink`: [`linkcount`](#linkcount)
+
+Offset: 24
+
+- <a href="#filestat.size" name="filestat.size"></a> `size`: [`filesize`](#filesize)
+
+Offset: 32
+
+- <a href="#filestat.atim" name="filestat.atim"></a> `atim`: [`timestamp`](#timestamp)
+
+Offset: 40
+
+- <a href="#filestat.mtim" name="filestat.mtim"></a> `mtim`: [`timestamp`](#timestamp)
+
+Offset: 48
+
+- <a href="#filestat.ctim" name="filestat.ctim"></a> `ctim`: [`timestamp`](#timestamp)
+
+Offset: 56
+
+## <a href="#userdata" name="userdata"></a> `userdata`: `u32`
+
+Size: 8
+
+Alignment: 8
+
+## <a href="#eventtype" name="eventtype"></a> `eventtype`: `Variant`
+
+Size: 1
+
+Alignment: 1
+
+### Variant cases
+- <a href="#eventtype.hidden1" name="eventtype.hidden1"></a> `hidden1`
+
+- <a href="#eventtype.hidden2" name="eventtype.hidden2"></a> `hidden2`
+
+- <a href="#eventtype.hidden3" name="eventtype.hidden3"></a> `hidden3`
+
+## <a href="#eventrwflags" name="eventrwflags"></a> `eventrwflags`: `Record`
+
+Size: 2
+
+Alignment: 2
+
+### Record members
+- <a href="#eventrwflags.hidden" name="eventrwflags.hidden"></a> `hidden`: `bool`
+
+Bit: 0
+
+## <a href="#event_fd_readwrite" name="event_fd_readwrite"></a> `event_fd_readwrite`: `Record`
+
+Size: 16
+
+Alignment: 8
+
+### Record members
+- <a href="#event_fd_readwrite.nbytes" name="event_fd_readwrite.nbytes"></a> `nbytes`: [`filesize`](#filesize)
+
+Offset: 0
+
+- <a href="#event_fd_readwrite.flags" name="event_fd_readwrite.flags"></a> `flags`: [`eventrwflags`](#eventrwflags)
+
+Offset: 8
+
+## <a href="#event" name="event"></a> `event`: `Record`
+
+Size: 32
+
+Alignment: 8
+
+### Record members
+- <a href="#event.userdata" name="event.userdata"></a> `userdata`: [`userdata`](#userdata)
+
+Offset: 0
+
+- <a href="#event.error" name="event.error"></a> `error`: [`errno`](#errno)
+
+Offset: 8
+
+- <a href="#event.type" name="event.type"></a> `type`: [`eventtype`](#eventtype)
+
+Offset: 10
+
+- <a href="#event.fd_readwrite" name="event.fd_readwrite"></a> `fd_readwrite`: [`event_fd_readwrite`](#event_fd_readwrite)
+
+Offset: 16
+
+## <a href="#subclockflags" name="subclockflags"></a> `subclockflags`: `Record`
+
+Size: 2
+
+Alignment: 2
+
+### Record members
+- <a href="#subclockflags.hidden" name="subclockflags.hidden"></a> `hidden`: `bool`
+
+Bit: 0
+
+## <a href="#subscription_clock" name="subscription_clock"></a> `subscription_clock`: `Record`
+
+Size: 32
+
+Alignment: 8
+
+### Record members
+- <a href="#subscription_clock.id" name="subscription_clock.id"></a> `id`: [`clockid`](#clockid)
+
+Offset: 0
+
+- <a href="#subscription_clock.timeout" name="subscription_clock.timeout"></a> `timeout`: [`timestamp`](#timestamp)
+
+Offset: 8
+
+- <a href="#subscription_clock.precision" name="subscription_clock.precision"></a> `precision`: [`timestamp`](#timestamp)
+
+Offset: 16
+
+- <a href="#subscription_clock.flags" name="subscription_clock.flags"></a> `flags`: [`subclockflags`](#subclockflags)
+
+Offset: 24
+
+## <a href="#subscription_fd_readwrite" name="subscription_fd_readwrite"></a> `subscription_fd_readwrite`: `Record`
+
+Size: 4
+
+Alignment: 4
+
+### Record members
+- <a href="#subscription_fd_readwrite.file_descriptor" name="subscription_fd_readwrite.file_descriptor"></a> `file_descriptor`: [`fd`](#fd)
+
+Offset: 0
+
+## <a href="#subscription_u" name="subscription_u"></a> `subscription_u`: `Variant`
+
+Size: 40
+
+Alignment: 8
+
+### Variant Layout
+- size: 40
+- align: 8
+- tag_size: 1
+### Variant cases
+- <a href="#subscription_u.hidden1" name="subscription_u.hidden1"></a> `hidden1`: [`subscription_clock`](#subscription_clock)
+
+- <a href="#subscription_u.hidden2" name="subscription_u.hidden2"></a> `hidden2`: [`subscription_fd_readwrite`](#subscription_fd_readwrite)
+
+- <a href="#subscription_u.hidden3" name="subscription_u.hidden3"></a> `hidden3`: [`subscription_fd_readwrite`](#subscription_fd_readwrite)
+
+## <a href="#subscription" name="subscription"></a> `subscription`: `Record`
+
+Size: 48
+
+Alignment: 8
+
+### Record members
+- <a href="#subscription.userdata" name="subscription.userdata"></a> `userdata`: [`userdata`](#userdata)
+
+Offset: 0
+
+- <a href="#subscription.u" name="subscription.u"></a> `u`: [`subscription_u`](#subscription_u)
+
+Offset: 8
+
+## <a href="#exitcode" name="exitcode"></a> `exitcode`: `u32`
+
+Size: 4
+
+Alignment: 4
+
+## <a href="#roflags" name="roflags"></a> `roflags`: `Record`
+
+Size: 2
+
+Alignment: 2
+
+### Record members
+- <a href="#roflags.hidden" name="roflags.hidden"></a> `hidden`: `bool`
+
+Bit: 0
+
+## <a href="#siflags" name="siflags"></a> `siflags`: `u16`
+
+Size: 2
+
+Alignment: 2
+
+## <a href="#sdflags" name="sdflags"></a> `sdflags`: `Record`
+
+Size: 1
+
+Alignment: 1
+
+### Record members
+- <a href="#sdflags.hidden" name="sdflags.hidden"></a> `hidden`: `bool`
+
+Bit: 0
+
+## <a href="#preopentype" name="preopentype"></a> `preopentype`: `Variant`
+
+Size: 1
+
+Alignment: 1
+
+### Variant cases
+- <a href="#preopentype.hidden" name="preopentype.hidden"></a> `hidden`
 
 ## <a href="#prestat_dir" name="prestat_dir"></a> `prestat_dir`: `Record`
-The contents of a $prestat when type is [`preopentype::dir`](#preopentype.dir).
 
 Size: 4
 
@@ -1244,12 +1136,10 @@ Alignment: 4
 
 ### Record members
 - <a href="#prestat_dir.pr_name_len" name="prestat_dir.pr_name_len"></a> `pr_name_len`: [`size`](#size)
-The length of the directory name for use with [`fd_prestat_dir_name`](#fd_prestat_dir_name).
 
 Offset: 0
 
 ## <a href="#prestat" name="prestat"></a> `prestat`: `Variant`
-Information about a pre-opened capability.
 
 Size: 8
 
@@ -1260,1249 +1150,3911 @@ Alignment: 4
 - align: 4
 - tag_size: 1
 ### Variant cases
-- <a href="#prestat.dir" name="prestat.dir"></a> `dir`: [`prestat_dir`](#prestat_dir)
+- <a href="#prestat.hidden" name="prestat.hidden"></a> `hidden`: [`prestat_dir`](#prestat_dir)
+
+## <a href="#longsize" name="longsize"></a> `longsize`: `u32`
+Represents a large number of items
+
+Size: 8
+
+Alignment: 8
+
+## <a href="#short_hash" name="short_hash"></a> `short_hash`: `u32`
+Value of a short hash
+
+Size: 8
+
+Alignment: 8
+
+## <a href="#hugesize" name="hugesize"></a> `hugesize`: `Record`
+Represents a 128bit number
+
+Size: 16
+
+Alignment: 8
+
+### Record members
+- <a href="#hugesize.b0" name="hugesize.b0"></a> `b0`: `u32`
+First set of 64 bits
+
+Offset: 0
+
+- <a href="#hugesize.b1" name="hugesize.b1"></a> `b1`: `u32`
+second set of 64 bits
+
+Offset: 8
+
+## <a href="#hash" name="hash"></a> `hash`: `Record`
+Represents the first 128 bits of a SHA256 hash
+
+Size: 16
+
+Alignment: 8
+
+### Record members
+- <a href="#hash.b0" name="hash.b0"></a> `b0`: `u32`
+First set of 64 bits
+
+Offset: 0
+
+- <a href="#hash.b1" name="hash.b1"></a> `b1`: `u32`
+second set of 64 bits
+
+Offset: 8
+
+## <a href="#stack_snapshot" name="stack_snapshot"></a> `stack_snapshot`: `Record`
+Represents a snapshot of a point in time of the stack that can be restored later
+
+Size: 24
+
+Alignment: 8
+
+### Record members
+- <a href="#stack_snapshot.user" name="stack_snapshot.user"></a> `user`: `u32`
+User defined field that can be used by functions
+
+Offset: 0
+
+- <a href="#stack_snapshot.hash" name="stack_snapshot.hash"></a> `hash`: [`hash`](#hash)
+Hash used to identify which stack snapshot to restore
+
+Offset: 8
+
+## <a href="#buf_array" name="buf_array"></a> `buf_array`: `List<u8>`
+
+Size: 8
+
+Alignment: 4
+
+## <a href="#option" name="option"></a> `option`: `Variant`
+Option type
+
+Size: 1
+
+Alignment: 1
+
+### Variant cases
+- <a href="#option.none" name="option.none"></a> `none`
+
+- <a href="#option.some" name="option.some"></a> `some`
+
+## <a href="#option_timestamp" name="option_timestamp"></a> `option_timestamp`: `Variant`
+Represents an optional timestamp
+
+Size: 16
+
+Alignment: 8
+
+### Variant Layout
+- size: 16
+- align: 8
+- tag_size: 1
+### Variant cases
+- <a href="#option_timestamp.none" name="option_timestamp.none"></a> `none`: `u8`
+
+- <a href="#option_timestamp.some" name="option_timestamp.some"></a> `some`: [`timestamp`](#timestamp)
+
+## <a href="#option_hash" name="option_hash"></a> `option_hash`: `Variant`
+Represents an optional hash
+
+Size: 24
+
+Alignment: 8
+
+### Variant Layout
+- size: 24
+- align: 8
+- tag_size: 1
+### Variant cases
+- <a href="#option_hash.none" name="option_hash.none"></a> `none`: `u8`
+
+- <a href="#option_hash.some" name="option_hash.some"></a> `some`: [`hash`](#hash)
+
+## <a href="#pid" name="pid"></a> `pid`: `Handle`
+A process descriptor handle.
+
+Size: 4
+
+Alignment: 4
+
+### Supertypes
+## <a href="#tid" name="tid"></a> `tid`: `Handle`
+A thread handle
+
+Size: 4
+
+Alignment: 4
+
+### Supertypes
+## <a href="#dlopenid" name="dlopenid"></a> `dlopenid`: `Handle`
+A thread handle
+
+Size: 4
+
+Alignment: 4
+
+### Supertypes
+## <a href="#option_pid" name="option_pid"></a> `option_pid`: `Variant`
+Represents an optional process ID
+
+Size: 8
+
+Alignment: 4
+
+### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 1
+### Variant cases
+- <a href="#option_pid.none" name="option_pid.none"></a> `none`: `u8`
+
+- <a href="#option_pid.some" name="option_pid.some"></a> `some`: [`pid`](#pid)
+
+## <a href="#option_fd" name="option_fd"></a> `option_fd`: `Variant`
+Represents an optional file descriptior
+
+Size: 8
+
+Alignment: 4
+
+### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 1
+### Variant cases
+- <a href="#option_fd.none" name="option_fd.none"></a> `none`: `u8`
+
+- <a href="#option_fd.some" name="option_fd.some"></a> `some`: [`fd`](#fd)
+
+## <a href="#bool" name="bool"></a> `bool`: `bool`
+Bool type
+
+Size: 1
+
+Alignment: 1
+
+## <a href="#eventfdflags" name="eventfdflags"></a> `eventfdflags`: `Record`
+Flags for the 'fd_event' call
+
+Size: 2
+
+Alignment: 2
+
+### Record members
+- <a href="#eventfdflags.Semaphore" name="eventfdflags.Semaphore"></a> `Semaphore`: `bool`
+Indicates if this event file description will run as a semaphore
+
+Bit: 0
+
+## <a href="#tty" name="tty"></a> `tty`: `Record`
+Rect that represents the TTY.
+
+Size: 24
+
+Alignment: 4
+
+### Record members
+- <a href="#tty.cols" name="tty.cols"></a> `cols`: `u32`
+Number of columns
+
+Offset: 0
+
+- <a href="#tty.rows" name="tty.rows"></a> `rows`: `u32`
+Number of rows
+
+Offset: 4
+
+- <a href="#tty.width" name="tty.width"></a> `width`: `u32`
+Width of the screen in pixels
+
+Offset: 8
+
+- <a href="#tty.height" name="tty.height"></a> `height`: `u32`
+Height of the screen in pixels
+
+Offset: 12
+
+- <a href="#tty.stdin_tty" name="tty.stdin_tty"></a> `stdin_tty`: [`bool`](#bool)
+Indicates if stdin is a TTY
+
+Offset: 16
+
+- <a href="#tty.stdout_tty" name="tty.stdout_tty"></a> `stdout_tty`: [`bool`](#bool)
+Indicates if stdout is a TTY
+
+Offset: 17
+
+- <a href="#tty.stderr_tty" name="tty.stderr_tty"></a> `stderr_tty`: [`bool`](#bool)
+Indicates if stderr is a TTY
+
+Offset: 18
+
+- <a href="#tty.echo" name="tty.echo"></a> `echo`: [`bool`](#bool)
+When enabled the TTY will echo input to console
+
+Offset: 19
+
+- <a href="#tty.line_buffered" name="tty.line_buffered"></a> `line_buffered`: [`bool`](#bool)
+When enabled buffers the input until the return key is pressed
+
+Offset: 20
+
+- <a href="#tty.line_feeds" name="tty.line_feeds"></a> `line_feeds`: [`bool`](#bool)
+Indicates if line feeds are ignored on the input
+
+Offset: 21
+
+## <a href="#stdio_mode" name="stdio_mode"></a> `stdio_mode`: `Variant`
+Type of stdio mode to run for the sub process
+
+Size: 1
+
+Alignment: 1
+
+### Variant cases
+- <a href="#stdio_mode.piped" name="stdio_mode.piped"></a> `piped`
+The stdio will be piped
+
+- <a href="#stdio_mode.inherit" name="stdio_mode.inherit"></a> `inherit`
+The stdio will inherit from its parent
+
+- <a href="#stdio_mode.null" name="stdio_mode.null"></a> `null`
+The stdio will be dumped to null
+
+- <a href="#stdio_mode.log" name="stdio_mode.log"></a> `log`
+The stdio will be written to the log file
+
+## <a href="#process_handles" name="process_handles"></a> `process_handles`: `Record`
+Process handles.
+
+Size: 28
+
+Alignment: 4
+
+### Record members
+- <a href="#process_handles.pid" name="process_handles.pid"></a> `pid`: [`pid`](#pid)
+Handle that represents the process
+
+Offset: 0
+
+- <a href="#process_handles.stdin" name="process_handles.stdin"></a> `stdin`: [`option_fd`](#option_fd)
+File handle for STDIN
+
+Offset: 4
+
+- <a href="#process_handles.stdout" name="process_handles.stdout"></a> `stdout`: [`option_fd`](#option_fd)
+File handle for STDOUT
+
+Offset: 12
+
+- <a href="#process_handles.stderr" name="process_handles.stderr"></a> `stderr`: [`option_fd`](#option_fd)
+File handle for STDERR
+
+Offset: 20
+
+## <a href="#sock_type" name="sock_type"></a> `sock_type`: `Variant`
+Socket type
+
+Size: 1
+
+Alignment: 1
+
+### Variant cases
+- <a href="#sock_type.socket_unused" name="sock_type.socket_unused"></a> `socket_unused`
+Unused enum variant to prevent $socket_dgram value of 0, which
+conflicts with a macro defined in cpython which is used in a case arm
+of a switch statement alongside C macros generated from this enum.
+ ref: https://github.com/python/cpython/blob/2f369cafeeb4a4886b00396abd8a5f33e555e1c3/Modules/getaddrinfo.c#L68
+ ref: https://github.com/python/cpython/blob/3f369cafeeb4a4886b00396abd8a5f33e555e1c3/Modules/getaddrinfo.c#L355-L368
+
+- <a href="#sock_type.socket_stream" name="sock_type.socket_stream"></a> `socket_stream`
+The file descriptor or file refers to a byte-stream socket.
+
+- <a href="#sock_type.socket_dgram" name="sock_type.socket_dgram"></a> `socket_dgram`
+The file descriptor or file refers to a datagram socket.
+
+- <a href="#sock_type.socket_raw" name="sock_type.socket_raw"></a> `socket_raw`
+The file descriptor or file refers to a raw socket.
+
+- <a href="#sock_type.socket_seqpacket" name="sock_type.socket_seqpacket"></a> `socket_seqpacket`
+The file descriptor or file refers to a sequential packet socket.
+
+## <a href="#sock_proto" name="sock_proto"></a> `sock_proto`: `Variant`
+Socket protocol type
+
+Size: 2
+
+Alignment: 2
+
+### Variant cases
+- <a href="#sock_proto.ip" name="sock_proto.ip"></a> `ip`
+
+- <a href="#sock_proto.icmp" name="sock_proto.icmp"></a> `icmp`
+
+- <a href="#sock_proto.igmp" name="sock_proto.igmp"></a> `igmp`
+
+- <a href="#sock_proto.proto_3" name="sock_proto.proto_3"></a> `proto_3`
+
+- <a href="#sock_proto.ipip" name="sock_proto.ipip"></a> `ipip`
+
+- <a href="#sock_proto.proto_5" name="sock_proto.proto_5"></a> `proto_5`
+
+- <a href="#sock_proto.tcp" name="sock_proto.tcp"></a> `tcp`
+
+- <a href="#sock_proto.proto_7" name="sock_proto.proto_7"></a> `proto_7`
+
+- <a href="#sock_proto.egp" name="sock_proto.egp"></a> `egp`
+
+- <a href="#sock_proto.proto_9" name="sock_proto.proto_9"></a> `proto_9`
+
+- <a href="#sock_proto.proto_10" name="sock_proto.proto_10"></a> `proto_10`
+
+- <a href="#sock_proto.proto_11" name="sock_proto.proto_11"></a> `proto_11`
+
+- <a href="#sock_proto.pup" name="sock_proto.pup"></a> `pup`
+
+- <a href="#sock_proto.proto_13" name="sock_proto.proto_13"></a> `proto_13`
+
+- <a href="#sock_proto.proto_14" name="sock_proto.proto_14"></a> `proto_14`
+
+- <a href="#sock_proto.proto_15" name="sock_proto.proto_15"></a> `proto_15`
+
+- <a href="#sock_proto.proto_16" name="sock_proto.proto_16"></a> `proto_16`
+
+- <a href="#sock_proto.udp" name="sock_proto.udp"></a> `udp`
+
+- <a href="#sock_proto.proto_18" name="sock_proto.proto_18"></a> `proto_18`
+
+- <a href="#sock_proto.proto_19" name="sock_proto.proto_19"></a> `proto_19`
+
+- <a href="#sock_proto.proto_20" name="sock_proto.proto_20"></a> `proto_20`
+
+- <a href="#sock_proto.proto_21" name="sock_proto.proto_21"></a> `proto_21`
+
+- <a href="#sock_proto.idp" name="sock_proto.idp"></a> `idp`
+
+- <a href="#sock_proto.proto_23" name="sock_proto.proto_23"></a> `proto_23`
+
+- <a href="#sock_proto.proto_24" name="sock_proto.proto_24"></a> `proto_24`
+
+- <a href="#sock_proto.proto_25" name="sock_proto.proto_25"></a> `proto_25`
+
+- <a href="#sock_proto.proto_26" name="sock_proto.proto_26"></a> `proto_26`
+
+- <a href="#sock_proto.proto_27" name="sock_proto.proto_27"></a> `proto_27`
+
+- <a href="#sock_proto.proto_28" name="sock_proto.proto_28"></a> `proto_28`
+
+- <a href="#sock_proto.proto_tp" name="sock_proto.proto_tp"></a> `proto_tp`
+
+- <a href="#sock_proto.proto_30" name="sock_proto.proto_30"></a> `proto_30`
+
+- <a href="#sock_proto.proto_31" name="sock_proto.proto_31"></a> `proto_31`
+
+- <a href="#sock_proto.proto_32" name="sock_proto.proto_32"></a> `proto_32`
+
+- <a href="#sock_proto.dccp" name="sock_proto.dccp"></a> `dccp`
+
+- <a href="#sock_proto.proto_34" name="sock_proto.proto_34"></a> `proto_34`
+
+- <a href="#sock_proto.proto_35" name="sock_proto.proto_35"></a> `proto_35`
+
+- <a href="#sock_proto.proto_36" name="sock_proto.proto_36"></a> `proto_36`
+
+- <a href="#sock_proto.proto_37" name="sock_proto.proto_37"></a> `proto_37`
+
+- <a href="#sock_proto.proto_38" name="sock_proto.proto_38"></a> `proto_38`
+
+- <a href="#sock_proto.proto_39" name="sock_proto.proto_39"></a> `proto_39`
+
+- <a href="#sock_proto.proto_40" name="sock_proto.proto_40"></a> `proto_40`
+
+- <a href="#sock_proto.ipv6" name="sock_proto.ipv6"></a> `ipv6`
+
+- <a href="#sock_proto.proto_42" name="sock_proto.proto_42"></a> `proto_42`
+
+- <a href="#sock_proto.routing" name="sock_proto.routing"></a> `routing`
+
+- <a href="#sock_proto.fragment" name="sock_proto.fragment"></a> `fragment`
+
+- <a href="#sock_proto.proto_45" name="sock_proto.proto_45"></a> `proto_45`
+
+- <a href="#sock_proto.rsvp" name="sock_proto.rsvp"></a> `rsvp`
+
+- <a href="#sock_proto.gre" name="sock_proto.gre"></a> `gre`
+
+- <a href="#sock_proto.proto_48" name="sock_proto.proto_48"></a> `proto_48`
+
+- <a href="#sock_proto.proto_49" name="sock_proto.proto_49"></a> `proto_49`
+
+- <a href="#sock_proto.esp" name="sock_proto.esp"></a> `esp`
+
+- <a href="#sock_proto.ah" name="sock_proto.ah"></a> `ah`
+
+- <a href="#sock_proto.proto_52" name="sock_proto.proto_52"></a> `proto_52`
+
+- <a href="#sock_proto.proto_53" name="sock_proto.proto_53"></a> `proto_53`
+
+- <a href="#sock_proto.proto_54" name="sock_proto.proto_54"></a> `proto_54`
+
+- <a href="#sock_proto.proto_55" name="sock_proto.proto_55"></a> `proto_55`
+
+- <a href="#sock_proto.proto_56" name="sock_proto.proto_56"></a> `proto_56`
+
+- <a href="#sock_proto.proto_57" name="sock_proto.proto_57"></a> `proto_57`
+
+- <a href="#sock_proto.icmpv6" name="sock_proto.icmpv6"></a> `icmpv6`
+
+- <a href="#sock_proto.none" name="sock_proto.none"></a> `none`
+
+- <a href="#sock_proto.dstopts" name="sock_proto.dstopts"></a> `dstopts`
+
+- <a href="#sock_proto.proto_61" name="sock_proto.proto_61"></a> `proto_61`
+
+- <a href="#sock_proto.proto_62" name="sock_proto.proto_62"></a> `proto_62`
+
+- <a href="#sock_proto.proto_63" name="sock_proto.proto_63"></a> `proto_63`
+
+- <a href="#sock_proto.proto_64" name="sock_proto.proto_64"></a> `proto_64`
+
+- <a href="#sock_proto.proto_65" name="sock_proto.proto_65"></a> `proto_65`
+
+- <a href="#sock_proto.proto_66" name="sock_proto.proto_66"></a> `proto_66`
+
+- <a href="#sock_proto.proto_67" name="sock_proto.proto_67"></a> `proto_67`
+
+- <a href="#sock_proto.proto_68" name="sock_proto.proto_68"></a> `proto_68`
+
+- <a href="#sock_proto.proto_69" name="sock_proto.proto_69"></a> `proto_69`
+
+- <a href="#sock_proto.proto_70" name="sock_proto.proto_70"></a> `proto_70`
+
+- <a href="#sock_proto.proto_71" name="sock_proto.proto_71"></a> `proto_71`
+
+- <a href="#sock_proto.proto_72" name="sock_proto.proto_72"></a> `proto_72`
+
+- <a href="#sock_proto.proto_73" name="sock_proto.proto_73"></a> `proto_73`
+
+- <a href="#sock_proto.proto_74" name="sock_proto.proto_74"></a> `proto_74`
+
+- <a href="#sock_proto.proto_75" name="sock_proto.proto_75"></a> `proto_75`
+
+- <a href="#sock_proto.proto_76" name="sock_proto.proto_76"></a> `proto_76`
+
+- <a href="#sock_proto.proto_77" name="sock_proto.proto_77"></a> `proto_77`
+
+- <a href="#sock_proto.proto_78" name="sock_proto.proto_78"></a> `proto_78`
+
+- <a href="#sock_proto.proto_79" name="sock_proto.proto_79"></a> `proto_79`
+
+- <a href="#sock_proto.proto_80" name="sock_proto.proto_80"></a> `proto_80`
+
+- <a href="#sock_proto.proto_81" name="sock_proto.proto_81"></a> `proto_81`
+
+- <a href="#sock_proto.proto_82" name="sock_proto.proto_82"></a> `proto_82`
+
+- <a href="#sock_proto.proto_83" name="sock_proto.proto_83"></a> `proto_83`
+
+- <a href="#sock_proto.proto_84" name="sock_proto.proto_84"></a> `proto_84`
+
+- <a href="#sock_proto.proto_85" name="sock_proto.proto_85"></a> `proto_85`
+
+- <a href="#sock_proto.proto_86" name="sock_proto.proto_86"></a> `proto_86`
+
+- <a href="#sock_proto.proto_87" name="sock_proto.proto_87"></a> `proto_87`
+
+- <a href="#sock_proto.proto_88" name="sock_proto.proto_88"></a> `proto_88`
+
+- <a href="#sock_proto.proto_89" name="sock_proto.proto_89"></a> `proto_89`
+
+- <a href="#sock_proto.proto_90" name="sock_proto.proto_90"></a> `proto_90`
+
+- <a href="#sock_proto.proto_91" name="sock_proto.proto_91"></a> `proto_91`
+
+- <a href="#sock_proto.mtp" name="sock_proto.mtp"></a> `mtp`
+
+- <a href="#sock_proto.proto_93" name="sock_proto.proto_93"></a> `proto_93`
+
+- <a href="#sock_proto.beetph" name="sock_proto.beetph"></a> `beetph`
+
+- <a href="#sock_proto.proto_95" name="sock_proto.proto_95"></a> `proto_95`
+
+- <a href="#sock_proto.proto_96" name="sock_proto.proto_96"></a> `proto_96`
+
+- <a href="#sock_proto.proto_97" name="sock_proto.proto_97"></a> `proto_97`
+
+- <a href="#sock_proto.encap" name="sock_proto.encap"></a> `encap`
+
+- <a href="#sock_proto.proto_99" name="sock_proto.proto_99"></a> `proto_99`
+
+- <a href="#sock_proto.proto_100" name="sock_proto.proto_100"></a> `proto_100`
+
+- <a href="#sock_proto.proto_101" name="sock_proto.proto_101"></a> `proto_101`
+
+- <a href="#sock_proto.proto_102" name="sock_proto.proto_102"></a> `proto_102`
+
+- <a href="#sock_proto.pim" name="sock_proto.pim"></a> `pim`
+
+- <a href="#sock_proto.proto_104" name="sock_proto.proto_104"></a> `proto_104`
+
+- <a href="#sock_proto.proto_105" name="sock_proto.proto_105"></a> `proto_105`
+
+- <a href="#sock_proto.proto_106" name="sock_proto.proto_106"></a> `proto_106`
+
+- <a href="#sock_proto.proto_107" name="sock_proto.proto_107"></a> `proto_107`
+
+- <a href="#sock_proto.comp" name="sock_proto.comp"></a> `comp`
+
+- <a href="#sock_proto.proto_109" name="sock_proto.proto_109"></a> `proto_109`
+
+- <a href="#sock_proto.proto_110" name="sock_proto.proto_110"></a> `proto_110`
+
+- <a href="#sock_proto.proto_111" name="sock_proto.proto_111"></a> `proto_111`
+
+- <a href="#sock_proto.proto_112" name="sock_proto.proto_112"></a> `proto_112`
+
+- <a href="#sock_proto.proto_113" name="sock_proto.proto_113"></a> `proto_113`
+
+- <a href="#sock_proto.proto_114" name="sock_proto.proto_114"></a> `proto_114`
+
+- <a href="#sock_proto.proto_115" name="sock_proto.proto_115"></a> `proto_115`
+
+- <a href="#sock_proto.proto_116" name="sock_proto.proto_116"></a> `proto_116`
+
+- <a href="#sock_proto.proto_117" name="sock_proto.proto_117"></a> `proto_117`
+
+- <a href="#sock_proto.proto_118" name="sock_proto.proto_118"></a> `proto_118`
+
+- <a href="#sock_proto.proto_119" name="sock_proto.proto_119"></a> `proto_119`
+
+- <a href="#sock_proto.proto_120" name="sock_proto.proto_120"></a> `proto_120`
+
+- <a href="#sock_proto.proto_121" name="sock_proto.proto_121"></a> `proto_121`
+
+- <a href="#sock_proto.proto_122" name="sock_proto.proto_122"></a> `proto_122`
+
+- <a href="#sock_proto.proto_123" name="sock_proto.proto_123"></a> `proto_123`
+
+- <a href="#sock_proto.proto_124" name="sock_proto.proto_124"></a> `proto_124`
+
+- <a href="#sock_proto.proto_125" name="sock_proto.proto_125"></a> `proto_125`
+
+- <a href="#sock_proto.proto_126" name="sock_proto.proto_126"></a> `proto_126`
+
+- <a href="#sock_proto.proto_127" name="sock_proto.proto_127"></a> `proto_127`
+
+- <a href="#sock_proto.proto_128" name="sock_proto.proto_128"></a> `proto_128`
+
+- <a href="#sock_proto.proto_129" name="sock_proto.proto_129"></a> `proto_129`
+
+- <a href="#sock_proto.proto_130" name="sock_proto.proto_130"></a> `proto_130`
+
+- <a href="#sock_proto.proto_131" name="sock_proto.proto_131"></a> `proto_131`
+
+- <a href="#sock_proto.sctp" name="sock_proto.sctp"></a> `sctp`
+
+- <a href="#sock_proto.proto_133" name="sock_proto.proto_133"></a> `proto_133`
+
+- <a href="#sock_proto.proto_134" name="sock_proto.proto_134"></a> `proto_134`
+
+- <a href="#sock_proto.mh" name="sock_proto.mh"></a> `mh`
+
+- <a href="#sock_proto.udplite" name="sock_proto.udplite"></a> `udplite`
+
+- <a href="#sock_proto.mpls" name="sock_proto.mpls"></a> `mpls`
+
+- <a href="#sock_proto.proto_138" name="sock_proto.proto_138"></a> `proto_138`
+
+- <a href="#sock_proto.proto_139" name="sock_proto.proto_139"></a> `proto_139`
+
+- <a href="#sock_proto.proto_140" name="sock_proto.proto_140"></a> `proto_140`
+
+- <a href="#sock_proto.proto_141" name="sock_proto.proto_141"></a> `proto_141`
+
+- <a href="#sock_proto.proto_142" name="sock_proto.proto_142"></a> `proto_142`
+
+- <a href="#sock_proto.ethernet" name="sock_proto.ethernet"></a> `ethernet`
+
+- <a href="#sock_proto.proto_144" name="sock_proto.proto_144"></a> `proto_144`
+
+- <a href="#sock_proto.proto_145" name="sock_proto.proto_145"></a> `proto_145`
+
+- <a href="#sock_proto.proto_146" name="sock_proto.proto_146"></a> `proto_146`
+
+- <a href="#sock_proto.proto_147" name="sock_proto.proto_147"></a> `proto_147`
+
+- <a href="#sock_proto.proto_148" name="sock_proto.proto_148"></a> `proto_148`
+
+- <a href="#sock_proto.proto_149" name="sock_proto.proto_149"></a> `proto_149`
+
+- <a href="#sock_proto.proto_150" name="sock_proto.proto_150"></a> `proto_150`
+
+- <a href="#sock_proto.proto_151" name="sock_proto.proto_151"></a> `proto_151`
+
+- <a href="#sock_proto.proto_152" name="sock_proto.proto_152"></a> `proto_152`
+
+- <a href="#sock_proto.proto_153" name="sock_proto.proto_153"></a> `proto_153`
+
+- <a href="#sock_proto.proto_154" name="sock_proto.proto_154"></a> `proto_154`
+
+- <a href="#sock_proto.proto_155" name="sock_proto.proto_155"></a> `proto_155`
+
+- <a href="#sock_proto.proto_156" name="sock_proto.proto_156"></a> `proto_156`
+
+- <a href="#sock_proto.proto_157" name="sock_proto.proto_157"></a> `proto_157`
+
+- <a href="#sock_proto.proto_158" name="sock_proto.proto_158"></a> `proto_158`
+
+- <a href="#sock_proto.proto_159" name="sock_proto.proto_159"></a> `proto_159`
+
+- <a href="#sock_proto.proto_160" name="sock_proto.proto_160"></a> `proto_160`
+
+- <a href="#sock_proto.proto_161" name="sock_proto.proto_161"></a> `proto_161`
+
+- <a href="#sock_proto.proto_162" name="sock_proto.proto_162"></a> `proto_162`
+
+- <a href="#sock_proto.proto_163" name="sock_proto.proto_163"></a> `proto_163`
+
+- <a href="#sock_proto.proto_164" name="sock_proto.proto_164"></a> `proto_164`
+
+- <a href="#sock_proto.proto_165" name="sock_proto.proto_165"></a> `proto_165`
+
+- <a href="#sock_proto.proto_166" name="sock_proto.proto_166"></a> `proto_166`
+
+- <a href="#sock_proto.proto_167" name="sock_proto.proto_167"></a> `proto_167`
+
+- <a href="#sock_proto.proto_168" name="sock_proto.proto_168"></a> `proto_168`
+
+- <a href="#sock_proto.proto_169" name="sock_proto.proto_169"></a> `proto_169`
+
+- <a href="#sock_proto.proto_170" name="sock_proto.proto_170"></a> `proto_170`
+
+- <a href="#sock_proto.proto_171" name="sock_proto.proto_171"></a> `proto_171`
+
+- <a href="#sock_proto.proto_172" name="sock_proto.proto_172"></a> `proto_172`
+
+- <a href="#sock_proto.proto_173" name="sock_proto.proto_173"></a> `proto_173`
+
+- <a href="#sock_proto.proto_174" name="sock_proto.proto_174"></a> `proto_174`
+
+- <a href="#sock_proto.proto_175" name="sock_proto.proto_175"></a> `proto_175`
+
+- <a href="#sock_proto.proto_176" name="sock_proto.proto_176"></a> `proto_176`
+
+- <a href="#sock_proto.proto_177" name="sock_proto.proto_177"></a> `proto_177`
+
+- <a href="#sock_proto.proto_178" name="sock_proto.proto_178"></a> `proto_178`
+
+- <a href="#sock_proto.proto_179" name="sock_proto.proto_179"></a> `proto_179`
+
+- <a href="#sock_proto.proto_180" name="sock_proto.proto_180"></a> `proto_180`
+
+- <a href="#sock_proto.proto_181" name="sock_proto.proto_181"></a> `proto_181`
+
+- <a href="#sock_proto.proto_182" name="sock_proto.proto_182"></a> `proto_182`
+
+- <a href="#sock_proto.proto_183" name="sock_proto.proto_183"></a> `proto_183`
+
+- <a href="#sock_proto.proto_184" name="sock_proto.proto_184"></a> `proto_184`
+
+- <a href="#sock_proto.proto_185" name="sock_proto.proto_185"></a> `proto_185`
+
+- <a href="#sock_proto.proto_186" name="sock_proto.proto_186"></a> `proto_186`
+
+- <a href="#sock_proto.proto_187" name="sock_proto.proto_187"></a> `proto_187`
+
+- <a href="#sock_proto.proto_188" name="sock_proto.proto_188"></a> `proto_188`
+
+- <a href="#sock_proto.proto_189" name="sock_proto.proto_189"></a> `proto_189`
+
+- <a href="#sock_proto.proto_190" name="sock_proto.proto_190"></a> `proto_190`
+
+- <a href="#sock_proto.proto_191" name="sock_proto.proto_191"></a> `proto_191`
+
+- <a href="#sock_proto.proto_192" name="sock_proto.proto_192"></a> `proto_192`
+
+- <a href="#sock_proto.proto_193" name="sock_proto.proto_193"></a> `proto_193`
+
+- <a href="#sock_proto.proto_194" name="sock_proto.proto_194"></a> `proto_194`
+
+- <a href="#sock_proto.proto_195" name="sock_proto.proto_195"></a> `proto_195`
+
+- <a href="#sock_proto.proto_196" name="sock_proto.proto_196"></a> `proto_196`
+
+- <a href="#sock_proto.proto_197" name="sock_proto.proto_197"></a> `proto_197`
+
+- <a href="#sock_proto.proto_198" name="sock_proto.proto_198"></a> `proto_198`
+
+- <a href="#sock_proto.proto_199" name="sock_proto.proto_199"></a> `proto_199`
+
+- <a href="#sock_proto.proto_200" name="sock_proto.proto_200"></a> `proto_200`
+
+- <a href="#sock_proto.proto_201" name="sock_proto.proto_201"></a> `proto_201`
+
+- <a href="#sock_proto.proto_202" name="sock_proto.proto_202"></a> `proto_202`
+
+- <a href="#sock_proto.proto_203" name="sock_proto.proto_203"></a> `proto_203`
+
+- <a href="#sock_proto.proto_204" name="sock_proto.proto_204"></a> `proto_204`
+
+- <a href="#sock_proto.proto_205" name="sock_proto.proto_205"></a> `proto_205`
+
+- <a href="#sock_proto.proto_206" name="sock_proto.proto_206"></a> `proto_206`
+
+- <a href="#sock_proto.proto_207" name="sock_proto.proto_207"></a> `proto_207`
+
+- <a href="#sock_proto.proto_208" name="sock_proto.proto_208"></a> `proto_208`
+
+- <a href="#sock_proto.proto_209" name="sock_proto.proto_209"></a> `proto_209`
+
+- <a href="#sock_proto.proto_210" name="sock_proto.proto_210"></a> `proto_210`
+
+- <a href="#sock_proto.proto_211" name="sock_proto.proto_211"></a> `proto_211`
+
+- <a href="#sock_proto.proto_212" name="sock_proto.proto_212"></a> `proto_212`
+
+- <a href="#sock_proto.proto_213" name="sock_proto.proto_213"></a> `proto_213`
+
+- <a href="#sock_proto.proto_214" name="sock_proto.proto_214"></a> `proto_214`
+
+- <a href="#sock_proto.proto_215" name="sock_proto.proto_215"></a> `proto_215`
+
+- <a href="#sock_proto.proto_216" name="sock_proto.proto_216"></a> `proto_216`
+
+- <a href="#sock_proto.proto_217" name="sock_proto.proto_217"></a> `proto_217`
+
+- <a href="#sock_proto.proto_218" name="sock_proto.proto_218"></a> `proto_218`
+
+- <a href="#sock_proto.proto_219" name="sock_proto.proto_219"></a> `proto_219`
+
+- <a href="#sock_proto.proto_220" name="sock_proto.proto_220"></a> `proto_220`
+
+- <a href="#sock_proto.proto_221" name="sock_proto.proto_221"></a> `proto_221`
+
+- <a href="#sock_proto.proto_222" name="sock_proto.proto_222"></a> `proto_222`
+
+- <a href="#sock_proto.proto_223" name="sock_proto.proto_223"></a> `proto_223`
+
+- <a href="#sock_proto.proto_224" name="sock_proto.proto_224"></a> `proto_224`
+
+- <a href="#sock_proto.proto_225" name="sock_proto.proto_225"></a> `proto_225`
+
+- <a href="#sock_proto.proto_226" name="sock_proto.proto_226"></a> `proto_226`
+
+- <a href="#sock_proto.proto_227" name="sock_proto.proto_227"></a> `proto_227`
+
+- <a href="#sock_proto.proto_228" name="sock_proto.proto_228"></a> `proto_228`
+
+- <a href="#sock_proto.proto_229" name="sock_proto.proto_229"></a> `proto_229`
+
+- <a href="#sock_proto.proto_230" name="sock_proto.proto_230"></a> `proto_230`
+
+- <a href="#sock_proto.proto_231" name="sock_proto.proto_231"></a> `proto_231`
+
+- <a href="#sock_proto.proto_232" name="sock_proto.proto_232"></a> `proto_232`
+
+- <a href="#sock_proto.proto_233" name="sock_proto.proto_233"></a> `proto_233`
+
+- <a href="#sock_proto.proto_234" name="sock_proto.proto_234"></a> `proto_234`
+
+- <a href="#sock_proto.proto_235" name="sock_proto.proto_235"></a> `proto_235`
+
+- <a href="#sock_proto.proto_236" name="sock_proto.proto_236"></a> `proto_236`
+
+- <a href="#sock_proto.proto_237" name="sock_proto.proto_237"></a> `proto_237`
+
+- <a href="#sock_proto.proto_238" name="sock_proto.proto_238"></a> `proto_238`
+
+- <a href="#sock_proto.proto_239" name="sock_proto.proto_239"></a> `proto_239`
+
+- <a href="#sock_proto.proto_240" name="sock_proto.proto_240"></a> `proto_240`
+
+- <a href="#sock_proto.proto_241" name="sock_proto.proto_241"></a> `proto_241`
+
+- <a href="#sock_proto.proto_242" name="sock_proto.proto_242"></a> `proto_242`
+
+- <a href="#sock_proto.proto_243" name="sock_proto.proto_243"></a> `proto_243`
+
+- <a href="#sock_proto.proto_244" name="sock_proto.proto_244"></a> `proto_244`
+
+- <a href="#sock_proto.proto_245" name="sock_proto.proto_245"></a> `proto_245`
+
+- <a href="#sock_proto.proto_246" name="sock_proto.proto_246"></a> `proto_246`
+
+- <a href="#sock_proto.proto_247" name="sock_proto.proto_247"></a> `proto_247`
+
+- <a href="#sock_proto.proto_248" name="sock_proto.proto_248"></a> `proto_248`
+
+- <a href="#sock_proto.proto_249" name="sock_proto.proto_249"></a> `proto_249`
+
+- <a href="#sock_proto.proto_250" name="sock_proto.proto_250"></a> `proto_250`
+
+- <a href="#sock_proto.proto_251" name="sock_proto.proto_251"></a> `proto_251`
+
+- <a href="#sock_proto.proto_252" name="sock_proto.proto_252"></a> `proto_252`
+
+- <a href="#sock_proto.proto_253" name="sock_proto.proto_253"></a> `proto_253`
+
+- <a href="#sock_proto.proto_254" name="sock_proto.proto_254"></a> `proto_254`
+
+- <a href="#sock_proto.proto_raw" name="sock_proto.proto_raw"></a> `proto_raw`
+
+- <a href="#sock_proto.proto_256" name="sock_proto.proto_256"></a> `proto_256`
+
+- <a href="#sock_proto.proto_257" name="sock_proto.proto_257"></a> `proto_257`
+
+- <a href="#sock_proto.proto_258" name="sock_proto.proto_258"></a> `proto_258`
+
+- <a href="#sock_proto.proto_259" name="sock_proto.proto_259"></a> `proto_259`
+
+- <a href="#sock_proto.proto_260" name="sock_proto.proto_260"></a> `proto_260`
+
+- <a href="#sock_proto.proto_261" name="sock_proto.proto_261"></a> `proto_261`
+
+- <a href="#sock_proto.mptcp" name="sock_proto.mptcp"></a> `mptcp`
+
+- <a href="#sock_proto.max" name="sock_proto.max"></a> `max`
+
+## <a href="#sock_status" name="sock_status"></a> `sock_status`: `Variant`
+Socket status
+
+Size: 1
+
+Alignment: 1
+
+### Variant cases
+- <a href="#sock_status.opening" name="sock_status.opening"></a> `opening`
+The socket is still opening
+
+- <a href="#sock_status.opened" name="sock_status.opened"></a> `opened`
+The socket has fully opened
+
+- <a href="#sock_status.closed" name="sock_status.closed"></a> `closed`
+The socket has closed
+
+- <a href="#sock_status.failed" name="sock_status.failed"></a> `failed`
+The socket has failed
+
+## <a href="#sock_option" name="sock_option"></a> `sock_option`: `Variant`
+Socket option
+
+Size: 1
+
+Alignment: 1
+
+### Variant cases
+- <a href="#sock_option.noop" name="sock_option.noop"></a> `noop`
+Socket option that does nothing
+
+- <a href="#sock_option.reuse_port" name="sock_option.reuse_port"></a> `reuse_port`
+Reuse Port
+
+- <a href="#sock_option.reuse_addr" name="sock_option.reuse_addr"></a> `reuse_addr`
+Reuse Address
+
+- <a href="#sock_option.no_delay" name="sock_option.no_delay"></a> `no_delay`
+No delay
+
+- <a href="#sock_option.dont_route" name="sock_option.dont_route"></a> `dont_route`
+Dont route
+
+- <a href="#sock_option.only_v6" name="sock_option.only_v6"></a> `only_v6`
+Only accept IPv6
+
+- <a href="#sock_option.broadcast" name="sock_option.broadcast"></a> `broadcast`
+Broadcast
+
+- <a href="#sock_option.multicast_loop_v4" name="sock_option.multicast_loop_v4"></a> `multicast_loop_v4`
+Multicast Loop IPv4
+
+- <a href="#sock_option.multicast_loop_v6" name="sock_option.multicast_loop_v6"></a> `multicast_loop_v6`
+Multicast Loop IPv6
+
+- <a href="#sock_option.promiscuous" name="sock_option.promiscuous"></a> `promiscuous`
+Promiscuous
+
+- <a href="#sock_option.listening" name="sock_option.listening"></a> `listening`
+Socket is listening
+
+- <a href="#sock_option.last_error" name="sock_option.last_error"></a> `last_error`
+Last error
+
+- <a href="#sock_option.keep_alive" name="sock_option.keep_alive"></a> `keep_alive`
+Keep alive
+
+- <a href="#sock_option.linger" name="sock_option.linger"></a> `linger`
+Linger time
+
+- <a href="#sock_option.oob_inline" name="sock_option.oob_inline"></a> `oob_inline`
+Out-of-band inline
+
+- <a href="#sock_option.recv_buf_size" name="sock_option.recv_buf_size"></a> `recv_buf_size`
+Receive buffer size
+
+- <a href="#sock_option.send_buf_size" name="sock_option.send_buf_size"></a> `send_buf_size`
+Send buffer size
+
+- <a href="#sock_option.recv_lowat" name="sock_option.recv_lowat"></a> `recv_lowat`
+Receive lowat
+
+- <a href="#sock_option.send_lowat" name="sock_option.send_lowat"></a> `send_lowat`
+Send lowat
+
+- <a href="#sock_option.recv_timeout" name="sock_option.recv_timeout"></a> `recv_timeout`
+Receive timeout
+
+- <a href="#sock_option.send_timeout" name="sock_option.send_timeout"></a> `send_timeout`
+Send timeout
+
+- <a href="#sock_option.connect_timeout" name="sock_option.connect_timeout"></a> `connect_timeout`
+Connect timeout
+
+- <a href="#sock_option.accept_timeout" name="sock_option.accept_timeout"></a> `accept_timeout`
+Accept timeout
+
+- <a href="#sock_option.ttl" name="sock_option.ttl"></a> `ttl`
+TTL of packets
+
+- <a href="#sock_option.multicast_ttl_v4" name="sock_option.multicast_ttl_v4"></a> `multicast_ttl_v4`
+Multicast TTL for IPv4
+
+- <a href="#sock_option.type" name="sock_option.type"></a> `type`
+Type of socket
+
+- <a href="#sock_option.proto" name="sock_option.proto"></a> `proto`
+Protocol of the socket
+
+## <a href="#stream_security" name="stream_security"></a> `stream_security`: `Record`
+Level of security to allow to the streaming connection
+
+Size: 1
+
+Alignment: 1
+
+### Record members
+- <a href="#stream_security.unencrypted" name="stream_security.unencrypted"></a> `unencrypted`: `bool`
+Unencrypted
+
+Bit: 0
+
+- <a href="#stream_security.any_encryption" name="stream_security.any_encryption"></a> `any_encryption`: `bool`
+Any encryption
+
+Bit: 1
+
+- <a href="#stream_security.classic_encryption" name="stream_security.classic_encryption"></a> `classic_encryption`: `bool`
+Classic encryption
+
+Bit: 2
+
+- <a href="#stream_security.double_encryption" name="stream_security.double_encryption"></a> `double_encryption`: `bool`
+Double encryption
+
+Bit: 3
+
+## <a href="#hardware_address" name="hardware_address"></a> `hardware_address`: `Record`
+Hardware address (MAC)
+
+Size: 6
+
+Alignment: 1
+
+### Record members
+- <a href="#hardware_address.n0" name="hardware_address.n0"></a> `n0`: `u8`
+
+Offset: 0
+
+- <a href="#hardware_address.n1" name="hardware_address.n1"></a> `n1`: `u8`
+
+Offset: 1
+
+- <a href="#hardware_address.n2" name="hardware_address.n2"></a> `n2`: `u8`
+
+Offset: 2
+
+- <a href="#hardware_address.h0" name="hardware_address.h0"></a> `h0`: `u8`
+
+Offset: 3
+
+- <a href="#hardware_address.h1" name="hardware_address.h1"></a> `h1`: `u8`
+
+Offset: 4
+
+- <a href="#hardware_address.h2" name="hardware_address.h2"></a> `h2`: `u8`
+
+Offset: 5
+
+## <a href="#ip_port" name="ip_port"></a> `ip_port`: `u16`
+IP port number
+
+Size: 2
+
+Alignment: 2
+
+## <a href="#address_family" name="address_family"></a> `address_family`: `Variant`
+Address family
+
+Size: 1
+
+Alignment: 1
+
+### Variant cases
+- <a href="#address_family.unspec" name="address_family.unspec"></a> `unspec`
+Unspecified
+
+- <a href="#address_family.inet4" name="address_family.inet4"></a> `inet4`
+IP v4
+
+- <a href="#address_family.inet6" name="address_family.inet6"></a> `inet6`
+IP v6
+
+- <a href="#address_family.unix" name="address_family.unix"></a> `unix`
+Unix
+
+## <a href="#address_family_ip" name="address_family_ip"></a> `address_family_ip`: `Variant`
+Address family
+
+Size: 1
+
+Alignment: 1
+
+### Variant cases
+- <a href="#address_family_ip.unspec" name="address_family_ip.unspec"></a> `unspec`
+Unspecified - this is unused, but this enum must be
+backwards-compatible with $address_family
+
+- <a href="#address_family_ip.inet4" name="address_family_ip.inet4"></a> `inet4`
+IP v4
+
+- <a href="#address_family_ip.inet6" name="address_family_ip.inet6"></a> `inet6`
+IP v6
+
+## <a href="#addr_unspec" name="addr_unspec"></a> `addr_unspec`: `Record`
+Represents an unspecified address
+
+Size: 1
+
+Alignment: 1
+
+### Record members
+- <a href="#addr_unspec.n0" name="addr_unspec.n0"></a> `n0`: `u8`
+
+Offset: 0
+
+## <a href="#addr_unspec_port" name="addr_unspec_port"></a> `addr_unspec_port`: `Record`
+An unspecified address with a port
+
+Size: 4
+
+Alignment: 2
+
+### Record members
+- <a href="#addr_unspec_port.port" name="addr_unspec_port.port"></a> `port`: [`ip_port`](#ip_port)
+
+Offset: 0
+
+- <a href="#addr_unspec_port.addr" name="addr_unspec_port.addr"></a> `addr`: [`addr_unspec`](#addr_unspec)
+
+Offset: 2
+
+## <a href="#addr_unspec_cidr" name="addr_unspec_cidr"></a> `addr_unspec_cidr`: `Record`
+An unspecified address with a cidr
+
+Size: 2
+
+Alignment: 1
+
+### Record members
+- <a href="#addr_unspec_cidr.addr" name="addr_unspec_cidr.addr"></a> `addr`: [`addr_unspec`](#addr_unspec)
+
+Offset: 0
+
+- <a href="#addr_unspec_cidr.prefix" name="addr_unspec_cidr.prefix"></a> `prefix`: `u8`
+
+Offset: 1
+
+## <a href="#addr_ip4" name="addr_ip4"></a> `addr_ip4`: `Record`
+An IPv4 address is a 32-bit number that uniquely identifies a network interface on a machine.
+
+Size: 4
+
+Alignment: 1
+
+### Record members
+- <a href="#addr_ip4.n0" name="addr_ip4.n0"></a> `n0`: `u8`
+
+Offset: 0
+
+- <a href="#addr_ip4.n1" name="addr_ip4.n1"></a> `n1`: `u8`
+
+Offset: 1
+
+- <a href="#addr_ip4.h0" name="addr_ip4.h0"></a> `h0`: `u8`
+
+Offset: 2
+
+- <a href="#addr_ip4.h1" name="addr_ip4.h1"></a> `h1`: `u8`
+
+Offset: 3
+
+## <a href="#addr_ip4_port" name="addr_ip4_port"></a> `addr_ip4_port`: `Record`
+An IPv4 address with a port number
+
+Size: 6
+
+Alignment: 2
+
+### Record members
+- <a href="#addr_ip4_port.port" name="addr_ip4_port.port"></a> `port`: [`ip_port`](#ip_port)
+
+Offset: 0
+
+- <a href="#addr_ip4_port.addr" name="addr_ip4_port.addr"></a> `addr`: [`addr_ip4`](#addr_ip4)
+
+Offset: 2
+
+## <a href="#addr_ip4_cidr" name="addr_ip4_cidr"></a> `addr_ip4_cidr`: `Record`
+An IPv4 address CIDR
+
+Size: 5
+
+Alignment: 1
+
+### Record members
+- <a href="#addr_ip4_cidr.addr" name="addr_ip4_cidr.addr"></a> `addr`: [`addr_ip4`](#addr_ip4)
+
+Offset: 0
+
+- <a href="#addr_ip4_cidr.prefix" name="addr_ip4_cidr.prefix"></a> `prefix`: `u8`
+
+Offset: 4
+
+## <a href="#addr_ip6" name="addr_ip6"></a> `addr_ip6`: `Record`
+An IPv6 address is a 128-bit number that uniquely identifies a network interface on a machine.
+
+Size: 24
+
+Alignment: 2
+
+### Record members
+- <a href="#addr_ip6.n0" name="addr_ip6.n0"></a> `n0`: `u16`
+
+Offset: 0
+
+- <a href="#addr_ip6.n1" name="addr_ip6.n1"></a> `n1`: `u16`
+
+Offset: 2
+
+- <a href="#addr_ip6.n2" name="addr_ip6.n2"></a> `n2`: `u16`
+
+Offset: 4
+
+- <a href="#addr_ip6.n3" name="addr_ip6.n3"></a> `n3`: `u16`
+
+Offset: 6
+
+- <a href="#addr_ip6.h0" name="addr_ip6.h0"></a> `h0`: `u16`
+
+Offset: 8
+
+- <a href="#addr_ip6.h1" name="addr_ip6.h1"></a> `h1`: `u16`
+
+Offset: 10
+
+- <a href="#addr_ip6.h2" name="addr_ip6.h2"></a> `h2`: `u16`
+
+Offset: 12
+
+- <a href="#addr_ip6.h3" name="addr_ip6.h3"></a> `h3`: `u16`
+
+Offset: 14
+
+- <a href="#addr_ip6.flow_info1" name="addr_ip6.flow_info1"></a> `flow_info1`: `u16`
+flow_info1 contains the most significant two bytes, and comes first in keeping with all wasix syscalls being little endian
+
+Offset: 16
+
+- <a href="#addr_ip6.flow_info0" name="addr_ip6.flow_info0"></a> `flow_info0`: `u16`
+flow_info0 contains the least significant two bytes
+
+Offset: 18
+
+- <a href="#addr_ip6.scope_id1" name="addr_ip6.scope_id1"></a> `scope_id1`: `u16`
+Same as flow_info1 and flow_info0
+
+Offset: 20
+
+- <a href="#addr_ip6.scope_id0" name="addr_ip6.scope_id0"></a> `scope_id0`: `u16`
+
+Offset: 22
+
+## <a href="#addr_ip6_bare" name="addr_ip6_bare"></a> `addr_ip6_bare`: `Record`
+IPv6 address without flow info and scope ID
+
+Size: 16
+
+Alignment: 2
+
+### Record members
+- <a href="#addr_ip6_bare.n0" name="addr_ip6_bare.n0"></a> `n0`: `u16`
+
+Offset: 0
+
+- <a href="#addr_ip6_bare.n1" name="addr_ip6_bare.n1"></a> `n1`: `u16`
+
+Offset: 2
+
+- <a href="#addr_ip6_bare.n2" name="addr_ip6_bare.n2"></a> `n2`: `u16`
+
+Offset: 4
+
+- <a href="#addr_ip6_bare.n3" name="addr_ip6_bare.n3"></a> `n3`: `u16`
+
+Offset: 6
+
+- <a href="#addr_ip6_bare.h0" name="addr_ip6_bare.h0"></a> `h0`: `u16`
+
+Offset: 8
+
+- <a href="#addr_ip6_bare.h1" name="addr_ip6_bare.h1"></a> `h1`: `u16`
+
+Offset: 10
+
+- <a href="#addr_ip6_bare.h2" name="addr_ip6_bare.h2"></a> `h2`: `u16`
+
+Offset: 12
+
+- <a href="#addr_ip6_bare.h3" name="addr_ip6_bare.h3"></a> `h3`: `u16`
+
+Offset: 14
+
+## <a href="#addr_unix" name="addr_unix"></a> `addr_unix`: `Record`
+Unix socket that is bound to no more than 107 bytes
+
+Size: 108
+
+Alignment: 1
+
+### Record members
+- <a href="#addr_unix.b0" name="addr_unix.b0"></a> `b0`: `u8`
+
+Offset: 0
+
+- <a href="#addr_unix.b1" name="addr_unix.b1"></a> `b1`: `u8`
+
+Offset: 1
+
+- <a href="#addr_unix.b2" name="addr_unix.b2"></a> `b2`: `u8`
+
+Offset: 2
+
+- <a href="#addr_unix.b3" name="addr_unix.b3"></a> `b3`: `u8`
+
+Offset: 3
+
+- <a href="#addr_unix.b4" name="addr_unix.b4"></a> `b4`: `u8`
+
+Offset: 4
+
+- <a href="#addr_unix.b5" name="addr_unix.b5"></a> `b5`: `u8`
+
+Offset: 5
+
+- <a href="#addr_unix.b6" name="addr_unix.b6"></a> `b6`: `u8`
+
+Offset: 6
+
+- <a href="#addr_unix.b7" name="addr_unix.b7"></a> `b7`: `u8`
+
+Offset: 7
+
+- <a href="#addr_unix.b8" name="addr_unix.b8"></a> `b8`: `u8`
+
+Offset: 8
+
+- <a href="#addr_unix.b9" name="addr_unix.b9"></a> `b9`: `u8`
+
+Offset: 9
+
+- <a href="#addr_unix.b10" name="addr_unix.b10"></a> `b10`: `u8`
+
+Offset: 10
+
+- <a href="#addr_unix.b11" name="addr_unix.b11"></a> `b11`: `u8`
+
+Offset: 11
+
+- <a href="#addr_unix.b12" name="addr_unix.b12"></a> `b12`: `u8`
+
+Offset: 12
+
+- <a href="#addr_unix.b13" name="addr_unix.b13"></a> `b13`: `u8`
+
+Offset: 13
+
+- <a href="#addr_unix.b14" name="addr_unix.b14"></a> `b14`: `u8`
+
+Offset: 14
+
+- <a href="#addr_unix.b15" name="addr_unix.b15"></a> `b15`: `u8`
+
+Offset: 15
+
+- <a href="#addr_unix.b16" name="addr_unix.b16"></a> `b16`: `u8`
+
+Offset: 16
+
+- <a href="#addr_unix.b17" name="addr_unix.b17"></a> `b17`: `u8`
+
+Offset: 17
+
+- <a href="#addr_unix.b18" name="addr_unix.b18"></a> `b18`: `u8`
+
+Offset: 18
+
+- <a href="#addr_unix.b19" name="addr_unix.b19"></a> `b19`: `u8`
+
+Offset: 19
+
+- <a href="#addr_unix.b20" name="addr_unix.b20"></a> `b20`: `u8`
+
+Offset: 20
+
+- <a href="#addr_unix.b21" name="addr_unix.b21"></a> `b21`: `u8`
+
+Offset: 21
+
+- <a href="#addr_unix.b22" name="addr_unix.b22"></a> `b22`: `u8`
+
+Offset: 22
+
+- <a href="#addr_unix.b23" name="addr_unix.b23"></a> `b23`: `u8`
+
+Offset: 23
+
+- <a href="#addr_unix.b24" name="addr_unix.b24"></a> `b24`: `u8`
+
+Offset: 24
+
+- <a href="#addr_unix.b25" name="addr_unix.b25"></a> `b25`: `u8`
+
+Offset: 25
+
+- <a href="#addr_unix.b26" name="addr_unix.b26"></a> `b26`: `u8`
+
+Offset: 26
+
+- <a href="#addr_unix.b27" name="addr_unix.b27"></a> `b27`: `u8`
+
+Offset: 27
+
+- <a href="#addr_unix.b28" name="addr_unix.b28"></a> `b28`: `u8`
+
+Offset: 28
+
+- <a href="#addr_unix.b29" name="addr_unix.b29"></a> `b29`: `u8`
+
+Offset: 29
+
+- <a href="#addr_unix.b30" name="addr_unix.b30"></a> `b30`: `u8`
+
+Offset: 30
+
+- <a href="#addr_unix.b31" name="addr_unix.b31"></a> `b31`: `u8`
+
+Offset: 31
+
+- <a href="#addr_unix.b32" name="addr_unix.b32"></a> `b32`: `u8`
+
+Offset: 32
+
+- <a href="#addr_unix.b33" name="addr_unix.b33"></a> `b33`: `u8`
+
+Offset: 33
+
+- <a href="#addr_unix.b34" name="addr_unix.b34"></a> `b34`: `u8`
+
+Offset: 34
+
+- <a href="#addr_unix.b35" name="addr_unix.b35"></a> `b35`: `u8`
+
+Offset: 35
+
+- <a href="#addr_unix.b36" name="addr_unix.b36"></a> `b36`: `u8`
+
+Offset: 36
+
+- <a href="#addr_unix.b37" name="addr_unix.b37"></a> `b37`: `u8`
+
+Offset: 37
+
+- <a href="#addr_unix.b38" name="addr_unix.b38"></a> `b38`: `u8`
+
+Offset: 38
+
+- <a href="#addr_unix.b39" name="addr_unix.b39"></a> `b39`: `u8`
+
+Offset: 39
+
+- <a href="#addr_unix.b40" name="addr_unix.b40"></a> `b40`: `u8`
+
+Offset: 40
+
+- <a href="#addr_unix.b41" name="addr_unix.b41"></a> `b41`: `u8`
+
+Offset: 41
+
+- <a href="#addr_unix.b42" name="addr_unix.b42"></a> `b42`: `u8`
+
+Offset: 42
+
+- <a href="#addr_unix.b43" name="addr_unix.b43"></a> `b43`: `u8`
+
+Offset: 43
+
+- <a href="#addr_unix.b44" name="addr_unix.b44"></a> `b44`: `u8`
+
+Offset: 44
+
+- <a href="#addr_unix.b45" name="addr_unix.b45"></a> `b45`: `u8`
+
+Offset: 45
+
+- <a href="#addr_unix.b46" name="addr_unix.b46"></a> `b46`: `u8`
+
+Offset: 46
+
+- <a href="#addr_unix.b47" name="addr_unix.b47"></a> `b47`: `u8`
+
+Offset: 47
+
+- <a href="#addr_unix.b48" name="addr_unix.b48"></a> `b48`: `u8`
+
+Offset: 48
+
+- <a href="#addr_unix.b49" name="addr_unix.b49"></a> `b49`: `u8`
+
+Offset: 49
+
+- <a href="#addr_unix.b50" name="addr_unix.b50"></a> `b50`: `u8`
+
+Offset: 50
+
+- <a href="#addr_unix.b51" name="addr_unix.b51"></a> `b51`: `u8`
+
+Offset: 51
+
+- <a href="#addr_unix.b52" name="addr_unix.b52"></a> `b52`: `u8`
+
+Offset: 52
+
+- <a href="#addr_unix.b53" name="addr_unix.b53"></a> `b53`: `u8`
+
+Offset: 53
+
+- <a href="#addr_unix.b54" name="addr_unix.b54"></a> `b54`: `u8`
+
+Offset: 54
+
+- <a href="#addr_unix.b55" name="addr_unix.b55"></a> `b55`: `u8`
+
+Offset: 55
+
+- <a href="#addr_unix.b56" name="addr_unix.b56"></a> `b56`: `u8`
+
+Offset: 56
+
+- <a href="#addr_unix.b57" name="addr_unix.b57"></a> `b57`: `u8`
+
+Offset: 57
+
+- <a href="#addr_unix.b58" name="addr_unix.b58"></a> `b58`: `u8`
+
+Offset: 58
+
+- <a href="#addr_unix.b59" name="addr_unix.b59"></a> `b59`: `u8`
+
+Offset: 59
+
+- <a href="#addr_unix.b60" name="addr_unix.b60"></a> `b60`: `u8`
+
+Offset: 60
+
+- <a href="#addr_unix.b61" name="addr_unix.b61"></a> `b61`: `u8`
+
+Offset: 61
+
+- <a href="#addr_unix.b62" name="addr_unix.b62"></a> `b62`: `u8`
+
+Offset: 62
+
+- <a href="#addr_unix.b63" name="addr_unix.b63"></a> `b63`: `u8`
+
+Offset: 63
+
+- <a href="#addr_unix.b64" name="addr_unix.b64"></a> `b64`: `u8`
+
+Offset: 64
+
+- <a href="#addr_unix.b65" name="addr_unix.b65"></a> `b65`: `u8`
+
+Offset: 65
+
+- <a href="#addr_unix.b66" name="addr_unix.b66"></a> `b66`: `u8`
+
+Offset: 66
+
+- <a href="#addr_unix.b67" name="addr_unix.b67"></a> `b67`: `u8`
+
+Offset: 67
+
+- <a href="#addr_unix.b68" name="addr_unix.b68"></a> `b68`: `u8`
+
+Offset: 68
+
+- <a href="#addr_unix.b69" name="addr_unix.b69"></a> `b69`: `u8`
+
+Offset: 69
+
+- <a href="#addr_unix.b70" name="addr_unix.b70"></a> `b70`: `u8`
+
+Offset: 70
+
+- <a href="#addr_unix.b71" name="addr_unix.b71"></a> `b71`: `u8`
+
+Offset: 71
+
+- <a href="#addr_unix.b72" name="addr_unix.b72"></a> `b72`: `u8`
+
+Offset: 72
+
+- <a href="#addr_unix.b73" name="addr_unix.b73"></a> `b73`: `u8`
+
+Offset: 73
+
+- <a href="#addr_unix.b74" name="addr_unix.b74"></a> `b74`: `u8`
+
+Offset: 74
+
+- <a href="#addr_unix.b75" name="addr_unix.b75"></a> `b75`: `u8`
+
+Offset: 75
+
+- <a href="#addr_unix.b76" name="addr_unix.b76"></a> `b76`: `u8`
+
+Offset: 76
+
+- <a href="#addr_unix.b77" name="addr_unix.b77"></a> `b77`: `u8`
+
+Offset: 77
+
+- <a href="#addr_unix.b78" name="addr_unix.b78"></a> `b78`: `u8`
+
+Offset: 78
+
+- <a href="#addr_unix.b79" name="addr_unix.b79"></a> `b79`: `u8`
+
+Offset: 79
+
+- <a href="#addr_unix.b80" name="addr_unix.b80"></a> `b80`: `u8`
+
+Offset: 80
+
+- <a href="#addr_unix.b81" name="addr_unix.b81"></a> `b81`: `u8`
+
+Offset: 81
+
+- <a href="#addr_unix.b82" name="addr_unix.b82"></a> `b82`: `u8`
+
+Offset: 82
+
+- <a href="#addr_unix.b83" name="addr_unix.b83"></a> `b83`: `u8`
+
+Offset: 83
+
+- <a href="#addr_unix.b84" name="addr_unix.b84"></a> `b84`: `u8`
+
+Offset: 84
+
+- <a href="#addr_unix.b85" name="addr_unix.b85"></a> `b85`: `u8`
+
+Offset: 85
+
+- <a href="#addr_unix.b86" name="addr_unix.b86"></a> `b86`: `u8`
+
+Offset: 86
+
+- <a href="#addr_unix.b87" name="addr_unix.b87"></a> `b87`: `u8`
+
+Offset: 87
+
+- <a href="#addr_unix.b88" name="addr_unix.b88"></a> `b88`: `u8`
+
+Offset: 88
+
+- <a href="#addr_unix.b89" name="addr_unix.b89"></a> `b89`: `u8`
+
+Offset: 89
+
+- <a href="#addr_unix.b90" name="addr_unix.b90"></a> `b90`: `u8`
+
+Offset: 90
+
+- <a href="#addr_unix.b91" name="addr_unix.b91"></a> `b91`: `u8`
+
+Offset: 91
+
+- <a href="#addr_unix.b92" name="addr_unix.b92"></a> `b92`: `u8`
+
+Offset: 92
+
+- <a href="#addr_unix.b93" name="addr_unix.b93"></a> `b93`: `u8`
+
+Offset: 93
+
+- <a href="#addr_unix.b94" name="addr_unix.b94"></a> `b94`: `u8`
+
+Offset: 94
+
+- <a href="#addr_unix.b95" name="addr_unix.b95"></a> `b95`: `u8`
+
+Offset: 95
+
+- <a href="#addr_unix.b96" name="addr_unix.b96"></a> `b96`: `u8`
+
+Offset: 96
+
+- <a href="#addr_unix.b97" name="addr_unix.b97"></a> `b97`: `u8`
+
+Offset: 97
+
+- <a href="#addr_unix.b98" name="addr_unix.b98"></a> `b98`: `u8`
+
+Offset: 98
+
+- <a href="#addr_unix.b99" name="addr_unix.b99"></a> `b99`: `u8`
+
+Offset: 99
+
+- <a href="#addr_unix.b100" name="addr_unix.b100"></a> `b100`: `u8`
+
+Offset: 100
+
+- <a href="#addr_unix.b101" name="addr_unix.b101"></a> `b101`: `u8`
+
+Offset: 101
+
+- <a href="#addr_unix.b102" name="addr_unix.b102"></a> `b102`: `u8`
+
+Offset: 102
+
+- <a href="#addr_unix.b103" name="addr_unix.b103"></a> `b103`: `u8`
+
+Offset: 103
+
+- <a href="#addr_unix.b104" name="addr_unix.b104"></a> `b104`: `u8`
+
+Offset: 104
+
+- <a href="#addr_unix.b105" name="addr_unix.b105"></a> `b105`: `u8`
+
+Offset: 105
+
+- <a href="#addr_unix.b106" name="addr_unix.b106"></a> `b106`: `u8`
+
+Offset: 106
+
+- <a href="#addr_unix.b107" name="addr_unix.b107"></a> `b107`: `u8`
+
+Offset: 107
+
+## <a href="#addr_unix_cidr" name="addr_unix_cidr"></a> `addr_unix_cidr`: `Record`
+Unix sockets do not support CIDR
+
+Size: 1
+
+Alignment: 1
+
+### Record members
+- <a href="#addr_unix_cidr.unused" name="addr_unix_cidr.unused"></a> `unused`: `u8`
+
+Offset: 0
+
+## <a href="#addr_ip6_port" name="addr_ip6_port"></a> `addr_ip6_port`: `Record`
+An IPv6 address with a port number
+
+Size: 26
+
+Alignment: 2
+
+### Record members
+- <a href="#addr_ip6_port.port" name="addr_ip6_port.port"></a> `port`: [`ip_port`](#ip_port)
+
+Offset: 0
+
+- <a href="#addr_ip6_port.addr" name="addr_ip6_port.addr"></a> `addr`: [`addr_ip6`](#addr_ip6)
+
+Offset: 2
+
+## <a href="#addr_ip6_cidr" name="addr_ip6_cidr"></a> `addr_ip6_cidr`: `Record`
+An IPv6 address CIDR
+
+Size: 26
+
+Alignment: 2
+
+### Record members
+- <a href="#addr_ip6_cidr.addr" name="addr_ip6_cidr.addr"></a> `addr`: [`addr_ip6`](#addr_ip6)
+
+Offset: 0
+
+- <a href="#addr_ip6_cidr.prefix" name="addr_ip6_cidr.prefix"></a> `prefix`: `u8`
+
+Offset: 24
+
+## <a href="#addr" name="addr"></a> `addr`: `Variant`
+Union of all possible addresses type
+
+Size: 110
+
+Alignment: 2
+
+### Variant Layout
+- size: 110
+- align: 2
+- tag_size: 1
+### Variant cases
+- <a href="#addr.unspec" name="addr.unspec"></a> `unspec`: [`addr_unspec`](#addr_unspec)
+
+- <a href="#addr.inet4" name="addr.inet4"></a> `inet4`: [`addr_ip4`](#addr_ip4)
+
+- <a href="#addr.inet6" name="addr.inet6"></a> `inet6`: [`addr_ip6`](#addr_ip6)
+
+- <a href="#addr.unix" name="addr.unix"></a> `unix`: [`addr_unix`](#addr_unix)
+
+## <a href="#addr_ip" name="addr_ip"></a> `addr_ip`: `Variant`
+Union of IP addresses
+
+Size: 18
+
+Alignment: 2
+
+### Variant Layout
+- size: 18
+- align: 2
+- tag_size: 1
+### Variant cases
+- <a href="#addr_ip.unspec" name="addr_ip.unspec"></a> `unspec`: [`addr_unspec`](#addr_unspec)
+
+- <a href="#addr_ip.inet4" name="addr_ip.inet4"></a> `inet4`: [`addr_ip4`](#addr_ip4)
+
+- <a href="#addr_ip.inet6" name="addr_ip.inet6"></a> `inet6`: [`addr_ip6_bare`](#addr_ip6_bare)
+
+## <a href="#addr_array" name="addr_array"></a> `addr_array`: `List<addr>`
+
+Size: 8
+
+Alignment: 4
+
+## <a href="#addr_port" name="addr_port"></a> `addr_port`: `Variant`
+Union that makes a generic IP address and port
+
+Size: 110
+
+Alignment: 2
+
+### Variant Layout
+- size: 110
+- align: 2
+- tag_size: 1
+### Variant cases
+- <a href="#addr_port.unspec" name="addr_port.unspec"></a> `unspec`: [`addr_unspec_port`](#addr_unspec_port)
+
+- <a href="#addr_port.inet4" name="addr_port.inet4"></a> `inet4`: [`addr_ip4_port`](#addr_ip4_port)
+
+- <a href="#addr_port.inet6" name="addr_port.inet6"></a> `inet6`: [`addr_ip6_port`](#addr_ip6_port)
+
+- <a href="#addr_port.unix" name="addr_port.unix"></a> `unix`: [`addr_unix`](#addr_unix)
+
+## <a href="#addr_port_array" name="addr_port_array"></a> `addr_port_array`: `List<addr_port>`
+
+Size: 8
+
+Alignment: 4
+
+## <a href="#addr_cidr" name="addr_cidr"></a> `addr_cidr`: `Variant`
+Union that makes a generic IP address and prefix. a.k.a. CIDR
+
+Size: 28
+
+Alignment: 2
+
+### Variant Layout
+- size: 28
+- align: 2
+- tag_size: 1
+### Variant cases
+- <a href="#addr_cidr.unspec" name="addr_cidr.unspec"></a> `unspec`: [`addr_unspec_cidr`](#addr_unspec_cidr)
+
+- <a href="#addr_cidr.inet4" name="addr_cidr.inet4"></a> `inet4`: [`addr_ip4_cidr`](#addr_ip4_cidr)
+
+- <a href="#addr_cidr.inet6" name="addr_cidr.inet6"></a> `inet6`: [`addr_ip6_cidr`](#addr_ip6_cidr)
+
+- <a href="#addr_cidr.unix" name="addr_cidr.unix"></a> `unix`: [`addr_unix_cidr`](#addr_unix_cidr)
+
+## <a href="#addr_cidr_array" name="addr_cidr_array"></a> `addr_cidr_array`: `List<addr_cidr>`
+
+Size: 8
+
+Alignment: 4
+
+## <a href="#route" name="route"></a> `route`: `Record`
+
+Size: 176
+
+Alignment: 8
+
+### Record members
+- <a href="#route.cidr" name="route.cidr"></a> `cidr`: [`addr_cidr`](#addr_cidr)
+
+Offset: 0
+
+- <a href="#route.via_router" name="route.via_router"></a> `via_router`: [`addr`](#addr)
+
+Offset: 28
+
+- <a href="#route.preferred_until" name="route.preferred_until"></a> `preferred_until`: [`option_timestamp`](#option_timestamp)
+
+Offset: 144
+
+- <a href="#route.expires_at" name="route.expires_at"></a> `expires_at`: [`option_timestamp`](#option_timestamp)
+
+Offset: 160
+
+## <a href="#join_flags" name="join_flags"></a> `join_flags`: `Record`
+join flags.
+
+Size: 4
+
+Alignment: 4
+
+### Record members
+- <a href="#join_flags.non_blocking" name="join_flags.non_blocking"></a> `non_blocking`: `bool`
+Non-blocking join on the process
+
+Bit: 0
+
+- <a href="#join_flags.wake_stopped" name="join_flags.wake_stopped"></a> `wake_stopped`: `bool`
+Return if a process is stopped
+
+Bit: 1
+
+## <a href="#join_status_type" name="join_status_type"></a> `join_status_type`: `Variant`
+What has happened with the proccess when we joined on it
+
+Size: 1
+
+Alignment: 1
+
+### Variant cases
+- <a href="#join_status_type.nothing" name="join_status_type.nothing"></a> `nothing`
+Nothing has happened
+
+- <a href="#join_status_type.exit_normal" name="join_status_type.exit_normal"></a> `exit_normal`
+The process has exited by a normal exit code
+
+- <a href="#join_status_type.exit_signal" name="join_status_type.exit_signal"></a> `exit_signal`
+The process was terminated by a signal
+
+- <a href="#join_status_type.stopped" name="join_status_type.stopped"></a> `stopped`
+The process was stopped by a signal and can be resumed with SIGCONT
+
+## <a href="#errno_signal" name="errno_signal"></a> `errno_signal`: `Record`
+Represents an errno and a signal
+
+Size: 4
+
+Alignment: 2
+
+### Record members
+- <a href="#errno_signal.exit_code" name="errno_signal.exit_code"></a> `exit_code`: [`errno`](#errno)
+The exit code that was returned
+
+Offset: 0
+
+- <a href="#errno_signal.signal" name="errno_signal.signal"></a> `signal`: [`signal`](#signal)
+The signal that was returned
+
+Offset: 2
+
+## <a href="#join_status" name="join_status"></a> `join_status`: `Variant`
+join status.
+
+Size: 6
+
+Alignment: 2
+
+### Variant Layout
+- size: 6
+- align: 2
+- tag_size: 1
+### Variant cases
+- <a href="#join_status.nothing" name="join_status.nothing"></a> `nothing`: `u8`
+
+- <a href="#join_status.exit_normal" name="join_status.exit_normal"></a> `exit_normal`: [`errno`](#errno)
+
+- <a href="#join_status.exit_signal" name="join_status.exit_signal"></a> `exit_signal`: [`errno_signal`](#errno_signal)
+
+- <a href="#join_status.stopped" name="join_status.stopped"></a> `stopped`: [`signal`](#signal)
+
+## <a href="#thread_flags" name="thread_flags"></a> `thread_flags`: `Record`
+thread state flags.
+
+Size: 2
+
+Alignment: 2
+
+### Record members
+- <a href="#thread_flags.tsd_used" name="thread_flags.tsd_used"></a> `tsd_used`: `bool`
+tsd_used
+
+Bit: 0
+
+- <a href="#thread_flags.dlerror_flag" name="thread_flags.dlerror_flag"></a> `dlerror_flag`: `bool`
+dlerror_flag
+
+Bit: 1
+
+## <a href="#thread_state" name="thread_state"></a> `thread_state`: `Record`
+represents the state of a thread
+
+Size: 112
+
+Alignment: 4
+
+### Record members
+- <a href="#thread_state.thread_self" name="thread_state.thread_self"></a> `thread_self`: [`pointersize`](#pointersize)
+
+Offset: 0
+
+- <a href="#thread_state.dtv" name="thread_state.dtv"></a> `dtv`: [`pointersize`](#pointersize)
+
+Offset: 4
+
+- <a href="#thread_state.thread_prev" name="thread_state.thread_prev"></a> `thread_prev`: [`pointersize`](#pointersize)
+
+Offset: 8
+
+- <a href="#thread_state.thread_next" name="thread_state.thread_next"></a> `thread_next`: [`pointersize`](#pointersize)
+
+Offset: 12
+
+- <a href="#thread_state.sysinfo" name="thread_state.sysinfo"></a> `sysinfo`: [`pointersize`](#pointersize)
+
+Offset: 16
+
+- <a href="#thread_state.canary" name="thread_state.canary"></a> `canary`: [`pointersize`](#pointersize)
+
+Offset: 20
+
+- <a href="#thread_state.tid" name="thread_state.tid"></a> `tid`: `s32`
+
+Offset: 24
+
+- <a href="#thread_state.errno_val" name="thread_state.errno_val"></a> `errno_val`: `s32`
+
+Offset: 28
+
+- <a href="#thread_state.detach_state" name="thread_state.detach_state"></a> `detach_state`: `s32`
+
+Offset: 32
+
+- <a href="#thread_state.cancel" name="thread_state.cancel"></a> `cancel`: `s32`
+
+Offset: 36
+
+- <a href="#thread_state.canceldisable" name="thread_state.canceldisable"></a> `canceldisable`: `u8`
+
+Offset: 40
+
+- <a href="#thread_state.cancelasync" name="thread_state.cancelasync"></a> `cancelasync`: `u8`
+
+Offset: 41
+
+- <a href="#thread_state.flags" name="thread_state.flags"></a> `flags`: [`thread_flags`](#thread_flags)
+
+Offset: 42
+
+- <a href="#thread_state.map_base" name="thread_state.map_base"></a> `map_base`: [`pointersize`](#pointersize)
+
+Offset: 44
+
+- <a href="#thread_state.map_size" name="thread_state.map_size"></a> `map_size`: [`pointersize`](#pointersize)
+
+Offset: 48
+
+- <a href="#thread_state.stack" name="thread_state.stack"></a> `stack`: [`pointersize`](#pointersize)
+
+Offset: 52
+
+- <a href="#thread_state.stack_size" name="thread_state.stack_size"></a> `stack_size`: [`pointersize`](#pointersize)
+
+Offset: 56
+
+- <a href="#thread_state.guard_size" name="thread_state.guard_size"></a> `guard_size`: [`pointersize`](#pointersize)
+
+Offset: 60
+
+- <a href="#thread_state.result" name="thread_state.result"></a> `result`: [`pointersize`](#pointersize)
+
+Offset: 64
+
+- <a href="#thread_state.cancelbuf" name="thread_state.cancelbuf"></a> `cancelbuf`: [`pointersize`](#pointersize)
+
+Offset: 68
+
+- <a href="#thread_state.tsd" name="thread_state.tsd"></a> `tsd`: [`pointersize`](#pointersize)
+
+Offset: 72
+
+- <a href="#thread_state.robust_list_head" name="thread_state.robust_list_head"></a> `robust_list_head`: [`pointersize`](#pointersize)
+
+Offset: 76
+
+- <a href="#thread_state.robust_list_off" name="thread_state.robust_list_off"></a> `robust_list_off`: [`pointersize`](#pointersize)
+
+Offset: 80
+
+- <a href="#thread_state.robust_list_pending" name="thread_state.robust_list_pending"></a> `robust_list_pending`: [`pointersize`](#pointersize)
+
+Offset: 84
+
+- <a href="#thread_state.h_errno_val" name="thread_state.h_errno_val"></a> `h_errno_val`: `s32`
+
+Offset: 88
+
+- <a href="#thread_state.timer_id" name="thread_state.timer_id"></a> `timer_id`: `s32`
+
+Offset: 92
+
+- <a href="#thread_state.locale" name="thread_state.locale"></a> `locale`: [`pointersize`](#pointersize)
+
+Offset: 96
+
+- <a href="#thread_state.killlock" name="thread_state.killlock"></a> `killlock`: `s32`
+
+Offset: 100
+
+- <a href="#thread_state.dlerror_buf" name="thread_state.dlerror_buf"></a> `dlerror_buf`: [`pointersize`](#pointersize)
+
+Offset: 104
+
+- <a href="#thread_state.stdio_locks" name="thread_state.stdio_locks"></a> `stdio_locks`: [`pointersize`](#pointersize)
+
+Offset: 108
+
+## <a href="#thread_start" name="thread_start"></a> `thread_start`: `Record`
+thread start type
+
+Size: 64
+
+Alignment: 4
+
+### Record members
+- <a href="#thread_start.stack" name="thread_start.stack"></a> `stack`: [`pointersize`](#pointersize)
+Address where the stack starts
+
+Offset: 0
+
+- <a href="#thread_start.tls_base" name="thread_start.tls_base"></a> `tls_base`: [`pointersize`](#pointersize)
+Address where the TLS starts
+
+Offset: 4
+
+- <a href="#thread_start.start_funct" name="thread_start.start_funct"></a> `start_funct`: [`pointersize`](#pointersize)
+Function that will be invoked when the thread starts
+
+Offset: 8
+
+- <a href="#thread_start.start_args" name="thread_start.start_args"></a> `start_args`: [`pointersize`](#pointersize)
+Arguments to pass the callback function
+
+Offset: 12
+
+- <a href="#thread_start.reserved0" name="thread_start.reserved0"></a> `reserved0`: [`pointersize`](#pointersize)
+Reserved for future WASI usage
+
+Offset: 16
+
+- <a href="#thread_start.reserved1" name="thread_start.reserved1"></a> `reserved1`: [`pointersize`](#pointersize)
+
+Offset: 20
+
+- <a href="#thread_start.reserved2" name="thread_start.reserved2"></a> `reserved2`: [`pointersize`](#pointersize)
+
+Offset: 24
+
+- <a href="#thread_start.reserved3" name="thread_start.reserved3"></a> `reserved3`: [`pointersize`](#pointersize)
+
+Offset: 28
+
+- <a href="#thread_start.reserved4" name="thread_start.reserved4"></a> `reserved4`: [`pointersize`](#pointersize)
+
+Offset: 32
+
+- <a href="#thread_start.reserved5" name="thread_start.reserved5"></a> `reserved5`: [`pointersize`](#pointersize)
+
+Offset: 36
+
+- <a href="#thread_start.reserved6" name="thread_start.reserved6"></a> `reserved6`: [`pointersize`](#pointersize)
+
+Offset: 40
+
+- <a href="#thread_start.reserved7" name="thread_start.reserved7"></a> `reserved7`: [`pointersize`](#pointersize)
+
+Offset: 44
+
+- <a href="#thread_start.reserved8" name="thread_start.reserved8"></a> `reserved8`: [`pointersize`](#pointersize)
+
+Offset: 48
+
+- <a href="#thread_start.reserved9" name="thread_start.reserved9"></a> `reserved9`: [`pointersize`](#pointersize)
+
+Offset: 52
+
+- <a href="#thread_start.stack_size" name="thread_start.stack_size"></a> `stack_size`: [`pointersize`](#pointersize)
+The size of the stack
+
+Offset: 56
+
+- <a href="#thread_start.guard_size" name="thread_start.guard_size"></a> `guard_size`: [`pointersize`](#pointersize)
+The size of the guards at the end of the stack
+
+Offset: 60
+
+## <a href="#epoll_type" name="epoll_type"></a> `epoll_type`: `Record`
+epoll type.
+
+Size: 4
+
+Alignment: 4
+
+### Record members
+- <a href="#epoll_type.epollin" name="epoll_type.epollin"></a> `epollin`: `bool`
+
+Bit: 0
+
+- <a href="#epoll_type.epollout" name="epoll_type.epollout"></a> `epollout`: `bool`
+
+Bit: 1
+
+- <a href="#epoll_type.epollrdhup" name="epoll_type.epollrdhup"></a> `epollrdhup`: `bool`
+
+Bit: 2
+
+- <a href="#epoll_type.epollpri" name="epoll_type.epollpri"></a> `epollpri`: `bool`
+
+Bit: 3
+
+- <a href="#epoll_type.epollerr" name="epoll_type.epollerr"></a> `epollerr`: `bool`
+
+Bit: 4
+
+- <a href="#epoll_type.epollhup" name="epoll_type.epollhup"></a> `epollhup`: `bool`
+
+Bit: 5
+
+- <a href="#epoll_type.epollet" name="epoll_type.epollet"></a> `epollet`: `bool`
+
+Bit: 6
+
+- <a href="#epoll_type.epolloneshot" name="epoll_type.epolloneshot"></a> `epolloneshot`: `bool`
+
+Bit: 7
+
+## <a href="#epoll_ctl" name="epoll_ctl"></a> `epoll_ctl`: `Variant`
+epoll ctl
+
+Size: 4
+
+Alignment: 4
+
+### Variant cases
+- <a href="#epoll_ctl.add" name="epoll_ctl.add"></a> `add`
+Add an entry to the interest list of the epoll file descriptor, epfd.
+
+- <a href="#epoll_ctl.mod" name="epoll_ctl.mod"></a> `mod`
+Change the settings associated with fd in the interest list to the new settings specified in event.
+
+- <a href="#epoll_ctl.del" name="epoll_ctl.del"></a> `del`
+Remove (deregister) the target file descriptor fd from the interest list.
+
+## <a href="#epoll_data" name="epoll_data"></a> `epoll_data`: `Record`
+epoll data
+
+Size: 24
+
+Alignment: 8
+
+### Record members
+- <a href="#epoll_data.ptr" name="epoll_data.ptr"></a> `ptr`: [`pointersize`](#pointersize)
+Pointer to some user defined data
+
+Offset: 0
+
+- <a href="#epoll_data.fd" name="epoll_data.fd"></a> `fd`: [`fd`](#fd)
+The file descriptor of the event
+
+Offset: 4
+
+- <a href="#epoll_data.data1" name="epoll_data.data1"></a> `data1`: `u32`
+User data for the event
+
+Offset: 8
+
+- <a href="#epoll_data.data2" name="epoll_data.data2"></a> `data2`: `u32`
+User data for the event
+
+Offset: 16
+
+## <a href="#epoll_event" name="epoll_event"></a> `epoll_event`: `Record`
+epoll event and its data
+
+Size: 32
+
+Alignment: 8
+
+### Record members
+- <a href="#epoll_event.events" name="epoll_event.events"></a> `events`: [`epoll_type`](#epoll_type)
+The events that are triggered for this
+
+Offset: 0
+
+- <a href="#epoll_event.data" name="epoll_event.data"></a> `data`: [`epoll_data`](#epoll_data)
+The data of the event
+
+Offset: 8
 
 # Modules
-## <a href="#wasi_snapshot_preview1" name="wasi_snapshot_preview1"></a> wasi_snapshot_preview1
+## <a href="#wasix_module_name" name="wasix_module_name"></a> wasix_module_name
 ### Imports
 #### Memory
 ### Functions
 
 ---
 
-#### <a href="#args_get" name="args_get"></a> `args_get(argv: Pointer<Pointer<u8>>, argv_buf: Pointer<u8>) -> Result<(), errno>`
-Read command-line argument data.
-The size of the array should match that returned by [`args_sizes_get`](#args_sizes_get).
-Each argument is expected to be `\0` terminated.
+#### <a href="#clock_time_set" name="clock_time_set"></a> `clock_time_set(id: clockid, timestamp: timestamp) -> Result<(), errno>`
+Sets the time value of a clock.
+Note: This is similar to `clock_settime` in POSIX.
 
 ##### Params
-- <a href="#args_get.argv" name="args_get.argv"></a> `argv`: `Pointer<Pointer<u8>>`
+- <a href="#clock_time_set.id" name="clock_time_set.id"></a> `id`: [`clockid`](#clockid)
+The clock for which to set the time.
 
-- <a href="#args_get.argv_buf" name="args_get.argv_buf"></a> `argv_buf`: `Pointer<u8>`
-
-##### Results
-- <a href="#args_get.error" name="args_get.error"></a> `error`: `Result<(), errno>`
-
-###### Variant Layout
-- size: 8
-- align: 4
-- tag_size: 4
-###### Variant cases
-- <a href="#args_get.error.ok" name="args_get.error.ok"></a> `ok`
-
-- <a href="#args_get.error.err" name="args_get.error.err"></a> `err`: [`errno`](#errno)
-
-
----
-
-#### <a href="#args_sizes_get" name="args_sizes_get"></a> `args_sizes_get() -> Result<(size, size), errno>`
-Return command-line argument data sizes.
-
-##### Params
-##### Results
-- <a href="#args_sizes_get.error" name="args_sizes_get.error"></a> `error`: `Result<(size, size), errno>`
-Returns the number of arguments and the size of the argument string
-data, or an error.
-
-###### Variant Layout
-- size: 12
-- align: 4
-- tag_size: 4
-###### Variant cases
-- <a href="#args_sizes_get.error.ok" name="args_sizes_get.error.ok"></a> `ok`: `(size, size)`
-
-####### Record members
-- <a href="#args_sizes_get.error.ok.0" name="args_sizes_get.error.ok.0"></a> `0`: [`size`](#size)
-
-Offset: 0
-
-- <a href="#args_sizes_get.error.ok.1" name="args_sizes_get.error.ok.1"></a> `1`: [`size`](#size)
-
-Offset: 4
-
-- <a href="#args_sizes_get.error.err" name="args_sizes_get.error.err"></a> `err`: [`errno`](#errno)
-
-
----
-
-#### <a href="#environ_get" name="environ_get"></a> `environ_get(environ: Pointer<Pointer<u8>>, environ_buf: Pointer<u8>) -> Result<(), errno>`
-Read environment variable data.
-The sizes of the buffers should match that returned by [`environ_sizes_get`](#environ_sizes_get).
-Key/value pairs are expected to be joined with `=`s, and terminated with `\0`s.
-
-##### Params
-- <a href="#environ_get.environ" name="environ_get.environ"></a> `environ`: `Pointer<Pointer<u8>>`
-
-- <a href="#environ_get.environ_buf" name="environ_get.environ_buf"></a> `environ_buf`: `Pointer<u8>`
+- <a href="#clock_time_set.timestamp" name="clock_time_set.timestamp"></a> `timestamp`: [`timestamp`](#timestamp)
+The value of the time to be set.
 
 ##### Results
-- <a href="#environ_get.error" name="environ_get.error"></a> `error`: `Result<(), errno>`
-
-###### Variant Layout
-- size: 8
-- align: 4
-- tag_size: 4
-###### Variant cases
-- <a href="#environ_get.error.ok" name="environ_get.error.ok"></a> `ok`
-
-- <a href="#environ_get.error.err" name="environ_get.error.err"></a> `err`: [`errno`](#errno)
-
-
----
-
-#### <a href="#environ_sizes_get" name="environ_sizes_get"></a> `environ_sizes_get() -> Result<(size, size), errno>`
-Return environment variable data sizes.
-
-##### Params
-##### Results
-- <a href="#environ_sizes_get.error" name="environ_sizes_get.error"></a> `error`: `Result<(size, size), errno>`
-Returns the number of environment variable arguments and the size of the
-environment variable data.
-
-###### Variant Layout
-- size: 12
-- align: 4
-- tag_size: 4
-###### Variant cases
-- <a href="#environ_sizes_get.error.ok" name="environ_sizes_get.error.ok"></a> `ok`: `(size, size)`
-
-####### Record members
-- <a href="#environ_sizes_get.error.ok.0" name="environ_sizes_get.error.ok.0"></a> `0`: [`size`](#size)
-
-Offset: 0
-
-- <a href="#environ_sizes_get.error.ok.1" name="environ_sizes_get.error.ok.1"></a> `1`: [`size`](#size)
-
-Offset: 4
-
-- <a href="#environ_sizes_get.error.err" name="environ_sizes_get.error.err"></a> `err`: [`errno`](#errno)
-
-
----
-
-#### <a href="#clock_res_get" name="clock_res_get"></a> `clock_res_get(id: clockid) -> Result<timestamp, errno>`
-Return the resolution of a clock.
-Implementations are required to provide a non-zero value for supported clocks. For unsupported clocks,
-return [`errno::inval`](#errno.inval).
-Note: This is similar to `clock_getres` in POSIX.
-
-##### Params
-- <a href="#clock_res_get.id" name="clock_res_get.id"></a> `id`: [`clockid`](#clockid)
-The clock for which to return the resolution.
-
-##### Results
-- <a href="#clock_res_get.error" name="clock_res_get.error"></a> `error`: `Result<timestamp, errno>`
-The resolution of the clock, or an error if one happened.
-
-###### Variant Layout
-- size: 16
-- align: 8
-- tag_size: 4
-###### Variant cases
-- <a href="#clock_res_get.error.ok" name="clock_res_get.error.ok"></a> `ok`: [`timestamp`](#timestamp)
-
-- <a href="#clock_res_get.error.err" name="clock_res_get.error.err"></a> `err`: [`errno`](#errno)
-
-
----
-
-#### <a href="#clock_time_get" name="clock_time_get"></a> `clock_time_get(id: clockid, precision: timestamp) -> Result<timestamp, errno>`
-Return the time value of a clock.
-Note: This is similar to `clock_gettime` in POSIX.
-
-##### Params
-- <a href="#clock_time_get.id" name="clock_time_get.id"></a> `id`: [`clockid`](#clockid)
-The clock for which to return the time.
-
-- <a href="#clock_time_get.precision" name="clock_time_get.precision"></a> `precision`: [`timestamp`](#timestamp)
-The maximum lag (exclusive) that the returned time value may have, compared to its actual value.
-
-##### Results
-- <a href="#clock_time_get.error" name="clock_time_get.error"></a> `error`: `Result<timestamp, errno>`
+- <a href="#clock_time_set.error" name="clock_time_set.error"></a> `error`: `Result<(), errno>`
 The time value of the clock.
 
 ###### Variant Layout
-- size: 16
-- align: 8
+- size: 8
+- align: 4
 - tag_size: 4
 ###### Variant cases
-- <a href="#clock_time_get.error.ok" name="clock_time_get.error.ok"></a> `ok`: [`timestamp`](#timestamp)
+- <a href="#clock_time_set.error.ok" name="clock_time_set.error.ok"></a> `ok`
 
-- <a href="#clock_time_get.error.err" name="clock_time_get.error.err"></a> `err`: [`errno`](#errno)
+- <a href="#clock_time_set.error.err" name="clock_time_set.error.err"></a> `err`: [`errno`](#errno)
 
 
 ---
 
-#### <a href="#fd_advise" name="fd_advise"></a> `fd_advise(fd: fd, offset: filesize, len: filesize, advice: advice) -> Result<(), errno>`
-Provide file advisory information on a file descriptor.
-Note: This is similar to `posix_fadvise` in POSIX.
+#### <a href="#fd_dup" name="fd_dup"></a> `fd_dup(fd: fd) -> Result<fd, errno>`
+Atomically duplicate a file handle.
 
 ##### Params
-- <a href="#fd_advise.fd" name="fd_advise.fd"></a> `fd`: [`fd`](#fd)
-
-- <a href="#fd_advise.offset" name="fd_advise.offset"></a> `offset`: [`filesize`](#filesize)
-The offset within the file to which the advisory applies.
-
-- <a href="#fd_advise.len" name="fd_advise.len"></a> `len`: [`filesize`](#filesize)
-The length of the region to which the advisory applies.
-
-- <a href="#fd_advise.advice" name="fd_advise.advice"></a> `advice`: [`advice`](#advice)
-The advice.
+- <a href="#fd_dup.fd" name="fd_dup.fd"></a> `fd`: [`fd`](#fd)
 
 ##### Results
-- <a href="#fd_advise.error" name="fd_advise.error"></a> `error`: `Result<(), errno>`
+- <a href="#fd_dup.error" name="fd_dup.error"></a> `error`: `Result<fd, errno>`
 
 ###### Variant Layout
 - size: 8
 - align: 4
 - tag_size: 4
 ###### Variant cases
-- <a href="#fd_advise.error.ok" name="fd_advise.error.ok"></a> `ok`
+- <a href="#fd_dup.error.ok" name="fd_dup.error.ok"></a> `ok`: [`fd`](#fd)
 
-- <a href="#fd_advise.error.err" name="fd_advise.error.err"></a> `err`: [`errno`](#errno)
+- <a href="#fd_dup.error.err" name="fd_dup.error.err"></a> `err`: [`errno`](#errno)
 
 
 ---
 
-#### <a href="#fd_allocate" name="fd_allocate"></a> `fd_allocate(fd: fd, offset: filesize, len: filesize) -> Result<(), errno>`
-Force the allocation of space in a file.
-Note: This is similar to `posix_fallocate` in POSIX.
+#### <a href="#fd_event" name="fd_event"></a> `fd_event(initial_val: u32, flags: eventfdflags) -> Result<fd, errno>`
+Creates a file handle for event notifications
+
 
 ##### Params
-- <a href="#fd_allocate.fd" name="fd_allocate.fd"></a> `fd`: [`fd`](#fd)
+- <a href="#fd_event.initial_val" name="fd_event.initial_val"></a> `initial_val`: `u32`
 
-- <a href="#fd_allocate.offset" name="fd_allocate.offset"></a> `offset`: [`filesize`](#filesize)
-The offset at which to start the allocation.
-
-- <a href="#fd_allocate.len" name="fd_allocate.len"></a> `len`: [`filesize`](#filesize)
-The length of the area that is allocated.
+- <a href="#fd_event.flags" name="fd_event.flags"></a> `flags`: [`eventfdflags`](#eventfdflags)
 
 ##### Results
-- <a href="#fd_allocate.error" name="fd_allocate.error"></a> `error`: `Result<(), errno>`
+- <a href="#fd_event.error" name="fd_event.error"></a> `error`: `Result<fd, errno>`
 
 ###### Variant Layout
 - size: 8
 - align: 4
 - tag_size: 4
 ###### Variant cases
-- <a href="#fd_allocate.error.ok" name="fd_allocate.error.ok"></a> `ok`
+- <a href="#fd_event.error.ok" name="fd_event.error.ok"></a> `ok`: [`fd`](#fd)
 
-- <a href="#fd_allocate.error.err" name="fd_allocate.error.err"></a> `err`: [`errno`](#errno)
-
-
----
-
-#### <a href="#fd_close" name="fd_close"></a> `fd_close(fd: fd) -> Result<(), errno>`
-Close a file descriptor.
-Note: This is similar to `close` in POSIX.
-
-##### Params
-- <a href="#fd_close.fd" name="fd_close.fd"></a> `fd`: [`fd`](#fd)
-
-##### Results
-- <a href="#fd_close.error" name="fd_close.error"></a> `error`: `Result<(), errno>`
-
-###### Variant Layout
-- size: 8
-- align: 4
-- tag_size: 4
-###### Variant cases
-- <a href="#fd_close.error.ok" name="fd_close.error.ok"></a> `ok`
-
-- <a href="#fd_close.error.err" name="fd_close.error.err"></a> `err`: [`errno`](#errno)
+- <a href="#fd_event.error.err" name="fd_event.error.err"></a> `err`: [`errno`](#errno)
 
 
 ---
 
-#### <a href="#fd_datasync" name="fd_datasync"></a> `fd_datasync(fd: fd) -> Result<(), errno>`
-Synchronize the data of a file to disk.
-Note: This is similar to `fdatasync` in POSIX.
+#### <a href="#fd_pipe" name="fd_pipe"></a> `fd_pipe() -> Result<(fd, fd), errno>`
+Opens a pipe with two file handles
+
+Pipes are bidirectional
 
 ##### Params
-- <a href="#fd_datasync.fd" name="fd_datasync.fd"></a> `fd`: [`fd`](#fd)
-
 ##### Results
-- <a href="#fd_datasync.error" name="fd_datasync.error"></a> `error`: `Result<(), errno>`
-
-###### Variant Layout
-- size: 8
-- align: 4
-- tag_size: 4
-###### Variant cases
-- <a href="#fd_datasync.error.ok" name="fd_datasync.error.ok"></a> `ok`
-
-- <a href="#fd_datasync.error.err" name="fd_datasync.error.err"></a> `err`: [`errno`](#errno)
-
-
----
-
-#### <a href="#fd_fdstat_get" name="fd_fdstat_get"></a> `fd_fdstat_get(fd: fd) -> Result<fdstat, errno>`
-Get the attributes of a file descriptor.
-Note: This returns similar flags to `fsync(fd, F_GETFL)` in POSIX, as well as additional fields.
-
-##### Params
-- <a href="#fd_fdstat_get.fd" name="fd_fdstat_get.fd"></a> `fd`: [`fd`](#fd)
-
-##### Results
-- <a href="#fd_fdstat_get.error" name="fd_fdstat_get.error"></a> `error`: `Result<fdstat, errno>`
-The buffer where the file descriptor's attributes are stored.
-
-###### Variant Layout
-- size: 32
-- align: 8
-- tag_size: 4
-###### Variant cases
-- <a href="#fd_fdstat_get.error.ok" name="fd_fdstat_get.error.ok"></a> `ok`: [`fdstat`](#fdstat)
-
-- <a href="#fd_fdstat_get.error.err" name="fd_fdstat_get.error.err"></a> `err`: [`errno`](#errno)
-
-
----
-
-#### <a href="#fd_fdstat_set_flags" name="fd_fdstat_set_flags"></a> `fd_fdstat_set_flags(fd: fd, flags: fdflags) -> Result<(), errno>`
-Adjust the flags associated with a file descriptor.
-Note: This is similar to `fcntl(fd, F_SETFL, flags)` in POSIX.
-
-##### Params
-- <a href="#fd_fdstat_set_flags.fd" name="fd_fdstat_set_flags.fd"></a> `fd`: [`fd`](#fd)
-
-- <a href="#fd_fdstat_set_flags.flags" name="fd_fdstat_set_flags.flags"></a> `flags`: [`fdflags`](#fdflags)
-The desired values of the file descriptor flags.
-
-##### Results
-- <a href="#fd_fdstat_set_flags.error" name="fd_fdstat_set_flags.error"></a> `error`: `Result<(), errno>`
-
-###### Variant Layout
-- size: 8
-- align: 4
-- tag_size: 4
-###### Variant cases
-- <a href="#fd_fdstat_set_flags.error.ok" name="fd_fdstat_set_flags.error.ok"></a> `ok`
-
-- <a href="#fd_fdstat_set_flags.error.err" name="fd_fdstat_set_flags.error.err"></a> `err`: [`errno`](#errno)
-
-
----
-
-#### <a href="#fd_fdstat_set_rights" name="fd_fdstat_set_rights"></a> `fd_fdstat_set_rights(fd: fd, fs_rights_base: rights, fs_rights_inheriting: rights) -> Result<(), errno>`
-Adjust the rights associated with a file descriptor.
-This can only be used to remove rights, and returns [`errno::notcapable`](#errno.notcapable) if called in a way that would attempt to add rights
-
-##### Params
-- <a href="#fd_fdstat_set_rights.fd" name="fd_fdstat_set_rights.fd"></a> `fd`: [`fd`](#fd)
-
-- <a href="#fd_fdstat_set_rights.fs_rights_base" name="fd_fdstat_set_rights.fs_rights_base"></a> `fs_rights_base`: [`rights`](#rights)
-The desired rights of the file descriptor.
-
-- <a href="#fd_fdstat_set_rights.fs_rights_inheriting" name="fd_fdstat_set_rights.fs_rights_inheriting"></a> `fs_rights_inheriting`: [`rights`](#rights)
-
-##### Results
-- <a href="#fd_fdstat_set_rights.error" name="fd_fdstat_set_rights.error"></a> `error`: `Result<(), errno>`
-
-###### Variant Layout
-- size: 8
-- align: 4
-- tag_size: 4
-###### Variant cases
-- <a href="#fd_fdstat_set_rights.error.ok" name="fd_fdstat_set_rights.error.ok"></a> `ok`
-
-- <a href="#fd_fdstat_set_rights.error.err" name="fd_fdstat_set_rights.error.err"></a> `err`: [`errno`](#errno)
-
-
----
-
-#### <a href="#fd_filestat_get" name="fd_filestat_get"></a> `fd_filestat_get(fd: fd) -> Result<filestat, errno>`
-Return the attributes of an open file.
-
-##### Params
-- <a href="#fd_filestat_get.fd" name="fd_filestat_get.fd"></a> `fd`: [`fd`](#fd)
-
-##### Results
-- <a href="#fd_filestat_get.error" name="fd_filestat_get.error"></a> `error`: `Result<filestat, errno>`
-The buffer where the file's attributes are stored.
-
-###### Variant Layout
-- size: 72
-- align: 8
-- tag_size: 4
-###### Variant cases
-- <a href="#fd_filestat_get.error.ok" name="fd_filestat_get.error.ok"></a> `ok`: [`filestat`](#filestat)
-
-- <a href="#fd_filestat_get.error.err" name="fd_filestat_get.error.err"></a> `err`: [`errno`](#errno)
-
-
----
-
-#### <a href="#fd_filestat_set_size" name="fd_filestat_set_size"></a> `fd_filestat_set_size(fd: fd, size: filesize) -> Result<(), errno>`
-Adjust the size of an open file. If this increases the file's size, the extra bytes are filled with zeros.
-Note: This is similar to `ftruncate` in POSIX.
-
-##### Params
-- <a href="#fd_filestat_set_size.fd" name="fd_filestat_set_size.fd"></a> `fd`: [`fd`](#fd)
-
-- <a href="#fd_filestat_set_size.size" name="fd_filestat_set_size.size"></a> `size`: [`filesize`](#filesize)
-The desired file size.
-
-##### Results
-- <a href="#fd_filestat_set_size.error" name="fd_filestat_set_size.error"></a> `error`: `Result<(), errno>`
-
-###### Variant Layout
-- size: 8
-- align: 4
-- tag_size: 4
-###### Variant cases
-- <a href="#fd_filestat_set_size.error.ok" name="fd_filestat_set_size.error.ok"></a> `ok`
-
-- <a href="#fd_filestat_set_size.error.err" name="fd_filestat_set_size.error.err"></a> `err`: [`errno`](#errno)
-
-
----
-
-#### <a href="#fd_filestat_set_times" name="fd_filestat_set_times"></a> `fd_filestat_set_times(fd: fd, atim: timestamp, mtim: timestamp, fst_flags: fstflags) -> Result<(), errno>`
-Adjust the timestamps of an open file or directory.
-Note: This is similar to `futimens` in POSIX.
-
-##### Params
-- <a href="#fd_filestat_set_times.fd" name="fd_filestat_set_times.fd"></a> `fd`: [`fd`](#fd)
-
-- <a href="#fd_filestat_set_times.atim" name="fd_filestat_set_times.atim"></a> `atim`: [`timestamp`](#timestamp)
-The desired values of the data access timestamp.
-
-- <a href="#fd_filestat_set_times.mtim" name="fd_filestat_set_times.mtim"></a> `mtim`: [`timestamp`](#timestamp)
-The desired values of the data modification timestamp.
-
-- <a href="#fd_filestat_set_times.fst_flags" name="fd_filestat_set_times.fst_flags"></a> `fst_flags`: [`fstflags`](#fstflags)
-A bitmask indicating which timestamps to adjust.
-
-##### Results
-- <a href="#fd_filestat_set_times.error" name="fd_filestat_set_times.error"></a> `error`: `Result<(), errno>`
-
-###### Variant Layout
-- size: 8
-- align: 4
-- tag_size: 4
-###### Variant cases
-- <a href="#fd_filestat_set_times.error.ok" name="fd_filestat_set_times.error.ok"></a> `ok`
-
-- <a href="#fd_filestat_set_times.error.err" name="fd_filestat_set_times.error.err"></a> `err`: [`errno`](#errno)
-
-
----
-
-#### <a href="#fd_pread" name="fd_pread"></a> `fd_pread(fd: fd, iovs: iovec_array, offset: filesize) -> Result<size, errno>`
-Read from a file descriptor, without using and updating the file descriptor's offset.
-Note: This is similar to `preadv` in POSIX.
-
-##### Params
-- <a href="#fd_pread.fd" name="fd_pread.fd"></a> `fd`: [`fd`](#fd)
-
-- <a href="#fd_pread.iovs" name="fd_pread.iovs"></a> `iovs`: [`iovec_array`](#iovec_array)
-List of scatter/gather vectors in which to store data.
-
-- <a href="#fd_pread.offset" name="fd_pread.offset"></a> `offset`: [`filesize`](#filesize)
-The offset within the file at which to read.
-
-##### Results
-- <a href="#fd_pread.error" name="fd_pread.error"></a> `error`: `Result<size, errno>`
-The number of bytes read.
-
-###### Variant Layout
-- size: 8
-- align: 4
-- tag_size: 4
-###### Variant cases
-- <a href="#fd_pread.error.ok" name="fd_pread.error.ok"></a> `ok`: [`size`](#size)
-
-- <a href="#fd_pread.error.err" name="fd_pread.error.err"></a> `err`: [`errno`](#errno)
-
-
----
-
-#### <a href="#fd_prestat_get" name="fd_prestat_get"></a> `fd_prestat_get(fd: fd) -> Result<prestat, errno>`
-Return a description of the given preopened file descriptor.
-
-##### Params
-- <a href="#fd_prestat_get.fd" name="fd_prestat_get.fd"></a> `fd`: [`fd`](#fd)
-
-##### Results
-- <a href="#fd_prestat_get.error" name="fd_prestat_get.error"></a> `error`: `Result<prestat, errno>`
-The buffer where the description is stored.
+- <a href="#fd_pipe.error" name="fd_pipe.error"></a> `error`: `Result<(fd, fd), errno>`
 
 ###### Variant Layout
 - size: 12
 - align: 4
 - tag_size: 4
 ###### Variant cases
-- <a href="#fd_prestat_get.error.ok" name="fd_prestat_get.error.ok"></a> `ok`: [`prestat`](#prestat)
+- <a href="#fd_pipe.error.ok" name="fd_pipe.error.ok"></a> `ok`: `(fd, fd)`
 
-- <a href="#fd_prestat_get.error.err" name="fd_prestat_get.error.err"></a> `err`: [`errno`](#errno)
+####### Record members
+- <a href="#fd_pipe.error.ok.0" name="fd_pipe.error.ok.0"></a> `0`: [`fd`](#fd)
+
+Offset: 0
+
+- <a href="#fd_pipe.error.ok.1" name="fd_pipe.error.ok.1"></a> `1`: [`fd`](#fd)
+
+Offset: 4
+
+- <a href="#fd_pipe.error.err" name="fd_pipe.error.err"></a> `err`: [`errno`](#errno)
 
 
 ---
 
-#### <a href="#fd_prestat_dir_name" name="fd_prestat_dir_name"></a> `fd_prestat_dir_name(fd: fd, path: Pointer<u8>, path_len: size) -> Result<(), errno>`
-Return a description of the given preopened file descriptor.
+#### <a href="#tty_get" name="tty_get"></a> `tty_get(state: Pointer<tty>) -> Result<(), errno>`
+Retrieves the current state of the TTY
 
 ##### Params
-- <a href="#fd_prestat_dir_name.fd" name="fd_prestat_dir_name.fd"></a> `fd`: [`fd`](#fd)
-
-- <a href="#fd_prestat_dir_name.path" name="fd_prestat_dir_name.path"></a> `path`: `Pointer<u8>`
-A buffer into which to write the preopened directory name.
-
-- <a href="#fd_prestat_dir_name.path_len" name="fd_prestat_dir_name.path_len"></a> `path_len`: [`size`](#size)
+- <a href="#tty_get.state" name="tty_get.state"></a> `state`: `Pointer<tty>`
 
 ##### Results
-- <a href="#fd_prestat_dir_name.error" name="fd_prestat_dir_name.error"></a> `error`: `Result<(), errno>`
+- <a href="#tty_get.error" name="tty_get.error"></a> `error`: `Result<(), errno>`
 
 ###### Variant Layout
 - size: 8
 - align: 4
 - tag_size: 4
 ###### Variant cases
-- <a href="#fd_prestat_dir_name.error.ok" name="fd_prestat_dir_name.error.ok"></a> `ok`
+- <a href="#tty_get.error.ok" name="tty_get.error.ok"></a> `ok`
 
-- <a href="#fd_prestat_dir_name.error.err" name="fd_prestat_dir_name.error.err"></a> `err`: [`errno`](#errno)
+- <a href="#tty_get.error.err" name="tty_get.error.err"></a> `err`: [`errno`](#errno)
 
 
 ---
 
-#### <a href="#fd_pwrite" name="fd_pwrite"></a> `fd_pwrite(fd: fd, iovs: ciovec_array, offset: filesize) -> Result<size, errno>`
-Write to a file descriptor, without using and updating the file descriptor's offset.
-Note: This is similar to `pwritev` in POSIX.
+#### <a href="#tty_set" name="tty_set"></a> `tty_set(state: Pointer<tty>) -> Result<(), errno>`
+Updates the properties of the the TTY
 
 ##### Params
-- <a href="#fd_pwrite.fd" name="fd_pwrite.fd"></a> `fd`: [`fd`](#fd)
-
-- <a href="#fd_pwrite.iovs" name="fd_pwrite.iovs"></a> `iovs`: [`ciovec_array`](#ciovec_array)
-List of scatter/gather vectors from which to retrieve data.
-
-- <a href="#fd_pwrite.offset" name="fd_pwrite.offset"></a> `offset`: [`filesize`](#filesize)
-The offset within the file at which to write.
+- <a href="#tty_set.state" name="tty_set.state"></a> `state`: `Pointer<tty>`
 
 ##### Results
-- <a href="#fd_pwrite.error" name="fd_pwrite.error"></a> `error`: `Result<size, errno>`
-The number of bytes written.
+- <a href="#tty_set.error" name="tty_set.error"></a> `error`: `Result<(), errno>`
 
 ###### Variant Layout
 - size: 8
 - align: 4
 - tag_size: 4
 ###### Variant cases
-- <a href="#fd_pwrite.error.ok" name="fd_pwrite.error.ok"></a> `ok`: [`size`](#size)
+- <a href="#tty_set.error.ok" name="tty_set.error.ok"></a> `ok`
 
-- <a href="#fd_pwrite.error.err" name="fd_pwrite.error.err"></a> `err`: [`errno`](#errno)
+- <a href="#tty_set.error.err" name="tty_set.error.err"></a> `err`: [`errno`](#errno)
 
 
 ---
 
-#### <a href="#fd_read" name="fd_read"></a> `fd_read(fd: fd, iovs: iovec_array) -> Result<size, errno>`
-Read from a file descriptor.
-Note: This is similar to `readv` in POSIX.
+#### <a href="#getcwd" name="getcwd"></a> `getcwd(path: Pointer<u8>, path_len: Pointer<pointersize>) -> Result<(), errno>`
+Returns the current working directory
+
+If the path exceeds the size of the buffer then this function
+will fill the path_len with the needed size and return EOVERFLOW
 
 ##### Params
-- <a href="#fd_read.fd" name="fd_read.fd"></a> `fd`: [`fd`](#fd)
+- <a href="#getcwd.path" name="getcwd.path"></a> `path`: `Pointer<u8>`
+The buffer where current directory is stored
 
-- <a href="#fd_read.iovs" name="fd_read.iovs"></a> `iovs`: [`iovec_array`](#iovec_array)
-List of scatter/gather vectors to which to store data.
+- <a href="#getcwd.path_len" name="getcwd.path_len"></a> `path_len`: `Pointer<pointersize>`
 
 ##### Results
-- <a href="#fd_read.error" name="fd_read.error"></a> `error`: `Result<size, errno>`
-The number of bytes read.
+- <a href="#getcwd.error" name="getcwd.error"></a> `error`: `Result<(), errno>`
 
 ###### Variant Layout
 - size: 8
 - align: 4
 - tag_size: 4
 ###### Variant cases
-- <a href="#fd_read.error.ok" name="fd_read.error.ok"></a> `ok`: [`size`](#size)
+- <a href="#getcwd.error.ok" name="getcwd.error.ok"></a> `ok`
 
-- <a href="#fd_read.error.err" name="fd_read.error.err"></a> `err`: [`errno`](#errno)
+- <a href="#getcwd.error.err" name="getcwd.error.err"></a> `err`: [`errno`](#errno)
 
 
 ---
 
-#### <a href="#fd_readdir" name="fd_readdir"></a> `fd_readdir(fd: fd, buf: Pointer<u8>, buf_len: size, cookie: dircookie) -> Result<size, errno>`
-Read directory entries from a directory.
-When successful, the contents of the output buffer consist of a sequence of
-directory entries. Each directory entry consists of a [`dirent`](#dirent) object,
-followed by [`dirent::d_namlen`](#dirent.d_namlen) bytes holding the name of the directory
-entry.
-This function fills the output buffer as much as possible, potentially
-truncating the last directory entry. This allows the caller to grow its
-read buffer size in case it's too small to fit a single large directory
-entry, or skip the oversized directory entry.
+#### <a href="#chdir" name="chdir"></a> `chdir(path: string) -> Result<(), errno>`
+Sets the current working directory
 
 ##### Params
-- <a href="#fd_readdir.fd" name="fd_readdir.fd"></a> `fd`: [`fd`](#fd)
-
-- <a href="#fd_readdir.buf" name="fd_readdir.buf"></a> `buf`: `Pointer<u8>`
-The buffer where directory entries are stored
-
-- <a href="#fd_readdir.buf_len" name="fd_readdir.buf_len"></a> `buf_len`: [`size`](#size)
-
-- <a href="#fd_readdir.cookie" name="fd_readdir.cookie"></a> `cookie`: [`dircookie`](#dircookie)
-The location within the directory to start reading
+- <a href="#chdir.path" name="chdir.path"></a> `path`: `string`
+Path to change the current working directory to
 
 ##### Results
-- <a href="#fd_readdir.error" name="fd_readdir.error"></a> `error`: `Result<size, errno>`
-The number of bytes stored in the read buffer. If less than the size of the read buffer, the end of the directory has been reached.
+- <a href="#chdir.error" name="chdir.error"></a> `error`: `Result<(), errno>`
 
 ###### Variant Layout
 - size: 8
 - align: 4
 - tag_size: 4
 ###### Variant cases
-- <a href="#fd_readdir.error.ok" name="fd_readdir.error.ok"></a> `ok`: [`size`](#size)
+- <a href="#chdir.error.ok" name="chdir.error.ok"></a> `ok`
 
-- <a href="#fd_readdir.error.err" name="fd_readdir.error.err"></a> `err`: [`errno`](#errno)
+- <a href="#chdir.error.err" name="chdir.error.err"></a> `err`: [`errno`](#errno)
 
 
 ---
 
-#### <a href="#fd_renumber" name="fd_renumber"></a> `fd_renumber(fd: fd, to: fd) -> Result<(), errno>`
-Atomically replace a file descriptor by renumbering another file descriptor.
-Due to the strong focus on thread safety, this environment does not provide
-a mechanism to duplicate or renumber a file descriptor to an arbitrary
-number, like `dup2()`. This would be prone to race conditions, as an actual
-file descriptor with the same number could be allocated by a different
-thread at the same time.
-This function provides a way to atomically renumber file descriptors, which
-would disappear if `dup2()` were to be removed entirely.
+#### <a href="#callback_signal" name="callback_signal"></a> `callback_signal(callback: string)`
+Registers a callback function for signals
 
 ##### Params
-- <a href="#fd_renumber.fd" name="fd_renumber.fd"></a> `fd`: [`fd`](#fd)
-
-- <a href="#fd_renumber.to" name="fd_renumber.to"></a> `to`: [`fd`](#fd)
-The file descriptor to overwrite.
+- <a href="#callback_signal.callback" name="callback_signal.callback"></a> `callback`: `string`
+Exported function that will be called back when the signal triggers
+(must match the callback signature that takes the signal value)
+(if this is not specified the default will be "_signal")
 
 ##### Results
-- <a href="#fd_renumber.error" name="fd_renumber.error"></a> `error`: `Result<(), errno>`
+
+---
+
+#### <a href="#thread_spawn_v2" name="thread_spawn_v2"></a> `thread_spawn_v2(args: Pointer<thread_start>) -> Result<tid, errno>`
+Creates a new thread by spawning that shares the same
+memory address space, file handles and main event loops.
+The web assembly process must export function named 'wasi_thread_start'
+
+##### Params
+- <a href="#thread_spawn_v2.args" name="thread_spawn_v2.args"></a> `args`: `Pointer<thread_start>`
+Pointer to the structure the describes the thread
+that is being spawened
+
+##### Results
+- <a href="#thread_spawn_v2.error" name="thread_spawn_v2.error"></a> `error`: `Result<tid, errno>`
+Returns the thread index of the newly created thread
+(indices always start from zero)
 
 ###### Variant Layout
 - size: 8
 - align: 4
 - tag_size: 4
 ###### Variant cases
-- <a href="#fd_renumber.error.ok" name="fd_renumber.error.ok"></a> `ok`
+- <a href="#thread_spawn_v2.error.ok" name="thread_spawn_v2.error.ok"></a> `ok`: [`tid`](#tid)
 
-- <a href="#fd_renumber.error.err" name="fd_renumber.error.err"></a> `err`: [`errno`](#errno)
-
-
----
-
-#### <a href="#fd_seek" name="fd_seek"></a> `fd_seek(fd: fd, offset: filedelta, whence: whence) -> Result<filesize, errno>`
-Move the offset of a file descriptor.
-Note: This is similar to `lseek` in POSIX.
-
-##### Params
-- <a href="#fd_seek.fd" name="fd_seek.fd"></a> `fd`: [`fd`](#fd)
-
-- <a href="#fd_seek.offset" name="fd_seek.offset"></a> `offset`: [`filedelta`](#filedelta)
-The number of bytes to move.
-
-- <a href="#fd_seek.whence" name="fd_seek.whence"></a> `whence`: [`whence`](#whence)
-The base from which the offset is relative.
-
-##### Results
-- <a href="#fd_seek.error" name="fd_seek.error"></a> `error`: `Result<filesize, errno>`
-The new offset of the file descriptor, relative to the start of the file.
-
-###### Variant Layout
-- size: 16
-- align: 8
-- tag_size: 4
-###### Variant cases
-- <a href="#fd_seek.error.ok" name="fd_seek.error.ok"></a> `ok`: [`filesize`](#filesize)
-
-- <a href="#fd_seek.error.err" name="fd_seek.error.err"></a> `err`: [`errno`](#errno)
+- <a href="#thread_spawn_v2.error.err" name="thread_spawn_v2.error.err"></a> `err`: [`errno`](#errno)
 
 
 ---
 
-#### <a href="#fd_sync" name="fd_sync"></a> `fd_sync(fd: fd) -> Result<(), errno>`
-Synchronize the data and metadata of a file to disk.
-Note: This is similar to `fsync` in POSIX.
+#### <a href="#thread_sleep" name="thread_sleep"></a> `thread_sleep(duration: timestamp) -> Result<(), errno>`
+Sends the current thread to sleep for a period of time
 
 ##### Params
-- <a href="#fd_sync.fd" name="fd_sync.fd"></a> `fd`: [`fd`](#fd)
+- <a href="#thread_sleep.duration" name="thread_sleep.duration"></a> `duration`: [`timestamp`](#timestamp)
+Amount of time that the thread should sleep
 
 ##### Results
-- <a href="#fd_sync.error" name="fd_sync.error"></a> `error`: `Result<(), errno>`
+- <a href="#thread_sleep.error" name="thread_sleep.error"></a> `error`: `Result<(), errno>`
 
 ###### Variant Layout
 - size: 8
 - align: 4
 - tag_size: 4
 ###### Variant cases
-- <a href="#fd_sync.error.ok" name="fd_sync.error.ok"></a> `ok`
+- <a href="#thread_sleep.error.ok" name="thread_sleep.error.ok"></a> `ok`
 
-- <a href="#fd_sync.error.err" name="fd_sync.error.err"></a> `err`: [`errno`](#errno)
-
-
----
-
-#### <a href="#fd_tell" name="fd_tell"></a> `fd_tell(fd: fd) -> Result<filesize, errno>`
-Return the current offset of a file descriptor.
-Note: This is similar to `lseek(fd, 0, SEEK_CUR)` in POSIX.
-
-##### Params
-- <a href="#fd_tell.fd" name="fd_tell.fd"></a> `fd`: [`fd`](#fd)
-
-##### Results
-- <a href="#fd_tell.error" name="fd_tell.error"></a> `error`: `Result<filesize, errno>`
-The current offset of the file descriptor, relative to the start of the file.
-
-###### Variant Layout
-- size: 16
-- align: 8
-- tag_size: 4
-###### Variant cases
-- <a href="#fd_tell.error.ok" name="fd_tell.error.ok"></a> `ok`: [`filesize`](#filesize)
-
-- <a href="#fd_tell.error.err" name="fd_tell.error.err"></a> `err`: [`errno`](#errno)
+- <a href="#thread_sleep.error.err" name="thread_sleep.error.err"></a> `err`: [`errno`](#errno)
 
 
 ---
 
-#### <a href="#fd_write" name="fd_write"></a> `fd_write(fd: fd, iovs: ciovec_array) -> Result<size, errno>`
-Write to a file descriptor.
-Note: This is similar to `writev` in POSIX.
+#### <a href="#thread_id" name="thread_id"></a> `thread_id() -> Result<tid, errno>`
+Returns the index of the current thread
+(threads indices are sequential from zero while the
+ main thread ID equals the process ID)
 
 ##### Params
-- <a href="#fd_write.fd" name="fd_write.fd"></a> `fd`: [`fd`](#fd)
-
-- <a href="#fd_write.iovs" name="fd_write.iovs"></a> `iovs`: [`ciovec_array`](#ciovec_array)
-List of scatter/gather vectors from which to retrieve data.
-
 ##### Results
-- <a href="#fd_write.error" name="fd_write.error"></a> `error`: `Result<size, errno>`
+- <a href="#thread_id.error" name="thread_id.error"></a> `error`: `Result<tid, errno>`
 
 ###### Variant Layout
 - size: 8
 - align: 4
 - tag_size: 4
 ###### Variant cases
-- <a href="#fd_write.error.ok" name="fd_write.error.ok"></a> `ok`: [`size`](#size)
+- <a href="#thread_id.error.ok" name="thread_id.error.ok"></a> `ok`: [`tid`](#tid)
 
-- <a href="#fd_write.error.err" name="fd_write.error.err"></a> `err`: [`errno`](#errno)
+- <a href="#thread_id.error.err" name="thread_id.error.err"></a> `err`: [`errno`](#errno)
 
 
 ---
 
-#### <a href="#path_create_directory" name="path_create_directory"></a> `path_create_directory(fd: fd, path: string) -> Result<(), errno>`
-Create a directory.
-Note: This is similar to `mkdirat` in POSIX.
+#### <a href="#thread_join" name="thread_join"></a> `thread_join(tid: tid) -> Result<(), errno>`
+Joins this thread with another thread, blocking this
+one until the other finishes
 
 ##### Params
-- <a href="#path_create_directory.fd" name="path_create_directory.fd"></a> `fd`: [`fd`](#fd)
-
-- <a href="#path_create_directory.path" name="path_create_directory.path"></a> `path`: `string`
-The path at which to create the directory.
+- <a href="#thread_join.tid" name="thread_join.tid"></a> `tid`: [`tid`](#tid)
+Handle of the thread to wait on
 
 ##### Results
-- <a href="#path_create_directory.error" name="path_create_directory.error"></a> `error`: `Result<(), errno>`
+- <a href="#thread_join.error" name="thread_join.error"></a> `error`: `Result<(), errno>`
 
 ###### Variant Layout
 - size: 8
 - align: 4
 - tag_size: 4
 ###### Variant cases
-- <a href="#path_create_directory.error.ok" name="path_create_directory.error.ok"></a> `ok`
+- <a href="#thread_join.error.ok" name="thread_join.error.ok"></a> `ok`
 
-- <a href="#path_create_directory.error.err" name="path_create_directory.error.err"></a> `err`: [`errno`](#errno)
-
-
----
-
-#### <a href="#path_filestat_get" name="path_filestat_get"></a> `path_filestat_get(fd: fd, flags: lookupflags, path: string) -> Result<filestat, errno>`
-Return the attributes of a file or directory.
-Note: This is similar to `stat` in POSIX.
-
-##### Params
-- <a href="#path_filestat_get.fd" name="path_filestat_get.fd"></a> `fd`: [`fd`](#fd)
-
-- <a href="#path_filestat_get.flags" name="path_filestat_get.flags"></a> `flags`: [`lookupflags`](#lookupflags)
-Flags determining the method of how the path is resolved.
-
-- <a href="#path_filestat_get.path" name="path_filestat_get.path"></a> `path`: `string`
-The path of the file or directory to inspect.
-
-##### Results
-- <a href="#path_filestat_get.error" name="path_filestat_get.error"></a> `error`: `Result<filestat, errno>`
-The buffer where the file's attributes are stored.
-
-###### Variant Layout
-- size: 72
-- align: 8
-- tag_size: 4
-###### Variant cases
-- <a href="#path_filestat_get.error.ok" name="path_filestat_get.error.ok"></a> `ok`: [`filestat`](#filestat)
-
-- <a href="#path_filestat_get.error.err" name="path_filestat_get.error.err"></a> `err`: [`errno`](#errno)
+- <a href="#thread_join.error.err" name="thread_join.error.err"></a> `err`: [`errno`](#errno)
 
 
 ---
 
-#### <a href="#path_filestat_set_times" name="path_filestat_set_times"></a> `path_filestat_set_times(fd: fd, flags: lookupflags, path: string, atim: timestamp, mtim: timestamp, fst_flags: fstflags) -> Result<(), errno>`
-Adjust the timestamps of a file or directory.
-Note: This is similar to `utimensat` in POSIX.
+#### <a href="#thread_parallelism" name="thread_parallelism"></a> `thread_parallelism() -> Result<size, errno>`
+Returns the available parallelism which is normally the
+number of available cores that can run concurrently
 
 ##### Params
-- <a href="#path_filestat_set_times.fd" name="path_filestat_set_times.fd"></a> `fd`: [`fd`](#fd)
-
-- <a href="#path_filestat_set_times.flags" name="path_filestat_set_times.flags"></a> `flags`: [`lookupflags`](#lookupflags)
-Flags determining the method of how the path is resolved.
-
-- <a href="#path_filestat_set_times.path" name="path_filestat_set_times.path"></a> `path`: `string`
-The path of the file or directory to operate on.
-
-- <a href="#path_filestat_set_times.atim" name="path_filestat_set_times.atim"></a> `atim`: [`timestamp`](#timestamp)
-The desired values of the data access timestamp.
-
-- <a href="#path_filestat_set_times.mtim" name="path_filestat_set_times.mtim"></a> `mtim`: [`timestamp`](#timestamp)
-The desired values of the data modification timestamp.
-
-- <a href="#path_filestat_set_times.fst_flags" name="path_filestat_set_times.fst_flags"></a> `fst_flags`: [`fstflags`](#fstflags)
-A bitmask indicating which timestamps to adjust.
-
 ##### Results
-- <a href="#path_filestat_set_times.error" name="path_filestat_set_times.error"></a> `error`: `Result<(), errno>`
+- <a href="#thread_parallelism.error" name="thread_parallelism.error"></a> `error`: `Result<size, errno>`
 
 ###### Variant Layout
 - size: 8
 - align: 4
 - tag_size: 4
 ###### Variant cases
-- <a href="#path_filestat_set_times.error.ok" name="path_filestat_set_times.error.ok"></a> `ok`
+- <a href="#thread_parallelism.error.ok" name="thread_parallelism.error.ok"></a> `ok`: [`size`](#size)
 
-- <a href="#path_filestat_set_times.error.err" name="path_filestat_set_times.error.err"></a> `err`: [`errno`](#errno)
+- <a href="#thread_parallelism.error.err" name="thread_parallelism.error.err"></a> `err`: [`errno`](#errno)
 
 
 ---
 
-#### <a href="#path_link" name="path_link"></a> `path_link(old_fd: fd, old_flags: lookupflags, old_path: string, new_fd: fd, new_path: string) -> Result<(), errno>`
-Create a hard link.
-Note: This is similar to `linkat` in POSIX.
+#### <a href="#thread_signal" name="thread_signal"></a> `thread_signal(tid: tid, signal: signal) -> Result<(), errno>`
+Sends a signal to a specific thread
 
 ##### Params
-- <a href="#path_link.old_fd" name="path_link.old_fd"></a> `old_fd`: [`fd`](#fd)
+- <a href="#thread_signal.tid" name="thread_signal.tid"></a> `tid`: [`tid`](#tid)
+Handle of the thread to send a signal
 
-- <a href="#path_link.old_flags" name="path_link.old_flags"></a> `old_flags`: [`lookupflags`](#lookupflags)
-Flags determining the method of how the path is resolved.
-
-- <a href="#path_link.old_path" name="path_link.old_path"></a> `old_path`: `string`
-The source path from which to link.
-
-- <a href="#path_link.new_fd" name="path_link.new_fd"></a> `new_fd`: [`fd`](#fd)
-The working directory at which the resolution of the new path starts.
-
-- <a href="#path_link.new_path" name="path_link.new_path"></a> `new_path`: `string`
-The destination path at which to create the hard link.
+- <a href="#thread_signal.signal" name="thread_signal.signal"></a> `signal`: [`signal`](#signal)
+Signal to send to the thread
 
 ##### Results
-- <a href="#path_link.error" name="path_link.error"></a> `error`: `Result<(), errno>`
+- <a href="#thread_signal.error" name="thread_signal.error"></a> `error`: `Result<(), errno>`
 
 ###### Variant Layout
 - size: 8
 - align: 4
 - tag_size: 4
 ###### Variant cases
-- <a href="#path_link.error.ok" name="path_link.error.ok"></a> `ok`
+- <a href="#thread_signal.error.ok" name="thread_signal.error.ok"></a> `ok`
 
-- <a href="#path_link.error.err" name="path_link.error.err"></a> `err`: [`errno`](#errno)
+- <a href="#thread_signal.error.err" name="thread_signal.error.err"></a> `err`: [`errno`](#errno)
 
 
 ---
 
-#### <a href="#path_open" name="path_open"></a> `path_open(fd: fd, dirflags: lookupflags, path: string, oflags: oflags, fs_rights_base: rights, fs_rights_inheriting: rights, fdflags: fdflags) -> Result<fd, errno>`
-Open a file or directory.
-The returned file descriptor is not guaranteed to be the lowest-numbered
-file descriptor not currently open; it is randomized to prevent
-applications from depending on making assumptions about indexes, since this
-is error-prone in multi-threaded contexts. The returned file descriptor is
-guaranteed to be less than 2**31.
-Note: This is similar to `openat` in POSIX.
+#### <a href="#futex_wait" name="futex_wait"></a> `futex_wait(futex: Pointer<u32>, expected: u32, timeout: ConstPointer<option_timestamp>) -> Result<bool, errno>`
+Wait for a futex_wake operation to wake us.
+
+Returns with EINVAL if the futex doesn't hold the expected value.
+Returns false on timeout, and true in all other cases.
 
 ##### Params
-- <a href="#path_open.fd" name="path_open.fd"></a> `fd`: [`fd`](#fd)
+- <a href="#futex_wait.futex" name="futex_wait.futex"></a> `futex`: `Pointer<u32>`
+Memory location that holds the value that will be checked
 
-- <a href="#path_open.dirflags" name="path_open.dirflags"></a> `dirflags`: [`lookupflags`](#lookupflags)
-Flags determining the method of how the path is resolved.
+- <a href="#futex_wait.expected" name="futex_wait.expected"></a> `expected`: `u32`
+Expected value that should be currently held at the memory location
 
-- <a href="#path_open.path" name="path_open.path"></a> `path`: `string`
-The relative path of the file or directory to open, relative to the
-[`path_open::fd`](#path_open.fd) directory.
-
-- <a href="#path_open.oflags" name="path_open.oflags"></a> `oflags`: [`oflags`](#oflags)
-The method by which to open the file.
-
-- <a href="#path_open.fs_rights_base" name="path_open.fs_rights_base"></a> `fs_rights_base`: [`rights`](#rights)
-The initial rights of the newly created file descriptor. The
-implementation is allowed to return a file descriptor with fewer rights
-than specified, if and only if those rights do not apply to the type of
-file being opened.
-The *base* rights are rights that will apply to operations using the file
-descriptor itself, while the *inheriting* rights are rights that apply to
-file descriptors derived from it.
-
-- <a href="#path_open.fs_rights_inheriting" name="path_open.fs_rights_inheriting"></a> `fs_rights_inheriting`: [`rights`](#rights)
-
-- <a href="#path_open.fdflags" name="path_open.fdflags"></a> `fdflags`: [`fdflags`](#fdflags)
+- <a href="#futex_wait.timeout" name="futex_wait.timeout"></a> `timeout`: `ConstPointer<option_timestamp>`
+Timeout should the futex not be triggered in the allocated time
 
 ##### Results
-- <a href="#path_open.error" name="path_open.error"></a> `error`: `Result<fd, errno>`
-The file descriptor of the file that has been opened.
+- <a href="#futex_wait.error" name="futex_wait.error"></a> `error`: `Result<bool, errno>`
 
 ###### Variant Layout
 - size: 8
 - align: 4
 - tag_size: 4
 ###### Variant cases
-- <a href="#path_open.error.ok" name="path_open.error.ok"></a> `ok`: [`fd`](#fd)
+- <a href="#futex_wait.error.ok" name="futex_wait.error.ok"></a> `ok`: [`bool`](#bool)
 
-- <a href="#path_open.error.err" name="path_open.error.err"></a> `err`: [`errno`](#errno)
+- <a href="#futex_wait.error.err" name="futex_wait.error.err"></a> `err`: [`errno`](#errno)
 
 
 ---
 
-#### <a href="#path_readlink" name="path_readlink"></a> `path_readlink(fd: fd, path: string, buf: Pointer<u8>, buf_len: size) -> Result<size, errno>`
-Read the contents of a symbolic link.
-Note: This is similar to `readlinkat` in POSIX.
+#### <a href="#futex_wake" name="futex_wake"></a> `futex_wake(futex: Pointer<u32>) -> Result<bool, errno>`
+Wake up one thread that's blocked on futex_wait on this futex.
+
+Returns true if this actually woke up such a thread,
+or false if no thread was waiting on this futex.
 
 ##### Params
-- <a href="#path_readlink.fd" name="path_readlink.fd"></a> `fd`: [`fd`](#fd)
-
-- <a href="#path_readlink.path" name="path_readlink.path"></a> `path`: `string`
-The path of the symbolic link from which to read.
-
-- <a href="#path_readlink.buf" name="path_readlink.buf"></a> `buf`: `Pointer<u8>`
-The buffer to which to write the contents of the symbolic link.
-
-- <a href="#path_readlink.buf_len" name="path_readlink.buf_len"></a> `buf_len`: [`size`](#size)
+- <a href="#futex_wake.futex" name="futex_wake.futex"></a> `futex`: `Pointer<u32>`
+Memory location that holds a futex that others may be waiting on
 
 ##### Results
-- <a href="#path_readlink.error" name="path_readlink.error"></a> `error`: `Result<size, errno>`
-The number of bytes placed in the buffer.
+- <a href="#futex_wake.error" name="futex_wake.error"></a> `error`: `Result<bool, errno>`
 
 ###### Variant Layout
 - size: 8
 - align: 4
 - tag_size: 4
 ###### Variant cases
-- <a href="#path_readlink.error.ok" name="path_readlink.error.ok"></a> `ok`: [`size`](#size)
+- <a href="#futex_wake.error.ok" name="futex_wake.error.ok"></a> `ok`: [`bool`](#bool)
 
-- <a href="#path_readlink.error.err" name="path_readlink.error.err"></a> `err`: [`errno`](#errno)
+- <a href="#futex_wake.error.err" name="futex_wake.error.err"></a> `err`: [`errno`](#errno)
 
 
 ---
 
-#### <a href="#path_remove_directory" name="path_remove_directory"></a> `path_remove_directory(fd: fd, path: string) -> Result<(), errno>`
-Remove a directory.
-Return [`errno::notempty`](#errno.notempty) if the directory is not empty.
-Note: This is similar to `unlinkat(fd, path, AT_REMOVEDIR)` in POSIX.
+#### <a href="#futex_wake_all" name="futex_wake_all"></a> `futex_wake_all(futex: Pointer<u32>) -> Result<bool, errno>`
+Wake up all threads that are waiting on futex_wait on this futex.
 
 ##### Params
-- <a href="#path_remove_directory.fd" name="path_remove_directory.fd"></a> `fd`: [`fd`](#fd)
-
-- <a href="#path_remove_directory.path" name="path_remove_directory.path"></a> `path`: `string`
-The path to a directory to remove.
+- <a href="#futex_wake_all.futex" name="futex_wake_all.futex"></a> `futex`: `Pointer<u32>`
+Memory location that holds a futex that others may be waiting on
 
 ##### Results
-- <a href="#path_remove_directory.error" name="path_remove_directory.error"></a> `error`: `Result<(), errno>`
+- <a href="#futex_wake_all.error" name="futex_wake_all.error"></a> `error`: `Result<bool, errno>`
 
 ###### Variant Layout
 - size: 8
 - align: 4
 - tag_size: 4
 ###### Variant cases
-- <a href="#path_remove_directory.error.ok" name="path_remove_directory.error.ok"></a> `ok`
+- <a href="#futex_wake_all.error.ok" name="futex_wake_all.error.ok"></a> `ok`: [`bool`](#bool)
 
-- <a href="#path_remove_directory.error.err" name="path_remove_directory.error.err"></a> `err`: [`errno`](#errno)
-
-
----
-
-#### <a href="#path_rename" name="path_rename"></a> `path_rename(fd: fd, old_path: string, new_fd: fd, new_path: string) -> Result<(), errno>`
-Rename a file or directory.
-Note: This is similar to `renameat` in POSIX.
-
-##### Params
-- <a href="#path_rename.fd" name="path_rename.fd"></a> `fd`: [`fd`](#fd)
-
-- <a href="#path_rename.old_path" name="path_rename.old_path"></a> `old_path`: `string`
-The source path of the file or directory to rename.
-
-- <a href="#path_rename.new_fd" name="path_rename.new_fd"></a> `new_fd`: [`fd`](#fd)
-The working directory at which the resolution of the new path starts.
-
-- <a href="#path_rename.new_path" name="path_rename.new_path"></a> `new_path`: `string`
-The destination path to which to rename the file or directory.
-
-##### Results
-- <a href="#path_rename.error" name="path_rename.error"></a> `error`: `Result<(), errno>`
-
-###### Variant Layout
-- size: 8
-- align: 4
-- tag_size: 4
-###### Variant cases
-- <a href="#path_rename.error.ok" name="path_rename.error.ok"></a> `ok`
-
-- <a href="#path_rename.error.err" name="path_rename.error.err"></a> `err`: [`errno`](#errno)
+- <a href="#futex_wake_all.error.err" name="futex_wake_all.error.err"></a> `err`: [`errno`](#errno)
 
 
 ---
 
-#### <a href="#path_symlink" name="path_symlink"></a> `path_symlink(old_path: string, fd: fd, new_path: string) -> Result<(), errno>`
-Create a symbolic link.
-Note: This is similar to `symlinkat` in POSIX.
+#### <a href="#thread_exit" name="thread_exit"></a> `thread_exit(rval: exitcode)`
+Terminates the current running thread, if this is the last thread then
+the process will also exit with the specified exit code. An exit code
+of 0 indicates successful termination of the thread. The meanings of
+other values is dependent on the environment.
 
 ##### Params
-- <a href="#path_symlink.old_path" name="path_symlink.old_path"></a> `old_path`: `string`
-The contents of the symbolic link.
-
-- <a href="#path_symlink.fd" name="path_symlink.fd"></a> `fd`: [`fd`](#fd)
-
-- <a href="#path_symlink.new_path" name="path_symlink.new_path"></a> `new_path`: `string`
-The destination path at which to create the symbolic link.
-
-##### Results
-- <a href="#path_symlink.error" name="path_symlink.error"></a> `error`: `Result<(), errno>`
-
-###### Variant Layout
-- size: 8
-- align: 4
-- tag_size: 4
-###### Variant cases
-- <a href="#path_symlink.error.ok" name="path_symlink.error.ok"></a> `ok`
-
-- <a href="#path_symlink.error.err" name="path_symlink.error.err"></a> `err`: [`errno`](#errno)
-
-
----
-
-#### <a href="#path_unlink_file" name="path_unlink_file"></a> `path_unlink_file(fd: fd, path: string) -> Result<(), errno>`
-Unlink a file.
-Return [`errno::isdir`](#errno.isdir) if the path refers to a directory.
-Note: This is similar to `unlinkat(fd, path, 0)` in POSIX.
-
-##### Params
-- <a href="#path_unlink_file.fd" name="path_unlink_file.fd"></a> `fd`: [`fd`](#fd)
-
-- <a href="#path_unlink_file.path" name="path_unlink_file.path"></a> `path`: `string`
-The path to a file to unlink.
-
-##### Results
-- <a href="#path_unlink_file.error" name="path_unlink_file.error"></a> `error`: `Result<(), errno>`
-
-###### Variant Layout
-- size: 8
-- align: 4
-- tag_size: 4
-###### Variant cases
-- <a href="#path_unlink_file.error.ok" name="path_unlink_file.error.ok"></a> `ok`
-
-- <a href="#path_unlink_file.error.err" name="path_unlink_file.error.err"></a> `err`: [`errno`](#errno)
-
-
----
-
-#### <a href="#poll_oneoff" name="poll_oneoff"></a> `poll_oneoff(in: ConstPointer<subscription>, out: Pointer<event>, nsubscriptions: size) -> Result<size, errno>`
-Concurrently poll for the occurrence of a set of events.
-
-##### Params
-- <a href="#poll_oneoff.in" name="poll_oneoff.in"></a> `in`: `ConstPointer<subscription>`
-The events to which to subscribe.
-
-- <a href="#poll_oneoff.out" name="poll_oneoff.out"></a> `out`: `Pointer<event>`
-The events that have occurred.
-
-- <a href="#poll_oneoff.nsubscriptions" name="poll_oneoff.nsubscriptions"></a> `nsubscriptions`: [`size`](#size)
-Both the number of subscriptions and events.
-
-##### Results
-- <a href="#poll_oneoff.error" name="poll_oneoff.error"></a> `error`: `Result<size, errno>`
-The number of events stored.
-
-###### Variant Layout
-- size: 8
-- align: 4
-- tag_size: 4
-###### Variant cases
-- <a href="#poll_oneoff.error.ok" name="poll_oneoff.error.ok"></a> `ok`: [`size`](#size)
-
-- <a href="#poll_oneoff.error.err" name="poll_oneoff.error.err"></a> `err`: [`errno`](#errno)
-
-
----
-
-#### <a href="#proc_exit" name="proc_exit"></a> `proc_exit(rval: exitcode)`
-Terminate the process normally. An exit code of 0 indicates successful
-termination of the program. The meanings of other values is dependent on
-the environment.
-
-##### Params
-- <a href="#proc_exit.rval" name="proc_exit.rval"></a> `rval`: [`exitcode`](#exitcode)
+- <a href="#thread_exit.rval" name="thread_exit.rval"></a> `rval`: [`exitcode`](#exitcode)
 The exit code returned by the process.
 
 ##### Results
 
 ---
 
-#### <a href="#proc_raise" name="proc_raise"></a> `proc_raise(sig: signal) -> Result<(), errno>`
-Send a signal to the process of the calling thread.
-Note: This is similar to `raise` in POSIX.
+#### <a href="#stack_checkpoint" name="stack_checkpoint"></a> `stack_checkpoint(snapshot: Pointer<stack_snapshot>) -> Result<longsize, errno>`
+Creates a checkpoint of the current stack which allows it to be restored
+later using its stack hash. The value supplied will be returned upon
+restoration (and hence must be none zero) - zero will be returned when
+the stack is first recorded.
+
+This is used by `longjmp` and `setjmp`
+
+This function will read the __stack_pointer global
 
 ##### Params
-- <a href="#proc_raise.sig" name="proc_raise.sig"></a> `sig`: [`signal`](#signal)
+- <a href="#stack_checkpoint.snapshot" name="stack_checkpoint.snapshot"></a> `snapshot`: `Pointer<stack_snapshot>`
+Reference to the stack snapshot that will be filled
+
+##### Results
+- <a href="#stack_checkpoint.error" name="stack_checkpoint.error"></a> `error`: `Result<longsize, errno>`
+Returns zero upon registration and the value when restored
+
+###### Variant Layout
+- size: 16
+- align: 8
+- tag_size: 4
+###### Variant cases
+- <a href="#stack_checkpoint.error.ok" name="stack_checkpoint.error.ok"></a> `ok`: [`longsize`](#longsize)
+
+- <a href="#stack_checkpoint.error.err" name="stack_checkpoint.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#stack_restore" name="stack_restore"></a> `stack_restore(snapshot: ConstPointer<stack_snapshot>, val: longsize)`
+Restores the current stack to a previous stack described by supplying
+stack snapshot.
+
+This function will manipulate the __stack_pointer global
+
+##### Params
+- <a href="#stack_restore.snapshot" name="stack_restore.snapshot"></a> `snapshot`: `ConstPointer<stack_snapshot>`
+Reference to the stack snapshot that will be restored
+
+- <a href="#stack_restore.val" name="stack_restore.val"></a> `val`: [`longsize`](#longsize)
+Value to be returned when the stack is restored
+(if zero this will change to one)
+
+##### Results
+
+---
+
+#### <a href="#proc_raise_interval" name="proc_raise_interval"></a> `proc_raise_interval(sig: signal, interval: timestamp, repeat: bool) -> Result<(), errno>`
+Send a signal to the process of the calling thread on a regular basis
+Note: This is similar to `setitimer` in POSIX.
+
+##### Params
+- <a href="#proc_raise_interval.sig" name="proc_raise_interval.sig"></a> `sig`: [`signal`](#signal)
 The signal condition to trigger.
 
+- <a href="#proc_raise_interval.interval" name="proc_raise_interval.interval"></a> `interval`: [`timestamp`](#timestamp)
+Time to wait before raising the signal
+(zero here indicates the signal interval is cancelled)
+
+- <a href="#proc_raise_interval.repeat" name="proc_raise_interval.repeat"></a> `repeat`: [`bool`](#bool)
+Flag that indicates if the signal will trigger indefinately
+
 ##### Results
-- <a href="#proc_raise.error" name="proc_raise.error"></a> `error`: `Result<(), errno>`
+- <a href="#proc_raise_interval.error" name="proc_raise_interval.error"></a> `error`: `Result<(), errno>`
 
 ###### Variant Layout
 - size: 8
 - align: 4
 - tag_size: 4
 ###### Variant cases
-- <a href="#proc_raise.error.ok" name="proc_raise.error.ok"></a> `ok`
+- <a href="#proc_raise_interval.error.ok" name="proc_raise_interval.error.ok"></a> `ok`
 
-- <a href="#proc_raise.error.err" name="proc_raise.error.err"></a> `err`: [`errno`](#errno)
+- <a href="#proc_raise_interval.error.err" name="proc_raise_interval.error.err"></a> `err`: [`errno`](#errno)
 
 
 ---
 
-#### <a href="#sched_yield" name="sched_yield"></a> `sched_yield() -> Result<(), errno>`
-Temporarily yield execution of the calling thread.
-Note: This is similar to [`sched_yield`](#sched_yield) in POSIX.
+#### <a href="#proc_fork" name="proc_fork"></a> `proc_fork(copy_memory: bool) -> Result<pid, errno>`
+Forks the current process into a new subprocess. If the function
+returns a zero then its the new subprocess. If it returns a positive
+number then its the current process and the $pid represents the child.
 
 ##### Params
+- <a href="#proc_fork.copy_memory" name="proc_fork.copy_memory"></a> `copy_memory`: [`bool`](#bool)
+Indicates if the memory will be copied into the new process
+(if it is not copied this then becomes similar to `vfork` in
+ that the current process pauses until [`proc_exec`](#proc_exec) is called)
+
 ##### Results
-- <a href="#sched_yield.error" name="sched_yield.error"></a> `error`: `Result<(), errno>`
+- <a href="#proc_fork.error" name="proc_fork.error"></a> `error`: `Result<pid, errno>`
 
 ###### Variant Layout
 - size: 8
 - align: 4
 - tag_size: 4
 ###### Variant cases
-- <a href="#sched_yield.error.ok" name="sched_yield.error.ok"></a> `ok`
+- <a href="#proc_fork.error.ok" name="proc_fork.error.ok"></a> `ok`: [`pid`](#pid)
 
-- <a href="#sched_yield.error.err" name="sched_yield.error.err"></a> `err`: [`errno`](#errno)
+- <a href="#proc_fork.error.err" name="proc_fork.error.err"></a> `err`: [`errno`](#errno)
 
 
 ---
 
-#### <a href="#random_get" name="random_get"></a> `random_get(buf: Pointer<u8>, buf_len: size) -> Result<(), errno>`
-Write high-quality random data into a buffer.
-This function blocks when the implementation is unable to immediately
-provide sufficient high-quality random data.
-This function may execute slowly, so when large mounts of random data are
-required, it's advisable to use this function to seed a pseudo-random
-number generator, rather than to provide the random data directly.
+#### <a href="#proc_exec" name="proc_exec"></a> `proc_exec(name: string, args: string)`
+execv()  executes  the  program  referred to by pathname.  This causes the
+program that is currently being run by the calling process to  be  replaced
+with  a  new  program, with newly initialized stack, heap, and (initialized
+and uninitialized) data segments
+
+If the named process does not exist then the process will fail and terminate
 
 ##### Params
-- <a href="#random_get.buf" name="random_get.buf"></a> `buf`: `Pointer<u8>`
-The buffer to fill with random data.
+- <a href="#proc_exec.name" name="proc_exec.name"></a> `name`: `string`
+Name of the process to be spawned
 
-- <a href="#random_get.buf_len" name="random_get.buf_len"></a> `buf_len`: [`size`](#size)
+- <a href="#proc_exec.args" name="proc_exec.args"></a> `args`: `string`
+List of the arguments to pass the process
+(entries are separated by line feeds)
 
 ##### Results
-- <a href="#random_get.error" name="random_get.error"></a> `error`: `Result<(), errno>`
+
+---
+
+#### <a href="#proc_exec2" name="proc_exec2"></a> `proc_exec2(name: string, args: string, envs: string)`
+execve()  executes  the  program  referred to by pathname.  This causes the
+program that is currently being run by the calling process to  be  replaced
+with  a  new  program, with newly initialized stack, heap, and (initialized
+and uninitialized) data segments
+
+If the named process does not exist then the process will fail and terminate
+
+##### Params
+- <a href="#proc_exec2.name" name="proc_exec2.name"></a> `name`: `string`
+Name of the process to be spawned
+
+- <a href="#proc_exec2.args" name="proc_exec2.args"></a> `args`: `string`
+List of the arguments to pass the process
+(entries are separated by line feeds)
+
+- <a href="#proc_exec2.envs" name="proc_exec2.envs"></a> `envs`: `string`
+List of the env vars to pass the process
+(entries are separated by line feeds)
+
+##### Results
+
+---
+
+#### <a href="#proc_spawn" name="proc_spawn"></a> `proc_spawn(name: string, chroot: bool, args: string, preopen: string, stdin: stdio_mode, stdout: stdio_mode, stderr: stdio_mode, working_dir: string) -> Result<process_handles, errno>`
+Spawns a new process within the context of the parent process
+(i.e. this process). It inherits the filesystem and sandbox
+permissions but runs standalone.
+
+##### Params
+- <a href="#proc_spawn.name" name="proc_spawn.name"></a> `name`: `string`
+Name of the process to be spawned
+
+- <a href="#proc_spawn.chroot" name="proc_spawn.chroot"></a> `chroot`: [`bool`](#bool)
+Indicates if the process will chroot or not
+
+- <a href="#proc_spawn.args" name="proc_spawn.args"></a> `args`: `string`
+List of the arguments to pass the process
+(entries are separated by line feeds)
+
+- <a href="#proc_spawn.preopen" name="proc_spawn.preopen"></a> `preopen`: `string`
+List of the preopens for this process
+(entries are separated by line feeds)
+
+- <a href="#proc_spawn.stdin" name="proc_spawn.stdin"></a> `stdin`: [`stdio_mode`](#stdio_mode)
+How will stdin be handled
+
+- <a href="#proc_spawn.stdout" name="proc_spawn.stdout"></a> `stdout`: [`stdio_mode`](#stdio_mode)
+How will stdout be handled
+
+- <a href="#proc_spawn.stderr" name="proc_spawn.stderr"></a> `stderr`: [`stdio_mode`](#stdio_mode)
+How will stderr be handled
+
+- <a href="#proc_spawn.working_dir" name="proc_spawn.working_dir"></a> `working_dir`: `string`
+Working directory where this process should run
+(passing '.' will use the current directory)
+
+##### Results
+- <a href="#proc_spawn.error" name="proc_spawn.error"></a> `error`: `Result<process_handles, errno>`
+Returns a bus process id that can be used to invoke calls
+
+###### Variant Layout
+- size: 32
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#proc_spawn.error.ok" name="proc_spawn.error.ok"></a> `ok`: [`process_handles`](#process_handles)
+
+- <a href="#proc_spawn.error.err" name="proc_spawn.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#proc_id" name="proc_id"></a> `proc_id() -> Result<pid, errno>`
+Returns the handle of the current process
+
+##### Params
+##### Results
+- <a href="#proc_id.error" name="proc_id.error"></a> `error`: `Result<pid, errno>`
 
 ###### Variant Layout
 - size: 8
 - align: 4
 - tag_size: 4
 ###### Variant cases
-- <a href="#random_get.error.ok" name="random_get.error.ok"></a> `ok`
+- <a href="#proc_id.error.ok" name="proc_id.error.ok"></a> `ok`: [`pid`](#pid)
 
-- <a href="#random_get.error.err" name="random_get.error.err"></a> `err`: [`errno`](#errno)
+- <a href="#proc_id.error.err" name="proc_id.error.err"></a> `err`: [`errno`](#errno)
 
 
 ---
 
-#### <a href="#sock_accept" name="sock_accept"></a> `sock_accept(fd: fd, flags: fdflags) -> Result<fd, errno>`
-Accept a new incoming connection.
-Note: This is similar to `accept` in POSIX.
+#### <a href="#proc_parent" name="proc_parent"></a> `proc_parent(pid: pid) -> Result<pid, errno>`
+Returns the parent handle of a particular process
 
 ##### Params
-- <a href="#sock_accept.fd" name="sock_accept.fd"></a> `fd`: [`fd`](#fd)
-The listening socket.
-
-- <a href="#sock_accept.flags" name="sock_accept.flags"></a> `flags`: [`fdflags`](#fdflags)
-The desired values of the file descriptor flags.
+- <a href="#proc_parent.pid" name="proc_parent.pid"></a> `pid`: [`pid`](#pid)
+Handle of the process to get the parent handle for
 
 ##### Results
-- <a href="#sock_accept.error" name="sock_accept.error"></a> `error`: `Result<fd, errno>`
-New socket connection
+- <a href="#proc_parent.error" name="proc_parent.error"></a> `error`: `Result<pid, errno>`
 
 ###### Variant Layout
 - size: 8
 - align: 4
 - tag_size: 4
 ###### Variant cases
-- <a href="#sock_accept.error.ok" name="sock_accept.error.ok"></a> `ok`: [`fd`](#fd)
+- <a href="#proc_parent.error.ok" name="proc_parent.error.ok"></a> `ok`: [`pid`](#pid)
 
-- <a href="#sock_accept.error.err" name="sock_accept.error.err"></a> `err`: [`errno`](#errno)
+- <a href="#proc_parent.error.err" name="proc_parent.error.err"></a> `err`: [`errno`](#errno)
 
 
 ---
 
-#### <a href="#sock_recv" name="sock_recv"></a> `sock_recv(fd: fd, ri_data: iovec_array, ri_flags: riflags) -> Result<(size, roflags), errno>`
-Receive a message from a socket.
-Note: This is similar to `recv` in POSIX, though it also supports reading
-the data into multiple buffers in the manner of `readv`.
+#### <a href="#proc_join" name="proc_join"></a> `proc_join(pid: Pointer<option_pid>, flags: join_flags) -> Result<join_status, errno>`
+Wait for process to exit
+
+Passing none to PID will mean that the call will wait
+for any subprocess to exit. PID will be populated with
+the process that exited.
 
 ##### Params
-- <a href="#sock_recv.fd" name="sock_recv.fd"></a> `fd`: [`fd`](#fd)
+- <a href="#proc_join.pid" name="proc_join.pid"></a> `pid`: `Pointer<option_pid>`
+ID of the process to wait on
 
-- <a href="#sock_recv.ri_data" name="sock_recv.ri_data"></a> `ri_data`: [`iovec_array`](#iovec_array)
-List of scatter/gather vectors to which to store data.
-
-- <a href="#sock_recv.ri_flags" name="sock_recv.ri_flags"></a> `ri_flags`: [`riflags`](#riflags)
-Message flags.
+- <a href="#proc_join.flags" name="proc_join.flags"></a> `flags`: [`join_flags`](#join_flags)
+Flags that determine how the join behaves
 
 ##### Results
-- <a href="#sock_recv.error" name="sock_recv.error"></a> `error`: `Result<(size, roflags), errno>`
-Number of bytes stored in ri_data and message flags.
+- <a href="#proc_join.error" name="proc_join.error"></a> `error`: `Result<join_status, errno>`
+Returns the status of the process
 
 ###### Variant Layout
 - size: 12
 - align: 4
 - tag_size: 4
 ###### Variant cases
-- <a href="#sock_recv.error.ok" name="sock_recv.error.ok"></a> `ok`: `(size, roflags)`
+- <a href="#proc_join.error.ok" name="proc_join.error.ok"></a> `ok`: [`join_status`](#join_status)
 
-####### Record members
-- <a href="#sock_recv.error.ok.0" name="sock_recv.error.ok.0"></a> `0`: [`size`](#size)
-
-Offset: 0
-
-- <a href="#sock_recv.error.ok.1" name="sock_recv.error.ok.1"></a> `1`: [`roflags`](#roflags)
-
-Offset: 4
-
-- <a href="#sock_recv.error.err" name="sock_recv.error.err"></a> `err`: [`errno`](#errno)
+- <a href="#proc_join.error.err" name="proc_join.error.err"></a> `err`: [`errno`](#errno)
 
 
 ---
 
-#### <a href="#sock_send" name="sock_send"></a> `sock_send(fd: fd, si_data: ciovec_array, si_flags: siflags) -> Result<size, errno>`
-Send a message on a socket.
-Note: This is similar to `send` in POSIX, though it also supports writing
-the data from multiple buffers in the manner of `writev`.
+#### <a href="#proc_signal" name="proc_signal"></a> `proc_signal(pid: pid, signal: signal) -> Result<(), errno>`
+Sends a signal to another process
 
 ##### Params
-- <a href="#sock_send.fd" name="sock_send.fd"></a> `fd`: [`fd`](#fd)
+- <a href="#proc_signal.pid" name="proc_signal.pid"></a> `pid`: [`pid`](#pid)
+ID of the process to send a singal
 
-- <a href="#sock_send.si_data" name="sock_send.si_data"></a> `si_data`: [`ciovec_array`](#ciovec_array)
-List of scatter/gather vectors to which to retrieve data
+- <a href="#proc_signal.signal" name="proc_signal.signal"></a> `signal`: [`signal`](#signal)
+Signal to send to the thread
 
-- <a href="#sock_send.si_flags" name="sock_send.si_flags"></a> `si_flags`: [`siflags`](#siflags)
+##### Results
+- <a href="#proc_signal.error" name="proc_signal.error"></a> `error`: `Result<(), errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#proc_signal.error.ok" name="proc_signal.error.ok"></a> `ok`
+
+- <a href="#proc_signal.error.err" name="proc_signal.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#proc_snapshot" name="proc_snapshot"></a> `proc_snapshot() -> Result<(), errno>`
+Explicitly requests for the runtime to create a
+snapshot of the guest module's state.
+
+##### Params
+##### Results
+- <a href="#proc_snapshot.error" name="proc_snapshot.error"></a> `error`: `Result<(), errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#proc_snapshot.error.ok" name="proc_snapshot.error.ok"></a> `ok`
+
+- <a href="#proc_snapshot.error.err" name="proc_snapshot.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#port_bridge" name="port_bridge"></a> `port_bridge(network: string, token: string, security: stream_security) -> Result<(), errno>`
+Securely connects to a particular remote network
+
+##### Params
+- <a href="#port_bridge.network" name="port_bridge.network"></a> `network`: `string`
+Fully qualified identifier for the network
+
+- <a href="#port_bridge.token" name="port_bridge.token"></a> `token`: `string`
+Access token used to authenticate with the network
+
+- <a href="#port_bridge.security" name="port_bridge.security"></a> `security`: [`stream_security`](#stream_security)
+Level of encryption to encapsulate the network connection with
+
+##### Results
+- <a href="#port_bridge.error" name="port_bridge.error"></a> `error`: `Result<(), errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#port_bridge.error.ok" name="port_bridge.error.ok"></a> `ok`
+
+- <a href="#port_bridge.error.err" name="port_bridge.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#port_unbridge" name="port_unbridge"></a> `port_unbridge() -> Result<(), errno>`
+Disconnects from a remote network
+
+##### Params
+##### Results
+- <a href="#port_unbridge.error" name="port_unbridge.error"></a> `error`: `Result<(), errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#port_unbridge.error.ok" name="port_unbridge.error.ok"></a> `ok`
+
+- <a href="#port_unbridge.error.err" name="port_unbridge.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#port_dhcp_acquire" name="port_dhcp_acquire"></a> `port_dhcp_acquire() -> Result<(), errno>`
+Acquires a set of addresses using DHCP
+
+##### Params
+##### Results
+- <a href="#port_dhcp_acquire.error" name="port_dhcp_acquire.error"></a> `error`: `Result<(), errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#port_dhcp_acquire.error.ok" name="port_dhcp_acquire.error.ok"></a> `ok`
+
+- <a href="#port_dhcp_acquire.error.err" name="port_dhcp_acquire.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#port_addr_add" name="port_addr_add"></a> `port_addr_add(addr: ConstPointer<addr_cidr>) -> Result<(), errno>`
+Adds another static address to the local port
+
+##### Params
+- <a href="#port_addr_add.addr" name="port_addr_add.addr"></a> `addr`: `ConstPointer<addr_cidr>`
+Address to be added
+
+##### Results
+- <a href="#port_addr_add.error" name="port_addr_add.error"></a> `error`: `Result<(), errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#port_addr_add.error.ok" name="port_addr_add.error.ok"></a> `ok`
+
+- <a href="#port_addr_add.error.err" name="port_addr_add.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#port_addr_remove" name="port_addr_remove"></a> `port_addr_remove(addr: ConstPointer<addr>) -> Result<(), errno>`
+Removes an address from the local port
+
+##### Params
+- <a href="#port_addr_remove.addr" name="port_addr_remove.addr"></a> `addr`: `ConstPointer<addr>`
+Address to be removed
+
+##### Results
+- <a href="#port_addr_remove.error" name="port_addr_remove.error"></a> `error`: `Result<(), errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#port_addr_remove.error.ok" name="port_addr_remove.error.ok"></a> `ok`
+
+- <a href="#port_addr_remove.error.err" name="port_addr_remove.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#port_addr_clear" name="port_addr_clear"></a> `port_addr_clear() -> Result<(), errno>`
+Clears all the addresses on the local port
+
+##### Params
+##### Results
+- <a href="#port_addr_clear.error" name="port_addr_clear.error"></a> `error`: `Result<(), errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#port_addr_clear.error.ok" name="port_addr_clear.error.ok"></a> `ok`
+
+- <a href="#port_addr_clear.error.err" name="port_addr_clear.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#port_mac" name="port_mac"></a> `port_mac() -> Result<hardware_address, errno>`
+Returns the MAC address of the local port
+
+##### Params
+##### Results
+- <a href="#port_mac.error" name="port_mac.error"></a> `error`: `Result<hardware_address, errno>`
+
+###### Variant Layout
+- size: 12
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#port_mac.error.ok" name="port_mac.error.ok"></a> `ok`: [`hardware_address`](#hardware_address)
+
+- <a href="#port_mac.error.err" name="port_mac.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#port_addr_list" name="port_addr_list"></a> `port_addr_list(addrs: Pointer<addr_cidr>, naddrs: Pointer<size>) -> Result<(), errno>`
+Returns a list of all the addresses owned by the local port
+
+This function fills the output buffer as much as possible.
+If the buffer is not big enough then the naddrs address will be
+filled with the buffer size needed and the EOVERFLOW will be returned
+
+##### Params
+- <a href="#port_addr_list.addrs" name="port_addr_list.addrs"></a> `addrs`: `Pointer<addr_cidr>`
+The buffer where addresses will be stored
+
+- <a href="#port_addr_list.naddrs" name="port_addr_list.naddrs"></a> `naddrs`: `Pointer<size>`
+
+##### Results
+- <a href="#port_addr_list.error" name="port_addr_list.error"></a> `error`: `Result<(), errno>`
+The number of addresses returned.
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#port_addr_list.error.ok" name="port_addr_list.error.ok"></a> `ok`
+
+- <a href="#port_addr_list.error.err" name="port_addr_list.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#port_gateway_set" name="port_gateway_set"></a> `port_gateway_set(addr: ConstPointer<addr>) -> Result<(), errno>`
+Adds a default gateway to the local port
+
+##### Params
+- <a href="#port_gateway_set.addr" name="port_gateway_set.addr"></a> `addr`: `ConstPointer<addr>`
+Address of the default gateway
+
+##### Results
+- <a href="#port_gateway_set.error" name="port_gateway_set.error"></a> `error`: `Result<(), errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#port_gateway_set.error.ok" name="port_gateway_set.error.ok"></a> `ok`
+
+- <a href="#port_gateway_set.error.err" name="port_gateway_set.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#port_route_add" name="port_route_add"></a> `port_route_add(cidr: ConstPointer<addr_cidr>, via_router: ConstPointer<addr>, preferred_until: ConstPointer<option_timestamp>, expires_at: ConstPointer<option_timestamp>) -> Result<(), errno>`
+Adds a new route to the local port
+
+##### Params
+- <a href="#port_route_add.cidr" name="port_route_add.cidr"></a> `cidr`: `ConstPointer<addr_cidr>`
+
+- <a href="#port_route_add.via_router" name="port_route_add.via_router"></a> `via_router`: `ConstPointer<addr>`
+
+- <a href="#port_route_add.preferred_until" name="port_route_add.preferred_until"></a> `preferred_until`: `ConstPointer<option_timestamp>`
+
+- <a href="#port_route_add.expires_at" name="port_route_add.expires_at"></a> `expires_at`: `ConstPointer<option_timestamp>`
+
+##### Results
+- <a href="#port_route_add.error" name="port_route_add.error"></a> `error`: `Result<(), errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#port_route_add.error.ok" name="port_route_add.error.ok"></a> `ok`
+
+- <a href="#port_route_add.error.err" name="port_route_add.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#port_route_remove" name="port_route_remove"></a> `port_route_remove(cidr: ConstPointer<addr>) -> Result<(), errno>`
+Removes an existing route from the local port
+
+##### Params
+- <a href="#port_route_remove.cidr" name="port_route_remove.cidr"></a> `cidr`: `ConstPointer<addr>`
+
+##### Results
+- <a href="#port_route_remove.error" name="port_route_remove.error"></a> `error`: `Result<(), errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#port_route_remove.error.ok" name="port_route_remove.error.ok"></a> `ok`
+
+- <a href="#port_route_remove.error.err" name="port_route_remove.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#port_route_clear" name="port_route_clear"></a> `port_route_clear() -> Result<(), errno>`
+Clears all the routes in the local port
+
+##### Params
+##### Results
+- <a href="#port_route_clear.error" name="port_route_clear.error"></a> `error`: `Result<(), errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#port_route_clear.error.ok" name="port_route_clear.error.ok"></a> `ok`
+
+- <a href="#port_route_clear.error.err" name="port_route_clear.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#port_route_list" name="port_route_list"></a> `port_route_list(routes: Pointer<route>, nroutes: Pointer<size>) -> Result<(), errno>`
+Returns a list of all the routes owned by the local port
+This function fills the output buffer as much as possible.
+If the buffer is too small this will return EOVERFLOW and
+fill nroutes with the size of the buffer needed.
+
+##### Params
+- <a href="#port_route_list.routes" name="port_route_list.routes"></a> `routes`: `Pointer<route>`
+The buffer where routes will be stored
+
+- <a href="#port_route_list.nroutes" name="port_route_list.nroutes"></a> `nroutes`: `Pointer<size>`
+
+##### Results
+- <a href="#port_route_list.error" name="port_route_list.error"></a> `error`: `Result<(), errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#port_route_list.error.ok" name="port_route_list.error.ok"></a> `ok`
+
+- <a href="#port_route_list.error.err" name="port_route_list.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#sock_status" name="sock_status"></a> `sock_status(fd: fd) -> Result<sock_status, errno>`
+Returns the current status of a socket
+
+##### Params
+- <a href="#sock_status.fd" name="sock_status.fd"></a> `fd`: [`fd`](#fd)
+
+##### Results
+- <a href="#sock_status.error" name="sock_status.error"></a> `error`: `Result<sock_status, errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#sock_status.error.ok" name="sock_status.error.ok"></a> `ok`: [`sock_status`](#sock_status)
+
+- <a href="#sock_status.error.err" name="sock_status.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#sock_addr_local" name="sock_addr_local"></a> `sock_addr_local(fd: fd) -> Result<addr_port, errno>`
+Returns the local address to which the socket is bound.
+
+Note: This is similar to `getsockname` in POSIX
+
+When successful, the contents of the output buffer consist of an IP address,
+either IP4 or IP6.
+
+##### Params
+- <a href="#sock_addr_local.fd" name="sock_addr_local.fd"></a> `fd`: [`fd`](#fd)
+Socket that the address is bound to
+
+##### Results
+- <a href="#sock_addr_local.error" name="sock_addr_local.error"></a> `error`: `Result<addr_port, errno>`
+
+###### Variant Layout
+- size: 116
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#sock_addr_local.error.ok" name="sock_addr_local.error.ok"></a> `ok`: [`addr_port`](#addr_port)
+
+- <a href="#sock_addr_local.error.err" name="sock_addr_local.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#sock_addr_peer" name="sock_addr_peer"></a> `sock_addr_peer(fd: fd) -> Result<addr_port, errno>`
+Returns the remote address to which the socket is connected to.
+
+Note: This is similar to `getpeername` in POSIX
+
+When successful, the contents of the output buffer consist of an IP address,
+either IP4 or IP6.
+
+##### Params
+- <a href="#sock_addr_peer.fd" name="sock_addr_peer.fd"></a> `fd`: [`fd`](#fd)
+Socket that the address is bound to
+
+##### Results
+- <a href="#sock_addr_peer.error" name="sock_addr_peer.error"></a> `error`: `Result<addr_port, errno>`
+
+###### Variant Layout
+- size: 116
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#sock_addr_peer.error.ok" name="sock_addr_peer.error.ok"></a> `ok`: [`addr_port`](#addr_port)
+
+- <a href="#sock_addr_peer.error.err" name="sock_addr_peer.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#sock_open" name="sock_open"></a> `sock_open(af: address_family, socktype: sock_type, sock_proto: sock_proto) -> Result<fd, errno>`
+Create an endpoint for communication.
+
+creates an endpoint for communication and returns a file descriptor
+tor that refers to that endpoint. The file descriptor returned by a successful
+call will be the lowest-numbered file descriptor not currently open
+for the process.
+
+Note: This is similar to `socket` in POSIX using PF_INET
+
+##### Params
+- <a href="#sock_open.af" name="sock_open.af"></a> `af`: [`address_family`](#address_family)
+Address family
+
+- <a href="#sock_open.socktype" name="sock_open.socktype"></a> `socktype`: [`sock_type`](#sock_type)
+Socket type, either datagram or stream
+
+- <a href="#sock_open.sock_proto" name="sock_open.sock_proto"></a> `sock_proto`: [`sock_proto`](#sock_proto)
+Socket protocol
+
+##### Results
+- <a href="#sock_open.error" name="sock_open.error"></a> `error`: `Result<fd, errno>`
+The file descriptor of the socket that has been opened.
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#sock_open.error.ok" name="sock_open.error.ok"></a> `ok`: [`fd`](#fd)
+
+- <a href="#sock_open.error.err" name="sock_open.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#sock_set_opt_flag" name="sock_set_opt_flag"></a> `sock_set_opt_flag(fd: fd, sockopt: sock_option, flag: bool) -> Result<(), errno>`
+Sets a particular socket setting
+Note: This is similar to `setsockopt` in POSIX for SO_REUSEADDR
+
+##### Params
+- <a href="#sock_set_opt_flag.fd" name="sock_set_opt_flag.fd"></a> `fd`: [`fd`](#fd)
+Socket descriptor
+
+- <a href="#sock_set_opt_flag.sockopt" name="sock_set_opt_flag.sockopt"></a> `sockopt`: [`sock_option`](#sock_option)
+Socket option to be set
+
+- <a href="#sock_set_opt_flag.flag" name="sock_set_opt_flag.flag"></a> `flag`: [`bool`](#bool)
+Value to set the option to
+
+##### Results
+- <a href="#sock_set_opt_flag.error" name="sock_set_opt_flag.error"></a> `error`: `Result<(), errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#sock_set_opt_flag.error.ok" name="sock_set_opt_flag.error.ok"></a> `ok`
+
+- <a href="#sock_set_opt_flag.error.err" name="sock_set_opt_flag.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#sock_get_opt_flag" name="sock_get_opt_flag"></a> `sock_get_opt_flag(fd: fd, sockopt: sock_option) -> Result<bool, errno>`
+Retrieve status of particular socket seting
+Note: This is similar to `getsockopt` in POSIX for SO_REUSEADDR
+
+##### Params
+- <a href="#sock_get_opt_flag.fd" name="sock_get_opt_flag.fd"></a> `fd`: [`fd`](#fd)
+Socket descriptor
+
+- <a href="#sock_get_opt_flag.sockopt" name="sock_get_opt_flag.sockopt"></a> `sockopt`: [`sock_option`](#sock_option)
+Socket option to be retrieved
+
+##### Results
+- <a href="#sock_get_opt_flag.error" name="sock_get_opt_flag.error"></a> `error`: `Result<bool, errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#sock_get_opt_flag.error.ok" name="sock_get_opt_flag.error.ok"></a> `ok`: [`bool`](#bool)
+
+- <a href="#sock_get_opt_flag.error.err" name="sock_get_opt_flag.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#sock_set_opt_time" name="sock_set_opt_time"></a> `sock_set_opt_time(fd: fd, sockopt: sock_option, timeout: ConstPointer<option_timestamp>) -> Result<(), errno>`
+Sets one of the times the socket
+
+##### Params
+- <a href="#sock_set_opt_time.fd" name="sock_set_opt_time.fd"></a> `fd`: [`fd`](#fd)
+Socket descriptor
+
+- <a href="#sock_set_opt_time.sockopt" name="sock_set_opt_time.sockopt"></a> `sockopt`: [`sock_option`](#sock_option)
+Socket option to be set
+
+- <a href="#sock_set_opt_time.timeout" name="sock_set_opt_time.timeout"></a> `timeout`: `ConstPointer<option_timestamp>`
+Value to set the time to
+
+##### Results
+- <a href="#sock_set_opt_time.error" name="sock_set_opt_time.error"></a> `error`: `Result<(), errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#sock_set_opt_time.error.ok" name="sock_set_opt_time.error.ok"></a> `ok`
+
+- <a href="#sock_set_opt_time.error.err" name="sock_set_opt_time.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#sock_get_opt_time" name="sock_get_opt_time"></a> `sock_get_opt_time(fd: fd, sockopt: sock_option) -> Result<option_timestamp, errno>`
+Retrieve one of the times on the socket
+
+##### Params
+- <a href="#sock_get_opt_time.fd" name="sock_get_opt_time.fd"></a> `fd`: [`fd`](#fd)
+Socket descriptor
+
+- <a href="#sock_get_opt_time.sockopt" name="sock_get_opt_time.sockopt"></a> `sockopt`: [`sock_option`](#sock_option)
+Socket option to be retrieved
+
+##### Results
+- <a href="#sock_get_opt_time.error" name="sock_get_opt_time.error"></a> `error`: `Result<option_timestamp, errno>`
+
+###### Variant Layout
+- size: 24
+- align: 8
+- tag_size: 4
+###### Variant cases
+- <a href="#sock_get_opt_time.error.ok" name="sock_get_opt_time.error.ok"></a> `ok`: [`option_timestamp`](#option_timestamp)
+
+- <a href="#sock_get_opt_time.error.err" name="sock_get_opt_time.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#sock_set_opt_size" name="sock_set_opt_size"></a> `sock_set_opt_size(fd: fd, sockopt: sock_option, size: filesize) -> Result<(), errno>`
+Set size of particular option for this socket
+Note: This is similar to `setsockopt` in POSIX for SO_RCVBUF
+
+##### Params
+- <a href="#sock_set_opt_size.fd" name="sock_set_opt_size.fd"></a> `fd`: [`fd`](#fd)
+Socket descriptor
+
+- <a href="#sock_set_opt_size.sockopt" name="sock_set_opt_size.sockopt"></a> `sockopt`: [`sock_option`](#sock_option)
+Socket option to be set
+
+- <a href="#sock_set_opt_size.size" name="sock_set_opt_size.size"></a> `size`: [`filesize`](#filesize)
+Buffer size
+
+##### Results
+- <a href="#sock_set_opt_size.error" name="sock_set_opt_size.error"></a> `error`: `Result<(), errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#sock_set_opt_size.error.ok" name="sock_set_opt_size.error.ok"></a> `ok`
+
+- <a href="#sock_set_opt_size.error.err" name="sock_set_opt_size.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#sock_get_opt_size" name="sock_get_opt_size"></a> `sock_get_opt_size(fd: fd, sockopt: sock_option) -> Result<filesize, errno>`
+Retrieve the size of particular option for this socket
+Note: This is similar to `getsockopt` in POSIX for SO_RCVBUF
+
+##### Params
+- <a href="#sock_get_opt_size.fd" name="sock_get_opt_size.fd"></a> `fd`: [`fd`](#fd)
+Socket descriptor
+
+- <a href="#sock_get_opt_size.sockopt" name="sock_get_opt_size.sockopt"></a> `sockopt`: [`sock_option`](#sock_option)
+Socket option to be retrieved
+
+##### Results
+- <a href="#sock_get_opt_size.error" name="sock_get_opt_size.error"></a> `error`: `Result<filesize, errno>`
+
+###### Variant Layout
+- size: 16
+- align: 8
+- tag_size: 4
+###### Variant cases
+- <a href="#sock_get_opt_size.error.ok" name="sock_get_opt_size.error.ok"></a> `ok`: [`filesize`](#filesize)
+
+- <a href="#sock_get_opt_size.error.err" name="sock_get_opt_size.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#sock_join_multicast_v4" name="sock_join_multicast_v4"></a> `sock_join_multicast_v4(fd: fd, multiaddr: ConstPointer<addr_ip4>, interface: ConstPointer<addr_ip4>) -> Result<(), errno>`
+Joins a particular multicast IPv4 group
+
+##### Params
+- <a href="#sock_join_multicast_v4.fd" name="sock_join_multicast_v4.fd"></a> `fd`: [`fd`](#fd)
+Socket descriptor
+
+- <a href="#sock_join_multicast_v4.multiaddr" name="sock_join_multicast_v4.multiaddr"></a> `multiaddr`: `ConstPointer<addr_ip4>`
+Multicast group to joined
+
+- <a href="#sock_join_multicast_v4.interface" name="sock_join_multicast_v4.interface"></a> `interface`: `ConstPointer<addr_ip4>`
+Interface that will join
+
+##### Results
+- <a href="#sock_join_multicast_v4.error" name="sock_join_multicast_v4.error"></a> `error`: `Result<(), errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#sock_join_multicast_v4.error.ok" name="sock_join_multicast_v4.error.ok"></a> `ok`
+
+- <a href="#sock_join_multicast_v4.error.err" name="sock_join_multicast_v4.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#sock_leave_multicast_v4" name="sock_leave_multicast_v4"></a> `sock_leave_multicast_v4(fd: fd, multiaddr: ConstPointer<addr_ip4>, interface: ConstPointer<addr_ip4>) -> Result<(), errno>`
+Leaves a particular multicast IPv4 group
+
+##### Params
+- <a href="#sock_leave_multicast_v4.fd" name="sock_leave_multicast_v4.fd"></a> `fd`: [`fd`](#fd)
+Socket descriptor
+
+- <a href="#sock_leave_multicast_v4.multiaddr" name="sock_leave_multicast_v4.multiaddr"></a> `multiaddr`: `ConstPointer<addr_ip4>`
+Multicast group to leave
+
+- <a href="#sock_leave_multicast_v4.interface" name="sock_leave_multicast_v4.interface"></a> `interface`: `ConstPointer<addr_ip4>`
+Interface that will left
+
+##### Results
+- <a href="#sock_leave_multicast_v4.error" name="sock_leave_multicast_v4.error"></a> `error`: `Result<(), errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#sock_leave_multicast_v4.error.ok" name="sock_leave_multicast_v4.error.ok"></a> `ok`
+
+- <a href="#sock_leave_multicast_v4.error.err" name="sock_leave_multicast_v4.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#sock_join_multicast_v6" name="sock_join_multicast_v6"></a> `sock_join_multicast_v6(fd: fd, multiaddr: ConstPointer<addr_ip6>, interface: u32) -> Result<(), errno>`
+Joins a particular multicast IPv6 group
+
+##### Params
+- <a href="#sock_join_multicast_v6.fd" name="sock_join_multicast_v6.fd"></a> `fd`: [`fd`](#fd)
+Socket descriptor
+
+- <a href="#sock_join_multicast_v6.multiaddr" name="sock_join_multicast_v6.multiaddr"></a> `multiaddr`: `ConstPointer<addr_ip6>`
+Multicast group to joined
+
+- <a href="#sock_join_multicast_v6.interface" name="sock_join_multicast_v6.interface"></a> `interface`: `u32`
+Interface that will join
+
+##### Results
+- <a href="#sock_join_multicast_v6.error" name="sock_join_multicast_v6.error"></a> `error`: `Result<(), errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#sock_join_multicast_v6.error.ok" name="sock_join_multicast_v6.error.ok"></a> `ok`
+
+- <a href="#sock_join_multicast_v6.error.err" name="sock_join_multicast_v6.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#sock_leave_multicast_v6" name="sock_leave_multicast_v6"></a> `sock_leave_multicast_v6(fd: fd, multiaddr: ConstPointer<addr_ip6>, interface: u32) -> Result<(), errno>`
+Leaves a particular multicast IPv6 group
+
+##### Params
+- <a href="#sock_leave_multicast_v6.fd" name="sock_leave_multicast_v6.fd"></a> `fd`: [`fd`](#fd)
+Socket descriptor
+
+- <a href="#sock_leave_multicast_v6.multiaddr" name="sock_leave_multicast_v6.multiaddr"></a> `multiaddr`: `ConstPointer<addr_ip6>`
+Multicast group to leave
+
+- <a href="#sock_leave_multicast_v6.interface" name="sock_leave_multicast_v6.interface"></a> `interface`: `u32`
+Interface that will left
+
+##### Results
+- <a href="#sock_leave_multicast_v6.error" name="sock_leave_multicast_v6.error"></a> `error`: `Result<(), errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#sock_leave_multicast_v6.error.ok" name="sock_leave_multicast_v6.error.ok"></a> `ok`
+
+- <a href="#sock_leave_multicast_v6.error.err" name="sock_leave_multicast_v6.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#sock_bind" name="sock_bind"></a> `sock_bind(fd: fd, addr: ConstPointer<addr_port>) -> Result<(), errno>`
+Bind a socket
+Note: This is similar to `bind` in POSIX using PF_INET
+
+##### Params
+- <a href="#sock_bind.fd" name="sock_bind.fd"></a> `fd`: [`fd`](#fd)
+File descriptor of the socket to be bind
+
+- <a href="#sock_bind.addr" name="sock_bind.addr"></a> `addr`: `ConstPointer<addr_port>`
+Address to bind the socket to
+
+##### Results
+- <a href="#sock_bind.error" name="sock_bind.error"></a> `error`: `Result<(), errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#sock_bind.error.ok" name="sock_bind.error.ok"></a> `ok`
+
+- <a href="#sock_bind.error.err" name="sock_bind.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#sock_listen" name="sock_listen"></a> `sock_listen(fd: fd, backlog: size) -> Result<(), errno>`
+Listen for connections on a socket
+
+Polling the socket handle will wait until a connection
+attempt is made
+
+Note: This is similar to `listen`
+
+##### Params
+- <a href="#sock_listen.fd" name="sock_listen.fd"></a> `fd`: [`fd`](#fd)
+File descriptor of the socket to be bind
+
+- <a href="#sock_listen.backlog" name="sock_listen.backlog"></a> `backlog`: [`size`](#size)
+Maximum size of the queue for pending connections
+
+##### Results
+- <a href="#sock_listen.error" name="sock_listen.error"></a> `error`: `Result<(), errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#sock_listen.error.ok" name="sock_listen.error.ok"></a> `ok`
+
+- <a href="#sock_listen.error.err" name="sock_listen.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#sock_accept_v2" name="sock_accept_v2"></a> `sock_accept_v2(fd: fd, flags: fdflags) -> Result<(fd, addr_port), errno>`
+Accept a new incoming connection.
+Note: This is similar to `accept` in POSIX.
+
+##### Params
+- <a href="#sock_accept_v2.fd" name="sock_accept_v2.fd"></a> `fd`: [`fd`](#fd)
+The listening socket.
+
+- <a href="#sock_accept_v2.flags" name="sock_accept_v2.flags"></a> `flags`: [`fdflags`](#fdflags)
+The desired values of the file descriptor flags.
+
+##### Results
+- <a href="#sock_accept_v2.error" name="sock_accept_v2.error"></a> `error`: `Result<(fd, addr_port), errno>`
+New socket connection
+
+###### Variant Layout
+- size: 120
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#sock_accept_v2.error.ok" name="sock_accept_v2.error.ok"></a> `ok`: `(fd, addr_port)`
+
+####### Record members
+- <a href="#sock_accept_v2.error.ok.0" name="sock_accept_v2.error.ok.0"></a> `0`: [`fd`](#fd)
+
+Offset: 0
+
+- <a href="#sock_accept_v2.error.ok.1" name="sock_accept_v2.error.ok.1"></a> `1`: [`addr_port`](#addr_port)
+
+Offset: 4
+
+- <a href="#sock_accept_v2.error.err" name="sock_accept_v2.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#sock_connect" name="sock_connect"></a> `sock_connect(fd: fd, addr: ConstPointer<addr_port>) -> Result<(), errno>`
+Initiate a connection on a socket to the specified address
+
+Polling the socket handle will wait for data to arrive or for
+the socket status to change which can be queried via 'sock_status'
+
+Note: This is similar to `connect` in POSIX
+
+##### Params
+- <a href="#sock_connect.fd" name="sock_connect.fd"></a> `fd`: [`fd`](#fd)
+Socket descriptor
+
+- <a href="#sock_connect.addr" name="sock_connect.addr"></a> `addr`: `ConstPointer<addr_port>`
+Address of the socket to connect to
+
+##### Results
+- <a href="#sock_connect.error" name="sock_connect.error"></a> `error`: `Result<(), errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#sock_connect.error.ok" name="sock_connect.error.ok"></a> `ok`
+
+- <a href="#sock_connect.error.err" name="sock_connect.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#sock_recv_from" name="sock_recv_from"></a> `sock_recv_from(fd: fd, ri_data: iovec_array, ri_flags: riflags) -> Result<(size, roflags, addr_port), errno>`
+Receive a message and its peer address from a socket.
+Note: This is similar to `recvfrom` in POSIX, though it also supports reading
+the data into multiple buffers in the manner of `readv`.
+
+##### Params
+- <a href="#sock_recv_from.fd" name="sock_recv_from.fd"></a> `fd`: [`fd`](#fd)
+
+- <a href="#sock_recv_from.ri_data" name="sock_recv_from.ri_data"></a> `ri_data`: [`iovec_array`](#iovec_array)
+List of scatter/gather vectors to which to store data.
+
+- <a href="#sock_recv_from.ri_flags" name="sock_recv_from.ri_flags"></a> `ri_flags`: [`riflags`](#riflags)
 Message flags.
 
 ##### Results
-- <a href="#sock_send.error" name="sock_send.error"></a> `error`: `Result<size, errno>`
+- <a href="#sock_recv_from.error" name="sock_recv_from.error"></a> `error`: `Result<(size, roflags, addr_port), errno>`
+Number of bytes stored in ri_data and message flags.
+
+###### Variant Layout
+- size: 120
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#sock_recv_from.error.ok" name="sock_recv_from.error.ok"></a> `ok`: `(size, roflags, addr_port)`
+
+####### Record members
+- <a href="#sock_recv_from.error.ok.0" name="sock_recv_from.error.ok.0"></a> `0`: [`size`](#size)
+
+Offset: 0
+
+- <a href="#sock_recv_from.error.ok.1" name="sock_recv_from.error.ok.1"></a> `1`: [`roflags`](#roflags)
+
+Offset: 4
+
+- <a href="#sock_recv_from.error.ok.2" name="sock_recv_from.error.ok.2"></a> `2`: [`addr_port`](#addr_port)
+
+Offset: 6
+
+- <a href="#sock_recv_from.error.err" name="sock_recv_from.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#sock_send_to" name="sock_send_to"></a> `sock_send_to(fd: fd, si_data: ciovec_array, si_flags: siflags, addr: ConstPointer<addr_port>) -> Result<size, errno>`
+Send a message on a socket to a specific address.
+Note: This is similar to `sendto` in POSIX, though it also supports writing
+the data from multiple buffers in the manner of `writev`.
+
+##### Params
+- <a href="#sock_send_to.fd" name="sock_send_to.fd"></a> `fd`: [`fd`](#fd)
+
+- <a href="#sock_send_to.si_data" name="sock_send_to.si_data"></a> `si_data`: [`ciovec_array`](#ciovec_array)
+List of scatter/gather vectors to which to retrieve data
+
+- <a href="#sock_send_to.si_flags" name="sock_send_to.si_flags"></a> `si_flags`: [`siflags`](#siflags)
+Message flags.
+
+- <a href="#sock_send_to.addr" name="sock_send_to.addr"></a> `addr`: `ConstPointer<addr_port>`
+Address of the socket to send message to
+
+##### Results
+- <a href="#sock_send_to.error" name="sock_send_to.error"></a> `error`: `Result<size, errno>`
 Number of bytes transmitted.
 
 ###### Variant Layout
@@ -2510,32 +5062,235 @@ Number of bytes transmitted.
 - align: 4
 - tag_size: 4
 ###### Variant cases
-- <a href="#sock_send.error.ok" name="sock_send.error.ok"></a> `ok`: [`size`](#size)
+- <a href="#sock_send_to.error.ok" name="sock_send_to.error.ok"></a> `ok`: [`size`](#size)
 
-- <a href="#sock_send.error.err" name="sock_send.error.err"></a> `err`: [`errno`](#errno)
+- <a href="#sock_send_to.error.err" name="sock_send_to.error.err"></a> `err`: [`errno`](#errno)
 
 
 ---
 
-#### <a href="#sock_shutdown" name="sock_shutdown"></a> `sock_shutdown(fd: fd, how: sdflags) -> Result<(), errno>`
-Shut down socket send and receive channels.
-Note: This is similar to `shutdown` in POSIX.
+#### <a href="#sock_send_file" name="sock_send_file"></a> `sock_send_file(out_fd: fd, in_fd: fd, offset: filesize, count: filesize) -> Result<filesize, errno>`
+Sends the entire contents of a file down a socket
 
 ##### Params
-- <a href="#sock_shutdown.fd" name="sock_shutdown.fd"></a> `fd`: [`fd`](#fd)
+- <a href="#sock_send_file.out_fd" name="sock_send_file.out_fd"></a> `out_fd`: [`fd`](#fd)
 
-- <a href="#sock_shutdown.how" name="sock_shutdown.how"></a> `how`: [`sdflags`](#sdflags)
-Which channels on the socket to shut down.
+- <a href="#sock_send_file.in_fd" name="sock_send_file.in_fd"></a> `in_fd`: [`fd`](#fd)
+Open file that has the data to be transmitted
+
+- <a href="#sock_send_file.offset" name="sock_send_file.offset"></a> `offset`: [`filesize`](#filesize)
+Offset into the file to start reading at
+
+- <a href="#sock_send_file.count" name="sock_send_file.count"></a> `count`: [`filesize`](#filesize)
+Number of bytes to be sent
 
 ##### Results
-- <a href="#sock_shutdown.error" name="sock_shutdown.error"></a> `error`: `Result<(), errno>`
+- <a href="#sock_send_file.error" name="sock_send_file.error"></a> `error`: `Result<filesize, errno>`
+Number of bytes transmitted.
+
+###### Variant Layout
+- size: 16
+- align: 8
+- tag_size: 4
+###### Variant cases
+- <a href="#sock_send_file.error.ok" name="sock_send_file.error.ok"></a> `ok`: [`filesize`](#filesize)
+
+- <a href="#sock_send_file.error.err" name="sock_send_file.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#resolve" name="resolve"></a> `resolve(host: string, port: u16, addrs: Pointer<addr_ip>, naddrs: size) -> Result<size, errno>`
+Resolves a hostname and a port to one or more IP addresses.
+
+Note: This is similar to `getaddrinfo` in POSIX
+
+When successful, the contents of the output buffer consist of a sequence of
+IPv4 and/or IPv6 addresses. Each address entry consists of a addr_t object.
+This function fills the output buffer as much as possible.
+
+##### Params
+- <a href="#resolve.host" name="resolve.host"></a> `host`: `string`
+Host to resolve
+
+- <a href="#resolve.port" name="resolve.port"></a> `port`: `u16`
+Port hint (zero if no hint is supplied)
+
+- <a href="#resolve.addrs" name="resolve.addrs"></a> `addrs`: `Pointer<addr_ip>`
+The buffer where addresses will be stored
+
+- <a href="#resolve.naddrs" name="resolve.naddrs"></a> `naddrs`: [`size`](#size)
+
+##### Results
+- <a href="#resolve.error" name="resolve.error"></a> `error`: `Result<size, errno>`
+The number of IP addresses returned during the DNS resolution.
 
 ###### Variant Layout
 - size: 8
 - align: 4
 - tag_size: 4
 ###### Variant cases
-- <a href="#sock_shutdown.error.ok" name="sock_shutdown.error.ok"></a> `ok`
+- <a href="#resolve.error.ok" name="resolve.error.ok"></a> `ok`: [`size`](#size)
 
-- <a href="#sock_shutdown.error.err" name="sock_shutdown.error.err"></a> `err`: [`errno`](#errno)
+- <a href="#resolve.error.err" name="resolve.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#epoll_create" name="epoll_create"></a> `epoll_create() -> Result<fd, errno>`
+Create an epoll interest list
+
+
+##### Params
+##### Results
+- <a href="#epoll_create.error" name="epoll_create.error"></a> `error`: `Result<fd, errno>`
+The file descriptor for this epoll interest list
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#epoll_create.error.ok" name="epoll_create.error.ok"></a> `ok`: [`fd`](#fd)
+
+- <a href="#epoll_create.error.err" name="epoll_create.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#epoll_ctl" name="epoll_ctl"></a> `epoll_ctl(epfd: fd, op: epoll_ctl, fd: fd, event: ConstPointer<epoll_event>) -> Result<(), errno>`
+Modifies an epoll interest list
+
+
+##### Params
+- <a href="#epoll_ctl.epfd" name="epoll_ctl.epfd"></a> `epfd`: [`fd`](#fd)
+File descriptor of the epoll interest list
+
+- <a href="#epoll_ctl.op" name="epoll_ctl.op"></a> `op`: [`epoll_ctl`](#epoll_ctl)
+Operation to be made on the list
+
+- <a href="#epoll_ctl.fd" name="epoll_ctl.fd"></a> `fd`: [`fd`](#fd)
+File descriptor to be added, deleted or modified
+
+- <a href="#epoll_ctl.event" name="epoll_ctl.event"></a> `event`: `ConstPointer<epoll_event>`
+Reference to the event to be added, deleted or modified
+
+##### Results
+- <a href="#epoll_ctl.error" name="epoll_ctl.error"></a> `error`: `Result<(), errno>`
+The number of bytes written.
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#epoll_ctl.error.ok" name="epoll_ctl.error.ok"></a> `ok`
+
+- <a href="#epoll_ctl.error.err" name="epoll_ctl.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#epoll_wait" name="epoll_wait"></a> `epoll_wait(epfd: fd, event: Pointer<epoll_event>, maxevents: size, timeout: timestamp) -> Result<size, errno>`
+wait for an I/O event on an epoll file descriptor
+
+
+##### Params
+- <a href="#epoll_wait.epfd" name="epoll_wait.epfd"></a> `epfd`: [`fd`](#fd)
+File descriptor of the epoll interest list
+
+- <a href="#epoll_wait.event" name="epoll_wait.event"></a> `event`: `Pointer<epoll_event>`
+Reference to the array of events
+
+- <a href="#epoll_wait.maxevents" name="epoll_wait.maxevents"></a> `maxevents`: [`size`](#size)
+Maximum number of events that will be returned in the array
+
+- <a href="#epoll_wait.timeout" name="epoll_wait.timeout"></a> `timeout`: [`timestamp`](#timestamp)
+Timeout for the wait event
+
+##### Results
+- <a href="#epoll_wait.error" name="epoll_wait.error"></a> `error`: `Result<size, errno>`
+The number of events returned.
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#epoll_wait.error.ok" name="epoll_wait.error.ok"></a> `ok`: [`size`](#size)
+
+- <a href="#epoll_wait.error.err" name="epoll_wait.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#dl_open" name="dl_open"></a> `dl_open(path: string) -> Result<dlopenid, errno>`
+Attempts to open a wasm library.
+
+##### Params
+- <a href="#dl_open.path" name="dl_open.path"></a> `path`: `string`
+Path to the library
+
+##### Results
+- <a href="#dl_open.error" name="dl_open.error"></a> `error`: `Result<dlopenid, errno>`
+A handle of the library or an error code
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#dl_open.error.ok" name="dl_open.error.ok"></a> `ok`: [`dlopenid`](#dlopenid)
+
+- <a href="#dl_open.error.err" name="dl_open.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#dl_load_symbol" name="dl_load_symbol"></a> `dl_load_symbol(symbol: string, handle: dlopenid) -> Result<pointersize, errno>`
+Load a symbol from a dynamically linked library
+
+##### Params
+- <a href="#dl_load_symbol.symbol" name="dl_load_symbol.symbol"></a> `symbol`: `string`
+Name of the symbol to be loaded
+
+- <a href="#dl_load_symbol.handle" name="dl_load_symbol.handle"></a> `handle`: [`dlopenid`](#dlopenid)
+Handle to the library
+
+##### Results
+- <a href="#dl_load_symbol.error" name="dl_load_symbol.error"></a> `error`: `Result<pointersize, errno>`
+Returns the address of the symbol.
+In case of a function there is a index in the indirect function table at that address
+Not sure yet, whether this address should be relative to the module or absolute. Probably absolute.
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#dl_load_symbol.error.ok" name="dl_load_symbol.error.ok"></a> `ok`: [`pointersize`](#pointersize)
+
+- <a href="#dl_load_symbol.error.err" name="dl_load_symbol.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#dl_close" name="dl_close"></a> `dl_close(handle: dlopenid) -> Result<(), errno>`
+Close a dynamically linked library
+
+##### Params
+- <a href="#dl_close.handle" name="dl_close.handle"></a> `handle`: [`dlopenid`](#dlopenid)
+Handle of the library to be closed
+
+##### Results
+- <a href="#dl_close.error" name="dl_close.error"></a> `error`: `Result<(), errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#dl_close.error.ok" name="dl_close.error.ok"></a> `ok`
+
+- <a href="#dl_close.error.err" name="dl_close.error.err"></a> `err`: [`errno`](#errno)
 
