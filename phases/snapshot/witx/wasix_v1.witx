@@ -734,7 +734,7 @@
     ;;; Path to the library
     (param $path string)
     ;;; A handle of the library or an error code
-    (result $error (expected $dlopenid (error $errno)))
+    (result $error (expected $dl_handle (error $errno)))
   )
 
   ;;; Load a symbol from a dynamically linked library
@@ -742,18 +742,29 @@
     ;;; Name of the symbol to be loaded
     (param $symbol string)
     ;;; Handle to the library
-    (param $handle $dlopenid)
+    (param $handle $dl_handle)
     ;;; Returns the address of the symbol.
     ;;; In case of a function there is a index in the indirect function table at that address
     ;;; Not sure yet, whether this address should be relative to the module or absolute. Probably absolute.
+    ;;; TODO: Figure out what exactly should be returned here.
     (result $error (expected $pointersize (error $errno)))
   )
 
   ;;; Close a dynamically linked library
   (@interface func (export "dl_close")
     ;;; Handle of the library to be closed
-    (param $handle $dlopenid)
+    (param $handle $dl_handle)
     (result $error (expected (error $errno)))
+  )
+
+  ;;; Get the most recent error from the dynamic linker as a human readable string
+  (@interface func (export "dl_error")
+    ;;; A buffer where the error message will be stored
+    (param $message (@witx pointer u8))
+    (param $message_len $size)
+    ;;; The length of the error message.
+    ;;; TODO: Figure out how to differentiate between no error and buffer to small.
+    (result $error (expected $size (error $errno)))
   )
 
 )

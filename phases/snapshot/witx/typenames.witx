@@ -679,8 +679,8 @@
 ;;; A thread handle
 (typename $tid (handle))
 
-;;; A thread handle
-(typename $dlopenid (handle))
+;;; A library handle
+(typename $dl_handle (handle))
 
 ;;; Represents an optional process ID
 (typename $option_pid

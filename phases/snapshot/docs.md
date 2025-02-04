@@ -1286,8 +1286,8 @@ Size: 4
 Alignment: 4
 
 ### Supertypes
-## <a href="#dlopenid" name="dlopenid"></a> `dlopenid`: `Handle`
-A thread handle
+## <a href="#dl_handle" name="dl_handle"></a> `dl_handle`: `Handle`
+A library handle
 
 Size: 4
 
@@ -5224,7 +5224,7 @@ The number of events returned.
 
 ---
 
-#### <a href="#dl_open" name="dl_open"></a> `dl_open(path: string) -> Result<dlopenid, errno>`
+#### <a href="#dl_open" name="dl_open"></a> `dl_open(path: string) -> Result<dl_handle, errno>`
 Attempts to open a wasm library.
 
 ##### Params
@@ -5232,7 +5232,7 @@ Attempts to open a wasm library.
 Path to the library
 
 ##### Results
-- <a href="#dl_open.error" name="dl_open.error"></a> `error`: `Result<dlopenid, errno>`
+- <a href="#dl_open.error" name="dl_open.error"></a> `error`: `Result<dl_handle, errno>`
 A handle of the library or an error code
 
 ###### Variant Layout
@@ -5240,21 +5240,21 @@ A handle of the library or an error code
 - align: 4
 - tag_size: 4
 ###### Variant cases
-- <a href="#dl_open.error.ok" name="dl_open.error.ok"></a> `ok`: [`dlopenid`](#dlopenid)
+- <a href="#dl_open.error.ok" name="dl_open.error.ok"></a> `ok`: [`dl_handle`](#dl_handle)
 
 - <a href="#dl_open.error.err" name="dl_open.error.err"></a> `err`: [`errno`](#errno)
 
 
 ---
 
-#### <a href="#dl_load_symbol" name="dl_load_symbol"></a> `dl_load_symbol(symbol: string, handle: dlopenid) -> Result<pointersize, errno>`
+#### <a href="#dl_load_symbol" name="dl_load_symbol"></a> `dl_load_symbol(symbol: string, handle: dl_handle) -> Result<pointersize, errno>`
 Load a symbol from a dynamically linked library
 
 ##### Params
 - <a href="#dl_load_symbol.symbol" name="dl_load_symbol.symbol"></a> `symbol`: `string`
 Name of the symbol to be loaded
 
-- <a href="#dl_load_symbol.handle" name="dl_load_symbol.handle"></a> `handle`: [`dlopenid`](#dlopenid)
+- <a href="#dl_load_symbol.handle" name="dl_load_symbol.handle"></a> `handle`: [`dl_handle`](#dl_handle)
 Handle to the library
 
 ##### Results
@@ -5262,6 +5262,7 @@ Handle to the library
 Returns the address of the symbol.
 In case of a function there is a index in the indirect function table at that address
 Not sure yet, whether this address should be relative to the module or absolute. Probably absolute.
+TODO: Figure out what exactly should be returned here.
 
 ###### Variant Layout
 - size: 8
@@ -5275,11 +5276,11 @@ Not sure yet, whether this address should be relative to the module or absolute.
 
 ---
 
-#### <a href="#dl_close" name="dl_close"></a> `dl_close(handle: dlopenid) -> Result<(), errno>`
+#### <a href="#dl_close" name="dl_close"></a> `dl_close(handle: dl_handle) -> Result<(), errno>`
 Close a dynamically linked library
 
 ##### Params
-- <a href="#dl_close.handle" name="dl_close.handle"></a> `handle`: [`dlopenid`](#dlopenid)
+- <a href="#dl_close.handle" name="dl_close.handle"></a> `handle`: [`dl_handle`](#dl_handle)
 Handle of the library to be closed
 
 ##### Results
@@ -5293,4 +5294,30 @@ Handle of the library to be closed
 - <a href="#dl_close.error.ok" name="dl_close.error.ok"></a> `ok`
 
 - <a href="#dl_close.error.err" name="dl_close.error.err"></a> `err`: [`errno`](#errno)
+
+
+---
+
+#### <a href="#dl_error" name="dl_error"></a> `dl_error(message: Pointer<u8>, message_len: size) -> Result<size, errno>`
+Get the most recent error from the dynamic linker as a human readable string
+
+##### Params
+- <a href="#dl_error.message" name="dl_error.message"></a> `message`: `Pointer<u8>`
+A buffer where the error message will be stored
+
+- <a href="#dl_error.message_len" name="dl_error.message_len"></a> `message_len`: [`size`](#size)
+
+##### Results
+- <a href="#dl_error.error" name="dl_error.error"></a> `error`: `Result<size, errno>`
+The length of the error message.
+TODO: Figure out how to differentiate between no error and buffer to small.
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#dl_error.error.ok" name="dl_error.error.ok"></a> `ok`: [`size`](#size)
+
+- <a href="#dl_error.error.err" name="dl_error.error.err"></a> `err`: [`errno`](#errno)
 
